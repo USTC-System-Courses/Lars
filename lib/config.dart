@@ -51,49 +51,69 @@ enum Ins_type{
 enum Exception{
     UNKNOWN_INST,
     RESTRICT_REG,
+    REG_OUT_OF_RANGE,
+    IMM_OUT_OF_RANGE,
 }
 
 Map<Exception, String> Exception_Info = {
     Exception.UNKNOWN_INST: 'UNKNOWN_INST: Can\'t Find Such Opcode in LoongArch32 Instruction Set',
     Exception.RESTRICT_REG: 'RESTRICT_REG: The 21st Register is Restricted',
+    Exception.REG_OUT_OF_RANGE: 'REG_OUT_OF_RANGE: The Register Number is Out of Range',
+    Exception.IMM_OUT_OF_RANGE: 'IMM_OUT_OF_RANGE: The Immediate Number is Out of Range',
 };
 
-// List<Ins_type> without_rd = [
-//     Ins_type.NOP,
-//     Ins_type.B,
-//     Ins_type.BL,
-// ],
-// without_rj = [
-//     Ins_type.NOP,
-//     Ins_type.B,
-//     Ins_type.BL,
-//     Ins_type.LU12IW,
-//     Ins_type.PCADDU12I,
-// ],
-// without_rk = [
-//     Ins_type.NOP,
-//     Ins_type.B,
-//     Ins_type.BL,
-//     Ins_type.LU12IW,
-//     Ins_type.PCADDU12I,
-//     Ins_type.JIRL,
-//     Ins_type.BEQ,
-//     Ins_type.BNE,
-//     Ins_type.BLT,
-//     Ins_type.BGE,
-//     Ins_type.BLTU,
-//     Ins_type.BGEU,
-//     Ins_type.SLLIW,
-//     Ins_type.SRLIW,
-//     Ins_type.SRAIW,
-// ],
-// with_ui5 = [
-//     Ins_type.SLLIW,
-//     Ins_type.SRLIW,
-//     Ins_type.SRAIW,
-// ],
-// with_ui12 = [
-//     Ins_type.LU12IW,
-//     Ins_type.PCADDU12I,
-// ]
-// ;
+List<Ins_type> without_rd = [
+    Ins_type.NOP,
+    Ins_type.B,
+    Ins_type.BL,
+],
+without_rj = [
+    Ins_type.NOP,
+    Ins_type.B,
+    Ins_type.BL,
+    Ins_type.LU12IW,
+    Ins_type.PCADDU12I,
+],
+without_rk = [
+    Ins_type.NOP,
+    Ins_type.B,
+    Ins_type.BL,
+    Ins_type.LU12IW,
+    Ins_type.PCADDU12I,
+    Ins_type.JIRL,
+    Ins_type.BEQ,
+    Ins_type.BNE,
+    Ins_type.BLT,
+    Ins_type.BGE,
+    Ins_type.BLTU,
+    Ins_type.BGEU,
+    Ins_type.SLLIW,
+    Ins_type.SRLIW,
+    Ins_type.SRAIW,
+],
+with_ui5 = [
+    Ins_type.SLLIW,
+    Ins_type.SRLIW,
+    Ins_type.SRAIW,
+],
+with_ui12 = [
+    Ins_type.LU12IW,
+    Ins_type.PCADDU12I,
+    Ins_type.ANDI,
+    Ins_type.ORI,
+    Ins_type.XORI,
+],
+with_si12 = [
+    Ins_type.SLTI,
+    Ins_type.SLTUI,
+    Ins_type.ADDIW,
+    Ins_type.LDB,
+    Ins_type.LDH,
+    Ins_type.LDW,
+    Ins_type.STB,
+    Ins_type.STH,
+    Ins_type.STW,
+    Ins_type.LDBU,
+    Ins_type.LDHU,
+]
+;

@@ -103,17 +103,99 @@ class Sentense{
                 _machine_code_i = Uint32(0x00100 << 12);
                 break;
             case Ins_type.SUBW:
-                _machine_code_i = Uint32(0x00101 << 12);
+                _machine_code_i = Uint32(0x00110 << 12);
                 break;
+            case Ins_type.SLT:
+                _machine_code_i = Uint32(0x00120 << 12);
+                break;
+            case Ins_type.SLTU:
+                _machine_code_i = Uint32(0x00128 << 12);
+                break;
+            case Ins_type.NOR:
+                _machine_code_i = Uint32(0x00140 << 12);
+                break;
+            case Ins_type.AND:
+                _machine_code_i = Uint32(0x00148 << 12);
+                break;
+            case Ins_type.OR:
+                _machine_code_i = Uint32(0x00150 << 12);
+                break;
+            case Ins_type.XOR:
+                _machine_code_i = Uint32(0x00158 << 12);
+                break;
+            case Ins_type.SLLW:
+                _machine_code_i = Uint32(0x00170 << 12);
+                break;
+            case Ins_type.SRLW:
+                _machine_code_i = Uint32(0x00178 << 12);
+                break;
+            case Ins_type.SRAW:
+                _machine_code_i = Uint32(0x00180 << 12);
+                break;
+            case Ins_type.MULW:
+                _machine_code_i = Uint32(0x001C0 << 12);
+                break;
+            case Ins_type.MULHW:
+                _machine_code_i = Uint32(0x001C8 << 12);
+                break;
+            case Ins_type.MULHWU:
+                _machine_code_i = Uint32(0x001D0 << 12);
+                break;
+            case Ins_type.DIVW:
+                _machine_code_i = Uint32(0x00200 << 12);
+                break;
+            case Ins_type.MODW:
+                _machine_code_i = Uint32(0x00208 << 12);
+                break;
+            case Ins_type.DIVWU:
+                _machine_code_i = Uint32(0x00210 << 12);
+                break;
+            case Ins_type.MODWU:
+                _machine_code_i = Uint32(0x00218 << 12);
+                break;
+            case Ins_type.SLLIW:
+                _machine_code_i = Uint32(0x00408 << 12);
+                break;
+            case Ins_type.SRLIW:
+                _machine_code_i = Uint32(0x00448 << 12);
+                break;
+            case Ins_type.SRAIW:
+                _machine_code_i = Uint32(0x00488 << 12);
             default:
                 break;
         }
-        rd = Uint32(int.parse(sentense_spilt[1].substring(2))); //TODO异常处理寄存器超出范围
-        rj = Uint32(int.parse(sentense_spilt[2].substring(2)));
-        rk = Uint32(int.parse(sentense_spilt[3].substring(2)));
-        _machine_code_i |= (rd << Uint32(10));
-        _machine_code_i |= (rj << Uint32(5));
-        _machine_code_i |= rk;
+        
+        //TODO异常处理寄存器超出范围
+        if(!without_rd.contains(type)) {
+            rd = Uint32(int.parse(sentense_spilt[1].substring(2)));
+            if(rd > Uint32(31)) throw(Exception.REG_OUT_OF_RANGE);
+            _machine_code_i |= rd;
+        } 
+        if(!without_rj.contains(type)) {
+            rj = Uint32(int.parse(sentense_spilt[2].substring(2)));
+            if(rj > Uint32(31)) throw(Exception.REG_OUT_OF_RANGE);
+            _machine_code_i |= (rj << Uint32(5));
+        }
+        if(!without_rk.contains(type)) {
+            rk = Uint32(int.parse(sentense_spilt[3].substring(2)));
+            if(rk > Uint32(31)) throw(Exception.REG_OUT_OF_RANGE);
+            _machine_code_i |= (rk << Uint32(10));
+        }
+        if(with_ui5.contains(type)) {
+            imm = Uint32(int.parse(sentense_spilt[3]));
+            if(imm > Uint32(31)) throw(Exception.IMM_OUT_OF_RANGE);
+            _machine_code_i |= (imm << Uint32(10));
+        }
+        if(with_ui12.contains(type)) {
+            imm = Uint32(int.parse(sentense_spilt[3]));
+            if(imm > Uint32(4095)) throw(Exception.IMM_OUT_OF_RANGE);
+            _machine_code_i |= (imm << Uint32(10));
+        }
+        if(with_si12.contains(type)) {
+            imm = Uint32(int.parse(sentense_spilt[3]));
+            if(imm > Uint32(4095)) throw(Exception.IMM_OUT_OF_RANGE);
+            _machine_code_i |= (imm << Uint32(10));
+        }
     }
 
     
