@@ -34,6 +34,7 @@ enum Exception_type{
     INVALID_LABEL,
     INVALID_SEGMENT,
     LABEL_NOT_FOUND,
+    LABEL_TOO_FAR,
 }
 
 Map<Exception_type, String> Exception_Info = {
@@ -44,4 +45,5 @@ Map<Exception_type, String> Exception_Info = {
     Exception_type.INVALID_LABEL: 'Invalid Label Name',
     Exception_type.INVALID_SEGMENT: '.Text or .Data shall follow a new line',
     Exception_type.LABEL_NOT_FOUND: 'Label Not Found',
+    Exception_type.LABEL_TOO_FAR: 'Label can\'t reach',
 };

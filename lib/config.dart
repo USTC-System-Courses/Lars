@@ -128,6 +128,16 @@ with_label26 = [
     Ins_type.B,
     Ins_type.BL,
 ],
+with_LDST = [
+    Ins_type.LDB,
+    Ins_type.LDH,
+    Ins_type.LDW,
+    Ins_type.STB,
+    Ins_type.STH,
+    Ins_type.STW,
+    Ins_type.LDBU,
+    Ins_type.LDHU,
+],
 with_label = with_label16 + with_label26;
 
 enum analyze_mode{

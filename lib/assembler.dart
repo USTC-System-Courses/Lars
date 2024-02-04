@@ -94,8 +94,23 @@ class Assembler{
             }
         }
         for (var element in _inst) {
-            if((with_label26.contains(element.type) || with_label16.contains(element.type)) && element.imm == Uint32.zero){
-                _label.find(element.sentence_spilt.last);
+            if((with_label.contains(element.type) || with_LDST.contains(element.type)) && element.imm == Uint32.zero){
+                var addr = _label.find(element.sentence_spilt.last);
+                var temp = judge(element, addr);
+                if(temp != 0){
+                    element.imm = Uint32(temp);
+                    if(with_label16.contains(element)) {
+                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32(10);
+                    }
+                    else if(with_label26.contains(element)){
+                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32(10);
+                        element._machine_code_i |= element.imm.bitRange(25, 16);
+                    }
+                    else{
+                        element._machine_code_i |= element.imm.bitRange(11, 0) << Uint32(10);
+                    }
+                }
+                else throw SentenceException(Exception_type.LABEL_TOO_FAR);
             }
             _memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
             _inst.last.addr = text_build;
@@ -104,10 +119,11 @@ class Assembler{
         }
     }
 
-    (bool, int) judge(Sentence a, Uint32 addr){
-        if (with_label16.contains(a.type) && (a.addr - addr) < -(1 << 15) || (a.addr - addr) > (1 << 15) - 1) return (true, (a.addr - addr));
-        else if (with_label16.contains(a.type)) return (false, (a.addr - addr));
-        else return (false, 0);
+    int judge(Sentence a, Uint32 addr){
+        if (with_label16.contains(a.type) && ((a.addr - addr) < -(1 << 15) || (a.addr - addr) > (1 << 15) - 1)) return ((a.addr - addr));
+        else if (with_label26.contains(a.type) && ((a.addr - addr) < -(1 << 25) || (a.addr - addr) > (1 << 25) - 1)) return ((a.addr - addr));
+        else if (with_LDST.contains(a.type) && ((a.addr - addr) < -(1 << 11) || (a.addr - addr) > (1 << 11) - 1)) return a.addr - addr;
+        else return 0;
     }
 
     List<String> print(){
@@ -148,7 +164,6 @@ String process(String temp){
 
 class Sentence{
     String sentence = '';                               //输入的汇编指令
-    String _machine_code = '';                           //输出的机器码(字符串形式)
     Uint32 _machine_code_i = Uint32(0);                  //输出的机器码
     
     Ins_type type = Ins_type.NOP;                       //指令类型
@@ -174,11 +189,10 @@ class Sentence{
         }
         type = Ins_type.values.byName(sentence_spilt.first);
         get_inst();
-        _machine_code = _machine_code_i.toBinaryPadded();
     }
 
     String print(){
-        return _machine_code;
+        return _machine_code_i.toBinaryPadded();
     }
     
     String _rename_register(String inst){
