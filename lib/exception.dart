@@ -32,7 +32,8 @@ enum Exception_type{
     REG_OUT_OF_RANGE,
     IMM_OUT_OF_RANGE,
     INVALID_LABEL,
-    INVALID_SEGMENT
+    INVALID_SEGMENT,
+    LABEL_NOT_FOUND,
 }
 
 Map<Exception_type, String> Exception_Info = {
@@ -41,5 +42,6 @@ Map<Exception_type, String> Exception_Info = {
     Exception_type.REG_OUT_OF_RANGE: 'The Register Number is Out of Range',
     Exception_type.IMM_OUT_OF_RANGE: 'The Immediate Number is Out of Range',
     Exception_type.INVALID_LABEL: 'Invalid Label Name',
-    Exception_type.INVALID_SEGMENT: '.Text or .Data shall follow a new line'
+    Exception_type.INVALID_SEGMENT: '.Text or .Data shall follow a new line',
+    Exception_type.LABEL_NOT_FOUND: 'Label Not Found',
 };

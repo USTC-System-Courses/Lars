@@ -23,6 +23,10 @@ extension Uint32_ext on Uint32{
         }
         return a;
     }
+
+    int operator -(Uint32 other){
+        return this.toInt() - other.toInt();
+    }
 }
 
 extension Uint8_ext on Uint8{

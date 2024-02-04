@@ -24,8 +24,8 @@ class Assembler{
             try {
                 if(cur_mode == analyze_mode.TEXT){
                     _inst.add(Sentence(element));
-                    _memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
-                    text_build = text_build.add(4);
+                    // _memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
+                    // text_build = text_build.add(4);
                 }
                 else{
                     //这里处理数据段的Label
@@ -68,6 +68,7 @@ class Assembler{
                             }
                             break;
                         default:
+                            throw SentenceException(Exception_type.INVALID_LABEL);
                     }
                 }
             } on LabelException catch (e) {
@@ -86,15 +87,29 @@ class Assembler{
                 else{
                     _label.add(spilt.first, text_build);
                     _inst.add(Sentence(element.replaceAll(RegExp(r'.*:'), '')));
+                    _inst.last.addr = text_build;
                     _memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
                     text_build = text_build.add(4);
                 }
             }
         }
         for (var element in _inst) {
+            if((with_label26.contains(element.type) || with_label16.contains(element.type)) && element.imm == Uint32.zero){
+                _label.find(element.sentence_spilt.last);
+            }
+            _memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
+            _inst.last.addr = text_build;
+            text_build = text_build.add(4);
             _machine_code.add(element.print());
         }
     }
+
+    (bool, int) judge(Sentence a, Uint32 addr){
+        if (with_label16.contains(a.type) && (a.addr - addr) < -(1 << 15) || (a.addr - addr) > (1 << 15) - 1) return (true, (a.addr - addr));
+        else if (with_label16.contains(a.type)) return (false, (a.addr - addr));
+        else return (false, 0);
+    }
+
     List<String> print(){
         return _machine_code;
     }
@@ -141,9 +156,12 @@ class Sentence{
     Uint32 rd = Uint32(0), rj = Uint32(0), rk = Uint32(0);  //寄存器编号
     Uint32 imm = Uint32(0);                             //立即数
     
+    Uint32 addr = Uint32(0);                            //指令所在内存地址
+    
     
 
     Sentence(String temp){
+        if(temp == '') return;
         temp = process(temp);
         //将寄存器别名改为标准写法
         sentence = _rename_register(temp);
