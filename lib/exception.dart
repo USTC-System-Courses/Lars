@@ -20,10 +20,16 @@ class MemoryException implements Exception {
     MemoryException(this.type);
 }
 
+class SimulateException implements Exception {
+    final bool type;
+    SimulateException(this.type);
+}
+
 enum MEM_EXP_type{
     MEM_READ_UNINIT,
     MEM_OUT_OF_RANGE,
     MEM_NOT_ALIGNED,
+    UNEXPECTED_MEM_ERROR,
 }
 
 enum Exception_type{

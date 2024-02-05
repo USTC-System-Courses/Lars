@@ -1,6 +1,8 @@
 // import 'dart:ffi' as ffi;
 // import 'dart:js_util';
 
+import 'package:flutter/foundation.dart';
+
 import './Uint32_ext.dart';
 import 'package:binary/binary.dart';
 import 'dart:core';
@@ -16,10 +18,11 @@ class Assembler{
     Label _label = Label();
     Memory _memory = Memory();
     Assembler(List<String> temp){
+        
         inst_input = temp;
         analyze_mode cur_mode = analyze_mode.TEXT;
-        Uint32 text_build = Uint32(0x1c800000);
-        Uint32 data_build = Uint32(0x1c000000);
+        Uint32 text_build = Uint32(0x1c000000);
+        Uint32 data_build = Uint32(0x1c800000);
         for (var element in inst_input) {
             try {
                 if(cur_mode == analyze_mode.TEXT){
@@ -124,6 +127,96 @@ class Assembler{
         else if (with_label26.contains(a.type) && ((a.addr - addr) < -(1 << 25) || (a.addr - addr) > (1 << 25) - 1)) return ((a.addr - addr));
         else if (with_LDST.contains(a.type) && ((a.addr - addr) < -(1 << 11) || (a.addr - addr) > (1 << 11) - 1)) return a.addr - addr;
         else return 0;
+    }
+
+    List<Uint32> reg = List.filled(32, Uint32.zero);
+    Uint32 pc = Uint32(0x1c000000);
+
+    void cycle(){
+        Uint32 ins = _memory.read(pc);
+        int rd = ins.bitRange(4, 0).toInt(), rj = ins.bitRange(9, 5).toInt(), rk = ins.bitRange(14, 10).toInt();
+        int ui12 = ins.bitRange(21, 10).toInt(), ui5 = ins.bitRange(14, 10).toInt();
+        int si12 = ins.getBit(21) == 1 ? (~(ins.bitRange(21, 10).signExtend(12))).add(1).toInt():ui12;
+        switch(get_inst_type(ins)){
+            case Ins_type.NOP:
+                pc = pc.add(4);
+                break;
+            case Ins_type.ADDW:
+                reg[rd] = reg[rj].add32(reg[rk]);
+                pc = pc.add(4);
+                break;
+            
+        }
+    }
+
+    Ins_type get_inst_type(Uint32 ins){
+        if(ins.getBit(30) == 1)
+            switch(ins.bitRange(31, 26).toInt()){
+                case 0x13: return Ins_type.JIRL;
+                case 0x14: return Ins_type.B;
+                case 0x15: return Ins_type.BL;
+                case 0x16: return Ins_type.BEQ;
+                case 0x17: return Ins_type.BNE;
+                case 0x18: return Ins_type.BLT;
+                case 0x19: return Ins_type.BGE;
+                case 0x1A: return Ins_type.BLTU;
+                case 0x1B: return Ins_type.BGEU;
+                default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+            }
+        else if (ins.getBit(29) == 1) 
+            switch(ins.bitRange(31, 22).toInt()){
+                case 0xA0: return Ins_type.LDB;
+                case 0xA1: return Ins_type.LDH;
+                case 0xA2: return Ins_type.LDW;
+                case 0xA4: return Ins_type.STB;
+                case 0xA5: return Ins_type.STH;
+                case 0xA6: return Ins_type.STW;
+                case 0xA8: return Ins_type.LDBU;
+                case 0xA9: return Ins_type.LDHU;
+                default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+            }
+        else if (ins.getBit(28) == 1)
+            switch(ins.bitRange(31, 25).toInt()){
+                case 0x0C: return Ins_type.LU12IW;
+                case 0x0E: return Ins_type.PCADDU12I;
+                default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+            }
+        else if (ins.getBit(25) == 1)
+            switch(ins.bitRange(31, 22).toInt()){
+                case 0x08: return Ins_type.SLTI;
+                case 0x09: return Ins_type.SLTUI;
+                case 0x0A: return Ins_type.ADDIW;
+                case 0x0D: return Ins_type.ANDI;
+                case 0x0E: return Ins_type.ORI;
+                case 0x0F: return Ins_type.XORI;
+                default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+            }
+        else
+            switch(ins.bitRange(31, 12).toInt()){
+                case 0x00100: return Ins_type.ADDW;
+                case 0x00110: return Ins_type.SUBW;
+                case 0x00120: return Ins_type.SLT;
+                case 0x00128: return Ins_type.SLTU;
+                case 0x00140: return Ins_type.NOR;
+                case 0x00148: return Ins_type.AND;
+                case 0x00150: return Ins_type.OR;
+                case 0x00158: return Ins_type.XOR;
+                case 0x00170: return Ins_type.SLLW;
+                case 0x00178: return Ins_type.SRLW;
+                case 0x00180: return Ins_type.SRAW;
+                case 0x001C0: return Ins_type.MULW;
+                case 0x001C8: return Ins_type.MULHW;
+                case 0x001D0: return Ins_type.MULHWU;
+                case 0x00200: return Ins_type.DIVW;
+                case 0x00208: return Ins_type.MODW;
+                case 0x00210: return Ins_type.DIVWU;
+                case 0x00218: return Ins_type.MODWU;
+                case 0x00408: return Ins_type.SLLIW;
+                case 0x00448: return Ins_type.SRLIW;
+                case 0x00488: return Ins_type.SRAIW;
+                case 0: return Ins_type.NOP;
+                default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+            }
     }
 
     List<String> print(){
@@ -302,79 +395,79 @@ class Sentence{
                 _machine_code_i = Uint32(0x00488 << 12);
                 break;
             case Ins_type.SLTI:
-                _machine_code_i = Uint32(0x020 << 22);
+                _machine_code_i = Uint32(0x08 << 22);
                 break;
             case Ins_type.SLTUI:
-                _machine_code_i = Uint32(0x024 << 22);
+                _machine_code_i = Uint32(0x09 << 22);
                 break;
             case Ins_type.ADDIW:
-                _machine_code_i = Uint32(0x028 << 22);
+                _machine_code_i = Uint32(0x0A << 22);
                 break;
             case Ins_type.ANDI:
-                _machine_code_i = Uint32(0x034 << 22);
+                _machine_code_i = Uint32(0x0D << 22);
                 break;
             case Ins_type.ORI:
-                _machine_code_i = Uint32(0x038 << 22);
+                _machine_code_i = Uint32(0x0E << 22);
                 break;
             case Ins_type.XORI:
-                _machine_code_i = Uint32(0x03C << 22);
+                _machine_code_i = Uint32(0x0F << 22);
                 break;
             case Ins_type.LU12IW:
-                _machine_code_i = Uint32(0x14 << 25);
+                _machine_code_i = Uint32(0x0C << 25);
                 break;
             case Ins_type.PCADDU12I:
-                _machine_code_i = Uint32(0x1C << 25);
+                _machine_code_i = Uint32(0x0E << 25);
                 break;
             case Ins_type.LDB:
-                _machine_code_i = Uint32(0x280 << 22);
+                _machine_code_i = Uint32(0xA0 << 22);
                 break;
             case Ins_type.LDH:
-                _machine_code_i = Uint32(0x284 << 22);
+                _machine_code_i = Uint32(0xA1 << 22);
                 break;
             case Ins_type.LDW:
-                _machine_code_i = Uint32(0x288 << 22);
+                _machine_code_i = Uint32(0xA2 << 22);
                 break;
             case Ins_type.STB:
-                _machine_code_i = Uint32(0x290 << 22);
+                _machine_code_i = Uint32(0xA4 << 22);
                 break;
             case Ins_type.STH:
-                _machine_code_i = Uint32(0x294 << 22);
+                _machine_code_i = Uint32(0xA5 << 22);
                 break;
             case Ins_type.STW:
-                _machine_code_i = Uint32(0x298 << 22);
+                _machine_code_i = Uint32(0xA6 << 22);
                 break;
             case Ins_type.LDBU:
-                _machine_code_i = Uint32(0x2A0 << 22);
+                _machine_code_i = Uint32(0xA8 << 22);
                 break;
             case Ins_type.LDHU:
-                _machine_code_i = Uint32(0x2A4 << 22);
+                _machine_code_i = Uint32(0xA9 << 22);
                 break;
             case Ins_type.JIRL:
-                _machine_code_i = Uint32(0x4C << 26);
+                _machine_code_i = Uint32(0x13 << 26);
                 break;
             case Ins_type.B:
-                _machine_code_i = Uint32(0x50 << 26);
+                _machine_code_i = Uint32(0x14 << 26);
                 break;
             case Ins_type.BL:
-                _machine_code_i = Uint32(0x54 << 26);
+                _machine_code_i = Uint32(0x15 << 26);
                 break;
             case Ins_type.BEQ:
-                _machine_code_i = Uint32(0x58 << 26);
+                _machine_code_i = Uint32(0x16 << 26);
                 break;
             case Ins_type.BNE:
-                _machine_code_i = Uint32(0x5C << 26);
+                _machine_code_i = Uint32(0x17 << 26);
                 break;
             case Ins_type.BLT:
-                _machine_code_i = Uint32(0x60 << 26);
+                _machine_code_i = Uint32(0x18 << 26);
                 break;
             case Ins_type.BGE:
-                _machine_code_i = Uint32(0x64 << 26);
+                _machine_code_i = Uint32(0x19 << 26);
                 break;
             case Ins_type.BLTU:
-                _machine_code_i = Uint32(0x68 << 26);
+                _machine_code_i = Uint32(0x1A << 26);
                 break;
             case Ins_type.BGEU:
-                _machine_code_i = Uint32(0x6C << 26);
+                _machine_code_i = Uint32(0x1B << 26);
                 break;
             default:
                 break;

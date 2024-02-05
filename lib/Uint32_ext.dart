@@ -8,6 +8,10 @@ extension Uint32_ext on Uint32{
         return Uint32(this.toInt() + other);
     }
 
+    Uint32 add32(Uint32 other){
+        return Uint32(this.toInt() + other.toInt());
+    }
+
     Uint8 operator [](int byte_offset){
         int temp = 0;
         for(int i = 8 * byte_offset + 7; i > 8 * byte_offset - 1; i--){
