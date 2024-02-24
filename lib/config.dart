@@ -1,4 +1,5 @@
 enum Ins_type{
+    NULL,
     NOP,
     ADDW,
     SUBW,
@@ -46,12 +47,14 @@ enum Ins_type{
     BGE,
     BLTU,
     BGEU,
+    BREAK,
 }
 
 List<Ins_type> without_rd = [
     Ins_type.NOP,
     Ins_type.B,
     Ins_type.BL,
+    Ins_type.BREAK,
 ],
 without_rj = [
     Ins_type.NOP,
@@ -59,6 +62,7 @@ without_rj = [
     Ins_type.BL,
     Ins_type.LU12IW,
     Ins_type.PCADDU12I,
+    Ins_type.BREAK,
 ],
 without_rk = [
     Ins_type.NOP,
@@ -90,6 +94,7 @@ without_rk = [
     Ins_type.STW,
     Ins_type.LDBU,
     Ins_type.LDHU,
+    Ins_type.BREAK,
 ],
 with_ui5 = [
     Ins_type.SLLIW,
@@ -97,8 +102,6 @@ with_ui5 = [
     Ins_type.SRAIW,
 ],
 with_ui12 = [
-    Ins_type.LU12IW,
-    Ins_type.PCADDU12I,
     Ins_type.ANDI,
     Ins_type.ORI,
     Ins_type.XORI,
@@ -115,6 +118,10 @@ with_si12 = [
     Ins_type.STW,
     Ins_type.LDBU,
     Ins_type.LDHU,
+],
+with_si20 = [
+    Ins_type.LU12IW,
+    Ins_type.PCADDU12I,
 ],
 with_label16 = [
     Ins_type.BEQ,

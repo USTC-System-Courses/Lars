@@ -31,13 +31,19 @@ class Memory{
         }
     }
 
-    Uint32 read(Uint32 r_addr){
+    Uint32 read(Uint32 r_addr, {int size = 4}){
+        int temp = 0;
+        if(size > 4) return Uint32(0);
+        for(int i = size - 1; i >= 0; i--){
+            temp = (temp << 8) + _read_byte(r_addr.add(i)).toInt();
+        }
+        return Uint32(temp);
+    }
+
+    Uint32 _read_byte(Uint32 r_addr){
         if(pmem.containsKey(r_addr)){
-            int temp = 0;
-            for(int i = 3; i >= 0; i--){
-                temp = (temp << 8) + pmem[r_addr]!.toInt();
-            }
-            return Uint32(temp);
+            var temp = pmem[r_addr];
+            return Uint32(temp!.toInt());
         }
         else throw MemoryException(MEM_EXP_type.MEM_READ_UNINIT);
     }

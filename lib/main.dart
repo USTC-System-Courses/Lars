@@ -1,3 +1,4 @@
+import 'package:binary/binary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:helloworld/assembler.dart';
@@ -47,7 +48,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<String> textLines = [];
     Assembler asm = Assembler([]);
     final ScrollController _scrollController = ScrollController();
-    
+
     @override
     Widget build(BuildContext context) {
         return Column(
@@ -89,7 +90,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                     child: ListView(
                                         controller: _scrollController,
                                         children:
-                                            Assembler(textLines).print().map((e) => Text(e)).toList(),
+                                            asm.print_reg().map((e) => Text(e)).toList(),
                     
                                     ),
                                 ),
@@ -111,14 +112,19 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                     setState(() {});
         
                                     // Save the text to a file
-                                    if(Platform.isWindows){
-                                        final directory = await getApplicationDocumentsDirectory();
-                                        print(directory.path);
-                                        final file = File('${directory.path}/input.txt');
-                                        await file.writeAsString(text);
+                                    try{
+                                        if(Platform.isWindows){
+                                            final directory = await getApplicationDocumentsDirectory();
+                                            print(directory.path);
+                                            final file = File('${directory.path}/input.txt');
+                                            await file.writeAsString(text);
+                                        }
+                                    }catch(e){
+                                        print(e);
                                     }
+                                    
                                 },
-                                child: Text('显示文本'),
+                                child: Text('编译'),
                             ),
                             ElevatedButton(
                                 child: Text('Go to second page'),
@@ -134,6 +140,13 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                 onPressed: () async{
                                     await Clipboard.setData(ClipboardData(text: asm.print().join('\n')));
                                 },
+                            ),
+                            ElevatedButton(
+                                onPressed: (){
+                                    asm.cycle();
+                                    setState(() {});
+                                }, 
+                                child: Text('单步执行')
                             ),
                         ] 
                     ),
