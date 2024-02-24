@@ -14,7 +14,8 @@ class Assembler{
     List<Sentence> _inst = [];
     List<String> _machine_code = [];
     Label _label = Label();
-    Memory _memory = Memory();
+    Memory memory = Memory();
+    Map<Uint32, Sentence> inst_rec = {};
     bool _isEnd = false;
     Assembler(List<String> temp){
         _isEnd = false;
@@ -26,7 +27,7 @@ class Assembler{
             try {
                 if(cur_mode == analyze_mode.TEXT){
                     _inst.add(Sentence(element));
-                    // _memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
+                    // memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
                     // text_build = text_build.add(4);
                 }
                 else{
@@ -37,20 +38,20 @@ class Assembler{
                     if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL);
                     switch (temp_spilt[1]) {
                         case '.BYTE':
-                            _memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
+                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(1);
                             break;
                         case '.HALF':
                             if (data_build.isSet(0)) data_build = data_build.add(1);
-                            _memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 2);
+                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 2);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(2);
                             break;
                         case '.WORD':
                             if (data_build.isSet(0)) data_build = data_build.add(1);
                             if (data_build.isSet(1)) data_build = data_build.add(2);
-                            _memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 4);
+                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 4);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(4);
                             break;
@@ -58,14 +59,14 @@ class Assembler{
                         //     if (data_build.isSet(0)) data_build = data_build.add(1);
                         //     if (data_build.isSet(1)) data_build = data_build.add(2);
                         //     if (data_build.isSet(2)) data_build = data_build.add(4);
-                        //     _memory.write(data_build, Uint32(int.parse(temp_spilt[2])), size: 8);
+                        //     memory.write(data_build, Uint32(int.parse(temp_spilt[2])), size: 8);
                         //     _label.add(temp_spilt[0], data_build);
                         //     data_build = data_build.add(8);
                         //     break;
                         case '.SPACE':
                             _label.add(temp_spilt[0], data_build);
                             for(int i = 0; i < int.parse(temp_spilt[2]); i++){
-                                _memory.write(data_build, Uint32(0), size: 1);
+                                memory.write(data_build, Uint32(0), size: 1);
                                 data_build = data_build.add(1);
                             }
                             break;
@@ -74,7 +75,6 @@ class Assembler{
                     }
                 }
             } on LabelException catch (e) {
-                //TODO:
                 var spilt = e.Sentence_Spilt;
                 //这里切换模式
                 if(spilt.first == '.DATA:'){
@@ -90,7 +90,7 @@ class Assembler{
                     _label.add(spilt.first, text_build);
                     _inst.add(Sentence(element.replaceAll(RegExp(r'.*:'), '')));
                     // _inst.last.addr = text_build;
-                    // _memory.write(text_build, Uint32((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
+                    // memory.write(text_build, Uint32((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
                     // text_build = text_build.add(4);
                 }
             }
@@ -120,7 +120,11 @@ class Assembler{
                 else throw SentenceException(Exception_type.LABEL_TOO_FAR);
             }
             if(element.type != Ins_type.NULL){
-                _memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
+                memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
+                if(inst_rec.containsKey(text_build)){
+                    inst_rec[text_build] = element;
+                }
+                else inst_rec.putIfAbsent(text_build, () => (element));
                 text_build = text_build.add(4);
                 _machine_code.add(element.print());
             }
@@ -148,7 +152,7 @@ class Assembler{
 
     void cycle(){
         if(_isEnd) return;
-        Uint32 ins = _memory.read(pc);
+        Uint32 ins = memory.read(pc);
         int rd = ins.bitRange(4, 0).toInt(), rj = ins.bitRange(9, 5).toInt(), rk = ins.bitRange(14, 10).toInt();
         int ui12 = ins.bitRange(21, 10).toInt(), ui5 = ins.bitRange(14, 10).toInt();
         int si12 = ins.getBit(21) == 1 ? (ins.bitRange(21, 10).signExtend(12)).toSignedInt():ui12;
@@ -299,35 +303,35 @@ class Assembler{
                 pc = pc.add(4);
                 break;
             case Ins_type.LDB:
-                if(rd != 0) reg[rd] = _memory.read(reg[rj].add(si12), size: 1).signExtend(8);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1).signExtend(8);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDH:
-                if(rd != 0) reg[rd] = _memory.read(reg[rj].add(si12), size: 2).signExtend(16);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2).signExtend(16);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDW:
-                if(rd != 0) reg[rd] = _memory.read(reg[rj].add(si12), size: 4);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 4);
                 pc = pc.add(4);
                 break;
             case Ins_type.STB:
-                _memory.write(reg[rj].add(si12), reg[rd], size: 1);
+                memory.write(reg[rj].add(si12), reg[rd], size: 1);
                 pc = pc.add(4);
                 break;
             case Ins_type.STH:
-                _memory.write(reg[rj].add(si12), reg[rd], size: 2);
+                memory.write(reg[rj].add(si12), reg[rd], size: 2);
                 pc = pc.add(4);
                 break;
             case Ins_type.STW:
-                _memory.write(reg[rj].add(si12), reg[rd], size: 4);
+                memory.write(reg[rj].add(si12), reg[rd], size: 4);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDBU:
-                if(rd != 0) reg[rd] = _memory.read(reg[rj].add(si12), size: 1);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDHU:
-                if(rd != 0) reg[rd] = _memory.read(reg[rj].add(si12), size: 2);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2);
                 pc = pc.add(4);
                 break;
             case Ins_type.JIRL:

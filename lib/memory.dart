@@ -47,5 +47,17 @@ class Memory{
         }
         else throw MemoryException(MEM_EXP_type.MEM_READ_UNINIT);
     }
+
+    int operator [](Uint32 r_addr){
+        int temp = 0;
+        for(int i = 3; i >= 0; i--){
+            try {
+                temp = (temp << 8) + _read_byte(r_addr.add(i)).toInt();
+            } catch (e) {
+                temp = (temp << 8);
+            }
+        }
+        return (temp);
+    }
     Memory(){}
 }
