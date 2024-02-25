@@ -6,13 +6,14 @@ class LabelException implements Exception {
 
 class SentenceException implements Exception {
     String message = "";
+    String Exception_String;
     final Exception_type type;
-    SentenceException(this.type){
+    SentenceException(this.type, this.Exception_String){
         message = Exception_Info[type]!;
     }
 
   @override
-    String toString() => type.toString() + ': ' + message;
+    String toString() => 'in Sentence \' ' + Exception_String + '\' \n\t' + type.toString() + ': ' + message;
 }
 
 class MemoryException implements Exception {

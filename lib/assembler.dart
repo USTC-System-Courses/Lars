@@ -35,7 +35,7 @@ class Assembler{
                     String temp = process(element);
                     List<String> temp_spilt = temp.split(' ');
                     if(temp_spilt.first == '.TEXT:') throw LabelException(temp_spilt);
-                    if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL);
+                    if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL, element);
                     switch (temp_spilt[1]) {
                         case '.BYTE':
                             memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
@@ -71,7 +71,7 @@ class Assembler{
                             }
                             break;
                         default:
-                            throw SentenceException(Exception_type.INVALID_LABEL);
+                            throw SentenceException(Exception_type.INVALID_LABEL, element);
                     }
                 }
             } on LabelException catch (e) {
@@ -79,16 +79,16 @@ class Assembler{
                 //这里切换模式
                 if(spilt.first == '.DATA:'){
                     cur_mode = analyze_mode.DATA;
-                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT);
+                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT, element);
                 }
                 else if(spilt.first == '.TEXT:'){
                     cur_mode = analyze_mode.TEXT;
-                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT);
+                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT, element);
                 }
                 //这里处理代码段的Label
                 else{
                     _label.add(spilt.first, text_build);
-                    _inst.add(Sentence(element.replaceAll(RegExp(r'.*:'), '')));
+                    _inst.add(Sentence(element.replaceAll(RegExp(r'^[^:]*:'), '')));
                     // _inst.last.addr = text_build;
                     // memory.write(text_build, Uint32((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
                     // text_build = text_build.add(4);
@@ -117,7 +117,7 @@ class Assembler{
                         element._machine_code_i |= element.imm.bitRange(11, 0) << Uint32(10);
                     }
                 }
-                else throw SentenceException(Exception_type.LABEL_TOO_FAR);
+                else throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
             }
             if(element.type != Ins_type.NULL){
                 memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
@@ -478,7 +478,8 @@ String process(String temp){
 }
 
 class Sentence{
-    String sentence = '';                               //输入的汇编指令
+    String sentence_ori = '';                           //输入的汇编指令(原始)
+    String sentence = '';                               //输入的汇编指令(经处理)
     Uint32 _machine_code_i = Uint32(0);                  //输出的机器码
     
     Ins_type type = Ins_type.NULL;                       //指令类型
@@ -490,17 +491,18 @@ class Sentence{
     
     
 
-    Sentence(String temp){
-        if(temp == '') return;
-        temp = process(temp);
+    Sentence(this.sentence_ori){
+
+        if(sentence_ori == '') return;
+        sentence = process(sentence_ori);
         //将寄存器别名改为标准写法
-        sentence = _rename_register(temp);
+        sentence = _rename_register(sentence);
         //判断指令类型的合法性并赋值
         sentence_spilt = sentence.split(' ');
         if(!Ins_type.values.map((inst) => inst.toString()).contains('Ins_type.' + sentence_spilt.first)) {
             if(sentence_spilt.first == '.DATA:' || sentence_spilt.first == '.TEXT:') throw LabelException(sentence_spilt);
             else if(RegExp(r'\.?[A-Za-z0-9_]+:').hasMatch(sentence_spilt.first)) throw LabelException(sentence_spilt);
-            else throw SentenceException(Exception_type.UNKNOWN_INST);
+            else throw SentenceException(Exception_type.UNKNOWN_INST, this.sentence_ori);
         }
         type = Ins_type.values.byName(sentence_spilt.first);
         get_inst();
@@ -701,37 +703,37 @@ class Sentence{
         //TODO异常处理寄存器超出范围
         if(!without_rd.contains(type)) {
             rd = Uint32(int.parse(sentence_spilt[1].substring(2)));
-            if(rd > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE);
+            if(rd > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= rd;
         } 
         if(!without_rj.contains(type)) {
             rj = Uint32(int.parse(sentence_spilt[2].substring(2)));
-            if(rj > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE);
+            if(rj > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (rj << Uint32(5));
         }
         if(!without_rk.contains(type)) {
             rk = Uint32(int.parse(sentence_spilt[3].substring(2)));
-            if(rk > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE);
+            if(rk > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (rk << Uint32(10));
         }
         if(with_ui5.contains(type)) {
             imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE);
+            if(imm > Uint32(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (imm << Uint32(10));
         }
         if(with_ui12.contains(type)) {
             imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE);
+            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (imm << Uint32(10));
         }
         if(with_si12.contains(type)) {
             imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE);
+            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (imm << Uint32(10));
         }
         if(with_si20.contains(type)){
             imm = Uint32(int.parse(sentence_spilt[2]));
-            if(imm > Uint32(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE);
+            if(imm > Uint32(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (imm << Uint32(5));
         }
         if(with_label16.contains(type)) {
