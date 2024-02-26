@@ -46,3 +46,8 @@ extension Uint8_ext on Uint8{
         return a;
     }
 }
+
+
+    Uint32_t(int a){
+        return Uint32(a & UI32_mask);
+    }

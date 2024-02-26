@@ -268,7 +268,12 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             ),
                             ElevatedButton(
                                 onPressed: (){
-                                    mem_search = int.parse(memtext_ctrl.text, radix: 16);
+                                    try{
+                                        mem_search = int.parse(memtext_ctrl.text, radix: 16);
+                                    } catch(e){
+                                        mem_search = 0x1c000000;
+                                    }
+                                    if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
                                     setState(() {});
                                 },
                                 child: Text('查看内存')

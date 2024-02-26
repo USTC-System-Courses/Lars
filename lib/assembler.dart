@@ -21,13 +21,13 @@ class Assembler{
         _isEnd = false;
         inst_input = temp;
         analyze_mode cur_mode = analyze_mode.TEXT;
-        Uint32 text_build = Uint32(0x1c000000);
-        Uint32 data_build = Uint32(0x1c800000);
+        Uint32 text_build = Uint32_t(0x1c000000);
+        Uint32 data_build = Uint32_t(0x1c800000);
         for (var element in inst_input){
             try {
                 if(cur_mode == analyze_mode.TEXT){
                     _inst.add(Sentence(element));
-                    // memory.write(text_build, Uint32(int.parse(_inst.last.print(), radix: 2)));
+                    // memory.write(text_build, Uint32_t(int.parse(_inst.last.print(), radix: 2)));
                     // text_build = text_build.add(4);
                 }
                 else{
@@ -38,20 +38,20 @@ class Assembler{
                     if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL, element);
                     switch (temp_spilt[1]) {
                         case '.BYTE':
-                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
+                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(1);
                             break;
                         case '.HALF':
                             if (data_build.isSet(0)) data_build = data_build.add(1);
-                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 2);
+                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 2);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(2);
                             break;
                         case '.WORD':
                             if (data_build.isSet(0)) data_build = data_build.add(1);
                             if (data_build.isSet(1)) data_build = data_build.add(2);
-                            memory.write(data_build, Uint32((int.parse(temp_spilt[2]) & UI32_mask)), size: 4);
+                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 4);
                             _label.add(temp_spilt[0], data_build);
                             data_build = data_build.add(4);
                             break;
@@ -59,14 +59,14 @@ class Assembler{
                         //     if (data_build.isSet(0)) data_build = data_build.add(1);
                         //     if (data_build.isSet(1)) data_build = data_build.add(2);
                         //     if (data_build.isSet(2)) data_build = data_build.add(4);
-                        //     memory.write(data_build, Uint32(int.parse(temp_spilt[2])), size: 8);
+                        //     memory.write(data_build, Uint32_t(int.parse(temp_spilt[2])), size: 8);
                         //     _label.add(temp_spilt[0], data_build);
                         //     data_build = data_build.add(8);
                         //     break;
                         case '.SPACE':
                             _label.add(temp_spilt[0], data_build);
                             for(int i = 0; i < int.parse(temp_spilt[2]); i++){
-                                memory.write(data_build, Uint32(0), size: 1);
+                                memory.write(data_build, Uint32_t(0), size: 1);
                                 data_build = data_build.add(1);
                             }
                             break;
@@ -90,7 +90,7 @@ class Assembler{
                     _label.add(spilt.first, text_build);
                     _inst.add(Sentence(element.replaceAll(RegExp(r'^[^:]*:'), '')));
                     // _inst.last.addr = text_build;
-                    // memory.write(text_build, Uint32((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
+                    // memory.write(text_build, Uint32_t((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
                     // text_build = text_build.add(4);
                 }
             }
@@ -102,25 +102,25 @@ class Assembler{
                 var temp_imm = judge(element, addr);
                 if(temp_imm != 0){
                     try {
-                      element.imm = Uint32(temp_imm);
+                      element.imm = Uint32_t(temp_imm);
                     } catch (e) {
                       element;
                     }
                     if(with_label16.contains(element)) {
-                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32(10);
+                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32_t(10);
                     }
                     else if(with_label26.contains(element)){
-                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32(10);
+                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32_t(10);
                         element._machine_code_i |= element.imm.bitRange(25, 16);
                     }
                     else{
-                        element._machine_code_i |= element.imm.bitRange(11, 0) << Uint32(10);
+                        element._machine_code_i |= element.imm.bitRange(11, 0) << Uint32_t(10);
                     }
                 }
                 else throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
             }
             if(element.type != Ins_type.NULL){
-                memory.write(text_build, Uint32(int.parse(element.print(), radix: 2)));
+                memory.write(text_build, Uint32_t(int.parse(element.print(), radix: 2)));
                 if(inst_rec.containsKey(text_build)){
                     inst_rec[text_build] = element;
                 }
@@ -139,7 +139,7 @@ class Assembler{
     }
 
     List<Uint32> reg = List.filled(32, Uint32.zero);
-    Uint32 pc = Uint32(0x1c000000);
+    Uint32 pc = Uint32_t(0x1c000000);
 
     List print_reg(){
         List<String> res = [];
@@ -160,8 +160,8 @@ class Assembler{
         int si20 = ins.getBit(24) == 1 ? (ins.bitRange(24, 5).signExtend(20)).toSignedInt():ui20;
         int ui16 = ins.bitRange(25, 10).toInt();
         int si16 = ins.getBit(25) == 1 ? (ins.bitRange(25, 10).signExtend(16)).toSignedInt():ui16;
-        int ui26 = (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32(15)).toInt();
-        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32(16)).signExtend(26).toSignedInt():ui26;
+        int ui26 = (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(15)).toInt();
+        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(16)).signExtend(26).toSignedInt():ui26;
         switch(get_inst_type(ins)){
             case Ins_type.BREAK:
             case Ins_type.NULL:
@@ -175,15 +175,15 @@ class Assembler{
                 pc = pc.add(4);
                 break;
             case Ins_type.SUBW:
-                if(rd != 0) reg[rd] = Uint32((reg[rj] - reg[rk]) & UI32_mask);
+                if(rd != 0) reg[rd] = Uint32_t((reg[rj] - reg[rk]) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLT:
-                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < reg[rk].toSignedInt() ? Uint32(1) : Uint32(0);
+                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < reg[rk].toSignedInt() ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTU:
-                if(rd != 0) reg[rd] = reg[rj] < reg[rk] ? Uint32(1) : Uint32(0);
+                if(rd != 0) reg[rd] = reg[rj] < reg[rk] ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.NOR:
@@ -209,9 +209,9 @@ class Assembler{
             case Ins_type.SRLW:
                 if(rd != 0) {
                     if(reg[rk] != Uint32.zero) {
-                        reg[rd] = reg[rj] >> Uint32(1);
+                        reg[rd] = reg[rj] >> Uint32_t(1);
                         reg[rd] = reg[rd].clearBit(31);
-                        reg[rd] = reg[rd] >> Uint32((reg[rk] - Uint32(1)) & UI32_mask);
+                        reg[rd] = reg[rd] >> Uint32_t((reg[rk] - Uint32_t(1)) & UI32_mask);
                     }
                     else reg[rd] = reg[rj];
                 }
@@ -222,43 +222,43 @@ class Assembler{
                 pc = pc.add(4);
                 break;
             case Ins_type.MULW:
-                if(rd != 0) reg[rd] = Uint32(reg[rj].toSignedInt() * reg[rk].toSignedInt() & UI32_mask);
+                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() * reg[rk].toSignedInt() & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.MULHW:
-                if(rd != 0) reg[rd] = Uint32((reg[rj].toSignedInt() * reg[rk].toSignedInt() >> 32) & UI32_mask);
+                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toSignedInt() * reg[rk].toSignedInt() >> 32) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.MULHWU:
-                if(rd != 0) reg[rd] = Uint32((reg[rj].toInt() * reg[rk].toInt() >> 32) & UI32_mask);
+                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toInt() * reg[rk].toInt() >> 32) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.DIVW:
-                if(rd != 0) reg[rd] = Uint32(reg[rj].toSignedInt() ~/ reg[rk].toSignedInt());
+                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() ~/ reg[rk].toSignedInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.MODW:
-                if(rd != 0) reg[rd] = Uint32(reg[rj].toSignedInt() % reg[rk].toSignedInt());
+                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() % reg[rk].toSignedInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.DIVWU:
-                if(rd != 0) reg[rd] = Uint32(reg[rj].toInt() ~/ reg[rk].toInt());
+                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toInt() ~/ reg[rk].toInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.MODWU:
-                if(rd != 0) reg[rd] = Uint32(reg[rj].toInt() % reg[rk].toInt());
+                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toInt() % reg[rk].toInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.SLLIW:
-                if(rd != 0) reg[rd] = reg[rj] << Uint32(ui5);
+                if(rd != 0) reg[rd] = reg[rj] << Uint32_t(ui5);
                 pc = pc.add(4);
                 break;
             case Ins_type.SRLIW:
                 if(rd != 0) {
                     if(ui5 != 0){
-                        reg[rd] = reg[rj] >> Uint32(1);
+                        reg[rd] = reg[rj] >> Uint32_t(1);
                         reg[rd] = reg[rd].clearBit(31);
-                        reg[rd] = reg[rd] >> Uint32(ui5 - 1);
+                        reg[rd] = reg[rd] >> Uint32_t(ui5 - 1);
                     }
                     else {
                     reg[rd] = reg[rj];
@@ -267,35 +267,35 @@ class Assembler{
                 pc = pc.add(4);
                 break;
             case Ins_type.SRAIW:
-                if(rd != 0) reg[rd] = reg[rj] >> Uint32(ui5);
+                if(rd != 0) reg[rd] = reg[rj] >> Uint32_t(ui5);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTI:
-                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < si12 ? Uint32(1) : Uint32(0);
+                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < si12 ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTUI:
-                if(rd != 0) reg[rd] = reg[rj] < Uint32(ui12) ? Uint32(1) : Uint32(0);
+                if(rd != 0) reg[rd] = reg[rj] < Uint32_t(ui12) ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.ADDIW:
-                if(rd != 0) reg[rd] = Uint32((reg[rj].toSignedInt() + si12) & UI32_mask);
+                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toSignedInt() + si12) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.ANDI:
-                if(rd != 0) reg[rd] = reg[rj] & Uint32(ui12);
+                if(rd != 0) reg[rd] = reg[rj] & Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.ORI:
-                if(rd != 0) reg[rd] = reg[rj] | Uint32(ui12);
+                if(rd != 0) reg[rd] = reg[rj] | Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.XORI:
-                if(rd != 0) reg[rd] = reg[rj] ^ Uint32(ui12);
+                if(rd != 0) reg[rd] = reg[rj] ^ Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.LU12IW:
-                if(rd != 0) reg[rd] = Uint32(si20) << Uint32(12);
+                if(rd != 0) reg[rd] = Uint32_t(si20) << Uint32_t(12);
                 pc = pc.add(4);
                 break;
             case Ins_type.PCADDU12I:
@@ -336,32 +336,32 @@ class Assembler{
                 break;
             case Ins_type.JIRL:
                 if(rd != 0) reg[rd] = pc.add(4);
-                pc = reg[rj] + Uint32(si16 << 2).signExtend(18);
+                pc = reg[rj] + Uint32_t(si16 << 2).signExtend(18);
                 break;
             case Ins_type.B:
-                pc = pc + Uint32(si26 << 2).signExtend(28);
+                pc = pc + Uint32_t(si26 << 2).signExtend(28);
                 break;
             case Ins_type.BL:
                 reg[1] = pc.add(4);
-                pc = pc + Uint32(si26 << 2).signExtend(28);
+                pc = pc + Uint32_t(si26 << 2).signExtend(28);
                 break;
             case Ins_type.BEQ:
-                pc = reg[rj] == reg[rd] ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] == reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             case Ins_type.BNE:
-                pc = reg[rj] != reg[rd] ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] != reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             case Ins_type.BLT:
-                pc = reg[rj].toSignedInt() < reg[rd].toSignedInt() ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj].toSignedInt() < reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             case Ins_type.BGE:
-                pc = reg[rj].toSignedInt() >= reg[rd].toSignedInt() ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj].toSignedInt() >= reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             case Ins_type.BLTU:
-                pc = reg[rj] < reg[rd] ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] < reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             case Ins_type.BGEU:
-                pc = reg[rj] >= reg[rd] ? pc + Uint32(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] >= reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
                 break;
             
         }
@@ -480,14 +480,14 @@ String process(String temp){
 class Sentence{
     String sentence_ori = '';                           //输入的汇编指令(原始)
     String sentence = '';                               //输入的汇编指令(经处理)
-    Uint32 _machine_code_i = Uint32(0);                  //输出的机器码
+    Uint32 _machine_code_i = Uint32_t(0);                  //输出的机器码
     
     Ins_type type = Ins_type.NULL;                       //指令类型
     List<String> sentence_spilt = [];                   //将输入的汇编指令按空格分词结果
-    Uint32 rd = Uint32(0), rj = Uint32(0), rk = Uint32(0);  //寄存器编号
-    Uint32 imm = Uint32(0);                             //立即数
+    Uint32 rd = Uint32_t(0), rj = Uint32_t(0), rk = Uint32_t(0);  //寄存器编号
+    Uint32 imm = Uint32_t(0);                             //立即数
     
-    Uint32 addr = Uint32(0);                            //指令所在内存地址
+    Uint32 addr = Uint32_t(0);                            //指令所在内存地址
     
     
 
@@ -548,152 +548,151 @@ class Sentence{
         res = res.replaceAll(r'$S8', r'$R31');
         return res;
     }
-
     void get_inst(){
         switch (type) {
             case Ins_type.NOP:
-                _machine_code_i = Uint32(0x0A << 20);
+                _machine_code_i = Uint32_t(0x0A << 20);
                 break;
             case Ins_type.ADDW:
-                _machine_code_i = Uint32(0x00100 << 12);
+                _machine_code_i = Uint32_t(0x00100 << 12);
                 break;
             case Ins_type.SUBW:
-                _machine_code_i = Uint32(0x00110 << 12);
+                _machine_code_i = Uint32_t(0x00110 << 12);
                 break;
             case Ins_type.SLT:
-                _machine_code_i = Uint32(0x00120 << 12);
+                _machine_code_i = Uint32_t(0x00120 << 12);
                 break;
             case Ins_type.SLTU:
-                _machine_code_i = Uint32(0x00128 << 12);
+                _machine_code_i = Uint32_t(0x00128 << 12);
                 break;
             case Ins_type.NOR:
-                _machine_code_i = Uint32(0x00140 << 12);
+                _machine_code_i = Uint32_t(0x00140 << 12);
                 break;
             case Ins_type.AND:
-                _machine_code_i = Uint32(0x00148 << 12);
+                _machine_code_i = Uint32_t(0x00148 << 12);
                 break;
             case Ins_type.OR:
-                _machine_code_i = Uint32(0x00150 << 12);
+                _machine_code_i = Uint32_t(0x00150 << 12);
                 break;
             case Ins_type.XOR:
-                _machine_code_i = Uint32(0x00158 << 12);
+                _machine_code_i = Uint32_t(0x00158 << 12);
                 break;
             case Ins_type.SLLW:
-                _machine_code_i = Uint32(0x00170 << 12);
+                _machine_code_i = Uint32_t(0x00170 << 12);
                 break;
             case Ins_type.SRLW:
-                _machine_code_i = Uint32(0x00178 << 12);
+                _machine_code_i = Uint32_t(0x00178 << 12);
                 break;
             case Ins_type.SRAW:
-                _machine_code_i = Uint32(0x00180 << 12);
+                _machine_code_i = Uint32_t(0x00180 << 12);
                 break;
             case Ins_type.MULW:
-                _machine_code_i = Uint32(0x001C0 << 12);
+                _machine_code_i = Uint32_t(0x001C0 << 12);
                 break;
             case Ins_type.MULHW:
-                _machine_code_i = Uint32(0x001C8 << 12);
+                _machine_code_i = Uint32_t(0x001C8 << 12);
                 break;
             case Ins_type.MULHWU:
-                _machine_code_i = Uint32(0x001D0 << 12);
+                _machine_code_i = Uint32_t(0x001D0 << 12);
                 break;
             case Ins_type.DIVW:
-                _machine_code_i = Uint32(0x00200 << 12);
+                _machine_code_i = Uint32_t(0x00200 << 12);
                 break;
             case Ins_type.MODW:
-                _machine_code_i = Uint32(0x00208 << 12);
+                _machine_code_i = Uint32_t(0x00208 << 12);
                 break;
             case Ins_type.DIVWU:
-                _machine_code_i = Uint32(0x00210 << 12);
+                _machine_code_i = Uint32_t(0x00210 << 12);
                 break;
             case Ins_type.MODWU:
-                _machine_code_i = Uint32(0x00218 << 12);
+                _machine_code_i = Uint32_t(0x00218 << 12);
                 break;
             case Ins_type.SLLIW:
-                _machine_code_i = Uint32(0x00408 << 12);
+                _machine_code_i = Uint32_t(0x00408 << 12);
                 break;
             case Ins_type.SRLIW:
-                _machine_code_i = Uint32(0x00448 << 12);
+                _machine_code_i = Uint32_t(0x00448 << 12);
                 break;
             case Ins_type.SRAIW:
-                _machine_code_i = Uint32(0x00488 << 12);
+                _machine_code_i = Uint32_t(0x00488 << 12);
                 break;
             case Ins_type.SLTI:
-                _machine_code_i = Uint32(0x08 << 22);
+                _machine_code_i = Uint32_t(0x08 << 22);
                 break;
             case Ins_type.SLTUI:
-                _machine_code_i = Uint32(0x09 << 22);
+                _machine_code_i = Uint32_t(0x09 << 22);
                 break;
             case Ins_type.ADDIW:
-                _machine_code_i = Uint32(0x0A << 22);
+                _machine_code_i = Uint32_t(0x0A << 22);
                 break;
             case Ins_type.ANDI:
-                _machine_code_i = Uint32(0x0D << 22);
+                _machine_code_i = Uint32_t(0x0D << 22);
                 break;
             case Ins_type.ORI:
-                _machine_code_i = Uint32(0x0E << 22);
+                _machine_code_i = Uint32_t(0x0E << 22);
                 break;
             case Ins_type.XORI:
-                _machine_code_i = Uint32(0x0F << 22);
+                _machine_code_i = Uint32_t(0x0F << 22);
                 break;
             case Ins_type.LU12IW:
-                _machine_code_i = Uint32(0x0C << 25);
+                _machine_code_i = Uint32_t(0x0C << 25);
                 break;
             case Ins_type.PCADDU12I:
-                _machine_code_i = Uint32(0x0E << 25);
+                _machine_code_i = Uint32_t(0x0E << 25);
                 break;
             case Ins_type.LDB:
-                _machine_code_i = Uint32(0xA0 << 22);
+                _machine_code_i = Uint32_t(0xA0 << 22);
                 break;
             case Ins_type.LDH:
-                _machine_code_i = Uint32(0xA1 << 22);
+                _machine_code_i = Uint32_t(0xA1 << 22);
                 break;
             case Ins_type.LDW:
-                _machine_code_i = Uint32(0xA2 << 22);
+                _machine_code_i = Uint32_t(0xA2 << 22);
                 break;
             case Ins_type.STB:
-                _machine_code_i = Uint32(0xA4 << 22);
+                _machine_code_i = Uint32_t(0xA4 << 22);
                 break;
             case Ins_type.STH:
-                _machine_code_i = Uint32(0xA5 << 22);
+                _machine_code_i = Uint32_t(0xA5 << 22);
                 break;
             case Ins_type.STW:
-                _machine_code_i = Uint32(0xA6 << 22);
+                _machine_code_i = Uint32_t(0xA6 << 22);
                 break;
             case Ins_type.LDBU:
-                _machine_code_i = Uint32(0xA8 << 22);
+                _machine_code_i = Uint32_t(0xA8 << 22);
                 break;
             case Ins_type.LDHU:
-                _machine_code_i = Uint32(0xA9 << 22);
+                _machine_code_i = Uint32_t(0xA9 << 22);
                 break;
             case Ins_type.JIRL:
-                _machine_code_i = Uint32(0x13 << 26);
+                _machine_code_i = Uint32_t(0x13 << 26);
                 break;
             case Ins_type.B:
-                _machine_code_i = Uint32(0x14 << 26);
+                _machine_code_i = Uint32_t(0x14 << 26);
                 break;
             case Ins_type.BL:
-                _machine_code_i = Uint32(0x15 << 26);
+                _machine_code_i = Uint32_t(0x15 << 26);
                 break;
             case Ins_type.BEQ:
-                _machine_code_i = Uint32(0x16 << 26);
+                _machine_code_i = Uint32_t(0x16 << 26);
                 break;
             case Ins_type.BNE:
-                _machine_code_i = Uint32(0x17 << 26);
+                _machine_code_i = Uint32_t(0x17 << 26);
                 break;
             case Ins_type.BLT:
-                _machine_code_i = Uint32(0x18 << 26);
+                _machine_code_i = Uint32_t(0x18 << 26);
                 break;
             case Ins_type.BGE:
-                _machine_code_i = Uint32(0x19 << 26);
+                _machine_code_i = Uint32_t(0x19 << 26);
                 break;
             case Ins_type.BLTU:
-                _machine_code_i = Uint32(0x1A << 26);
+                _machine_code_i = Uint32_t(0x1A << 26);
                 break;
             case Ins_type.BGEU:
-                _machine_code_i = Uint32(0x1B << 26);
+                _machine_code_i = Uint32_t(0x1B << 26);
                 break;
             case Ins_type.BREAK:
-                _machine_code_i = Uint32(0x54 << 12);
+                _machine_code_i = Uint32_t(0x54 << 15);
                 break;
             default:
                 break;
@@ -702,56 +701,58 @@ class Sentence{
 
         //TODO异常处理寄存器超出范围
         if(!without_rd.contains(type)) {
-            rd = Uint32(int.parse(sentence_spilt[1].substring(2)));
-            if(rd > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
+            rd = Uint32_t(int.parse(sentence_spilt[1].substring(2)));
+            if(rd > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= rd;
         } 
         if(!without_rj.contains(type)) {
-            rj = Uint32(int.parse(sentence_spilt[2].substring(2)));
-            if(rj > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (rj << Uint32(5));
+            rj = Uint32_t(int.parse(sentence_spilt[2].substring(2)));
+            if(rj > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (rj << Uint32_t(5));
         }
         if(!without_rk.contains(type)) {
-            rk = Uint32(int.parse(sentence_spilt[3].substring(2)));
-            if(rk > Uint32(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (rk << Uint32(10));
+            rk = Uint32_t(int.parse(sentence_spilt[3].substring(2)));
+            if(rk > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (rk << Uint32_t(10));
         }
         if(with_ui5.contains(type)) {
-            imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (imm << Uint32(10));
+            imm = Uint32_t(int.parse(sentence_spilt[3]));
+            if(imm > Uint32_t(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_ui12.contains(type)) {
-            imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (imm << Uint32(10));
+            imm = Uint32_t(int.parse(sentence_spilt[3]));
+            if(imm > Uint32_t(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si12.contains(type)) {
-            imm = Uint32(int.parse(sentence_spilt[3]));
-            if(imm > Uint32(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (imm << Uint32(10));
+            imm = Uint32_t(int.parse(sentence_spilt[3]));
+            if(imm > Uint32_t(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si20.contains(type)){
-            imm = Uint32(int.parse(sentence_spilt[2]));
-            if(imm > Uint32(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            _machine_code_i |= (imm << Uint32(5));
+            var temp_int = int.parse(sentence_spilt[2]);
+            temp_int = temp_int.replaceBitRange(63, 32, 0);
+            imm = Uint32_t(temp_int & 0xfffff);
+            // if(imm > Uint32_t(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            _machine_code_i |= (imm << Uint32_t(5));
         }
         if(with_label16.contains(type)) {
             RegExp regnum16 = RegExp(r'^0x[0-9A-F]+$'), regnum10 = RegExp(r'^[0-9]+$');
             if(regnum16.hasMatch(sentence_spilt[3])){
-                imm = Uint32((int.parse(sentence_spilt[3].substring(2), radix: 16) & UI32_mask)) << Uint32(2);
+                imm = Uint32_t((int.parse(sentence_spilt[3].substring(2), radix: 16) & UI32_mask)) << Uint32_t(2);
             }
             else if(regnum10.hasMatch(sentence_spilt[3])){
-                imm = Uint32((int.parse(sentence_spilt[3]) & UI32_mask)) << Uint32(2);
+                imm = Uint32_t((int.parse(sentence_spilt[3]) & UI32_mask)) << Uint32_t(2);
             }
         }
         if(with_label26.contains(type)) {
             RegExp regnum16 = RegExp(r'^0x[0-9A-F]+$'), regnum10 = RegExp(r'^[0-9]+$');
             if(regnum16.hasMatch(sentence_spilt[3])){
-                imm = Uint32((int.parse(sentence_spilt[3].substring(2), radix: 16) & UI32_mask)) << Uint32(2);
+                imm = Uint32_t((int.parse(sentence_spilt[3].substring(2), radix: 16) & UI32_mask)) << Uint32_t(2);
             }
             else if(regnum10.hasMatch(sentence_spilt[3])){
-                imm = Uint32((int.parse(sentence_spilt[3]) & UI32_mask)) << Uint32(2);
+                imm = Uint32_t((int.parse(sentence_spilt[3]) & UI32_mask)) << Uint32_t(2);
             }
         }
     }
