@@ -82,7 +82,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     minLines: 20,
                     expands: false,
                     decoration: InputDecoration(
-                    labelText: '请输入LA32R汇编代码',
+                    hintText: '请输入LA32R汇编代码',
                     border: InputBorder.none,
                     ),
                 ),
@@ -287,7 +287,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildMemoryAddrInput(double width){
         return Container(
+            alignment: Alignment.center,
             width: width / 8,
+            height: 30,
             child: TextField(
                 decoration: InputDecoration(
                     isDense: true,
