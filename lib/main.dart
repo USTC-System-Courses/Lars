@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
                 children: [
                     Container(
                         decoration: BoxDecoration(
-
                             color: Color.fromARGB(255, 239, 241, 254)
                         ),
                     ),
@@ -124,13 +123,13 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
 
     /* build the reg info */
-    Widget _buildRegStateInfo(double width){
+    Widget _buildRegStateInfo(double width, double height){
         return ListView(
             controller: _scrollController,
             children: [
             for(int i = 0; i < 8; i++)
                 Flex(direction: Axis.vertical,children: [
-                    SizedBox(height: 3,),
+                    SizedBox(height: height / 120,),
                     Row(children: [
                         for(int j = 0; j < 4; j++)
                             Flex(direction: Axis.horizontal, children: [
@@ -153,20 +152,20 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                     ),
-                    SizedBox(height: 3,),
+                    SizedBox(height: height / 120,),
                 ],
             )],
         );
     }
 
     /* build the reg and pc info */
-    Widget _buildProcessorStateInfo(double width){
+    Widget _buildProcessorStateInfo(double width, height){
         return Column(
             children: [
                 Container(
                     child: Row(
                         children: [
-                            SizedBox(width: width/240,),
+                            SizedBox(width: width / 240,),
                             // pc
                             _buildPCStateInfo(width),
                             // inst
@@ -182,9 +181,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // reg info
                 Expanded(
-                    flex: width~/60,
+                    flex: 16,
                     child: Container(
-                        child: _buildRegStateInfo(width),
+                        child: _buildRegStateInfo(width, height),
                         padding: EdgeInsets.only(top: 1, bottom: 1),
                         margin: EdgeInsets.only(top: 5, bottom: 0),
                         decoration: BoxDecoration(
@@ -278,7 +277,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                     ),
                             ],
                             decoration: BoxDecoration(
-                                color: (i%2==0)?Color.fromARGB(255, 253, 251, 234):Color.fromARGB(255, 244, 252, 203)
+                                color: (i%2==0)?Color.fromARGB(255, 218, 245, 251):Color.fromARGB(255, 198, 228, 252)
                             )
                         ),
                 ],
@@ -288,7 +287,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildMemoryAddrInput(double width){
         return Container(
-            width: width > 100 ? width : 100,
+            width: width / 6,
             child: TextField(
                 decoration: InputDecoration(
                     hintText: '输入内存地址(16进制)',
@@ -385,57 +384,58 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     Widget build(BuildContext context) {
         final size = MediaQuery.of(context).size;
         final width = size.width;
+        final height = size.height;
         return Row(children: [
             // orgnize the items by column
             // first column: Code write, compile and single step, use two row
-            SizedBox(width: 20,),
+            SizedBox(width: width / 60,),
             Expanded(
                 flex: 40,
                 child: Column(children: [
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                     // 1. code write
                     Expanded(
                         flex: 38,
                         child: _buildCodeText(),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                     // 2. compile and single step
                     Expanded(
                         flex: 2,
                         child: Row(children: [
                             _buildCompileButton(),
-                            SizedBox(width: 10,),
+                            SizedBox(width: width / 120,),
                             _buildSingleStepButton(),
-                            SizedBox(width: width/18,),
+                            SizedBox(width: width / 18,),
                             _buildMemoryCheckButton(),
-                            SizedBox(width: 10,),
-                            _buildMemoryAddrInput(width * 4/9 - 340),
+                            SizedBox(width: width / 120,),
+                            _buildMemoryAddrInput(width),
                         ],),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                 ],)
             ),
-            SizedBox(width: 20,),
+            SizedBox(width: width / 60,),
             // second column: Processor state info, memory table, use two row
             Expanded(
                 flex: 40,
                 child: Column(children: [
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                     // 1. processor state info
                     Expanded(
-                        flex: 11,
-                        child: _buildProcessorStateInfo(width),
+                        flex: 12,
+                        child: _buildProcessorStateInfo(width, height),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                     // 2. memory table
                     Expanded(
                         flex: 12,
                         child: _buildMemoryTable(width),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: height / 60,),
                 ],)
             ),
-            SizedBox(width: 20,),
+            SizedBox(width: width / 60,),
             
         ],);
         
