@@ -80,7 +80,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 child: TextField(
                     controller: _textEditingController,
                     maxLines: null,
-                    minLines: 10,
+                    minLines: 20,
                     expands: false,
                     decoration: InputDecoration(
                     labelText: '请输入LA32R汇编代码',
@@ -199,15 +199,15 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
 
-    /* exception info */
-    Widget _buildExceptionInfo(double width){
-        return Container(
-            width: width*14/60,
-            child: ListView(
-                children: Warnings.map((e) => Text(e)).toList(),
-            ),
-        );
-    }
+    // /* exception info */
+    // Widget _buildExceptionInfo(double width){
+    //     return Container(
+    //         width: width*14/60,
+    //         child: ListView(
+    //             children: Warnings.map((e) => Text(e)).toList(),
+    //         ),
+    //     );
+    // }
 
     Widget _buildExceptionDialog(double width){
         return UnconstrainedBox(
@@ -292,6 +292,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             child: TextField(
                 decoration: InputDecoration(
                     hintText: '输入内存地址(16进制)',
+                    // 减小字体
+                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic, fontSize: 12),
                     border: InputBorder.none,
                 ),
                 controller: memtext_ctrl,
@@ -383,88 +385,59 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     Widget build(BuildContext context) {
         final size = MediaQuery.of(context).size;
         final width = size.width;
-        // make the items by column, up to down
-        return Column(
-            children: [
-                SizedBox(height: 10,),
-                // first row by expanded
-                Expanded(
-                    flex: 12,
-                    child: Row(
-                        children: [
-                            SizedBox(width: 20,),
-                            Expanded(
-                                flex: 40,
-                                child: _buildCodeText(),
-                            ),
-                            SizedBox(width: 20,),
-                            // reg and pc info
-                            Expanded(
-                                flex: 40,
-                                child: _buildProcessorStateInfo(width),
-                            ),
-                            SizedBox(width: width/60,),
-                        ],
+        return Row(children: [
+            // orgnize the items by column
+            // first column: Code write, compile and single step, use two row
+            SizedBox(width: 20,),
+            Expanded(
+                flex: 40,
+                child: Column(children: [
+                    SizedBox(height: 10,),
+                    // 1. code write
+                    Expanded(
+                        flex: 38,
+                        child: _buildCodeText(),
                     ),
-                ),
-                // blank for 10
-                SizedBox(height: 10,),
-                // second row by expanded
-                Expanded(
-                    flex: 12,
-                    child: Row(
-                        children: [
-                            SizedBox(width: 20,),
-                            // exceptions
-                            Expanded(
-                                flex: 40,
-                                child: _buildExceptionInfo(width),
-                            ),
-                            SizedBox(width: 20,),
-                            // memory table
-                            Expanded(
-                                flex: 40,
-                                child: _buildMemoryTable(width),
-                            ),
-                            SizedBox(width: 20,)
-                        ],
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                    ),
-                ),
-                SizedBox(height: 10,),
-                // third row by expanded
-                Expanded(
-                    flex: 2,
-                    child: Row(
-                        children: [
-                            Container(width: width/60,),
-                            _buildMemoryAddrInput(width),
-                            _buildMemoryCheckButton(),
+                    SizedBox(height: 10,),
+                    // 2. compile and single step
+                    Expanded(
+                        flex: 2,
+                        child: Row(children: [
                             _buildCompileButton(),
+                            SizedBox(width: 10,),
                             _buildSingleStepButton(),
-                            // ElevatedButton(
-                            //     child: Text('Go to second page'),
-                            //     onPressed: () {
-                            //         Navigator.push(
-                            //         context,
-                            //         MaterialPageRoute(builder: (context) => SecondPage()),
-                            //         );
-                            //     },
-                            // ),
-                            // ElevatedButton(
-                            //     child: Text('复制代码段'),
-                            //     onPressed: () async{
-                            //         await Clipboard.setData(ClipboardData(text: _textEditingController.text));
-                            //     },
-                            // ),
-                        ] 
+                            SizedBox(width: width/18,),
+                            _buildMemoryCheckButton(),
+                            SizedBox(width: 10,),
+                            _buildMemoryAddrInput(width),
+                        ],),
                     ),
-                    
-                ),
-                Container(
-                    height: 10,
-                ),
-            ],
-        );
+                    SizedBox(height: 10,),
+                ],)
+            ),
+            SizedBox(width: 20,),
+            // second column: Processor state info, memory table, use two row
+            Expanded(
+                flex: 40,
+                child: Column(children: [
+                    SizedBox(height: 10,),
+                    // 1. processor state info
+                    Expanded(
+                        flex: 11,
+                        child: _buildProcessorStateInfo(width),
+                    ),
+                    SizedBox(height: 10,),
+                    // 2. memory table
+                    Expanded(
+                        flex: 12,
+                        child: _buildMemoryTable(width),
+                    ),
+                    SizedBox(height: 10,),
+                ],)
+            ),
+            SizedBox(width: 20,),
+            
+        ],);
+        
     }
 }
