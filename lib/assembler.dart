@@ -155,13 +155,13 @@ class Assembler{
         Uint32 ins = memory.read(pc);
         int rd = ins.bitRange(4, 0).toInt(), rj = ins.bitRange(9, 5).toInt(), rk = ins.bitRange(14, 10).toInt();
         int ui12 = ins.bitRange(21, 10).toInt(), ui5 = ins.bitRange(14, 10).toInt();
-        int si12 = ins.getBit(21) == 1 ? (ins.bitRange(21, 10).signExtend(12)).toSignedInt():ui12;
+        int si12 = ins.getBit(21) == 1 ? (ins.bitRange(21, 10).signExtend(11)).toSignedInt():ui12;
         int ui20 = ins.bitRange(24, 5).toInt();
-        int si20 = ins.getBit(24) == 1 ? (ins.bitRange(24, 5).signExtend(20)).toSignedInt():ui20;
+        int si20 = ins.getBit(24) == 1 ? (ins.bitRange(24, 5).signExtend(19)).toSignedInt():ui20;
         int ui16 = ins.bitRange(25, 10).toInt();
-        int si16 = ins.getBit(25) == 1 ? (ins.bitRange(25, 10).signExtend(16)).toSignedInt():ui16;
+        int si16 = ins.getBit(25) == 1 ? (ins.bitRange(25, 10).signExtend(15)).toSignedInt():ui16;
         int ui26 = (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(15)).toInt();
-        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(16)).signExtend(26).toSignedInt():ui26;
+        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(16)).signExtend(25).toSignedInt():ui26;
         switch(get_inst_type(ins)){
             case Ins_type.BREAK:
             case Ins_type.NULL:
@@ -303,11 +303,11 @@ class Assembler{
                 pc = pc.add(4);
                 break;
             case Ins_type.LDB:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1).signExtend(8);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1).signExtend(7);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDH:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2).signExtend(16);
+                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2).signExtend(15);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDW:
@@ -336,32 +336,32 @@ class Assembler{
                 break;
             case Ins_type.JIRL:
                 if(rd != 0) reg[rd] = pc.add(4);
-                pc = reg[rj] + Uint32_t(si16 << 2).signExtend(18);
+                pc = reg[rj] + Uint32_t(si16 << 2).signExtend(17);
                 break;
             case Ins_type.B:
-                pc = pc + Uint32_t(si26 << 2).signExtend(28);
+                pc = pc + Uint32_t(si26 << 2).signExtend(27);
                 break;
             case Ins_type.BL:
                 reg[1] = pc.add(4);
-                pc = pc + Uint32_t(si26 << 2).signExtend(28);
+                pc = pc + Uint32_t(si26 << 2).signExtend(27);
                 break;
             case Ins_type.BEQ:
-                pc = reg[rj] == reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] == reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             case Ins_type.BNE:
-                pc = reg[rj] != reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] != reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             case Ins_type.BLT:
-                pc = reg[rj].toSignedInt() < reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj].toSignedInt() < reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             case Ins_type.BGE:
-                pc = reg[rj].toSignedInt() >= reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj].toSignedInt() >= reg[rd].toSignedInt() ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             case Ins_type.BLTU:
-                pc = reg[rj] < reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] < reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             case Ins_type.BGEU:
-                pc = reg[rj] >= reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(18) : pc.add(4);
+                pc = reg[rj] >= reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
             
         }
@@ -721,13 +721,11 @@ class Sentence{
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_ui12.contains(type)) {
-            imm = Uint32_t(int.parse(sentence_spilt[3]));
-            if(imm > Uint32_t(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si12.contains(type)) {
-            imm = Uint32_t(int.parse(sentence_spilt[3]));
-            if(imm > Uint32_t(4095)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
+            imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si20.contains(type)){

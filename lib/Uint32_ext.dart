@@ -27,7 +27,7 @@ extension Uint32_ext on Uint32{
 
     int toSignedInt(){
         if(this.getBit(31) == 1){
-            return (~this).add(1).toInt();
+            return -((~this).add(1).toInt());
         }
         return this.toInt();
     }
