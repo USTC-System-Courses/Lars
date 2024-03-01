@@ -288,7 +288,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildMemoryAddrInput(double width){
         return Container(
-            width: 200,
+            width: width > 100 ? width : 100,
             child: TextField(
                 decoration: InputDecoration(
                     hintText: '输入内存地址(16进制)',
@@ -409,7 +409,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             SizedBox(width: width/18,),
                             _buildMemoryCheckButton(),
                             SizedBox(width: 10,),
-                            _buildMemoryAddrInput(width),
+                            _buildMemoryAddrInput(width * 4/9 - 340),
                         ],),
                     ),
                     SizedBox(height: 10,),
