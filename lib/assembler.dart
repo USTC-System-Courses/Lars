@@ -99,18 +99,18 @@ class Assembler{
             element.addr = text_build;
             if((with_label.contains(element.type) || with_LDST.contains(element.type)) && element.imm == Uint32.zero){
                 var addr = _label.find(element.sentence_spilt.last);//标签的地址
-                // var temp_imm = judge(element, addr);
-                var temp_imm = addr - text_build;
+                var temp_imm = judge(element, addr);
+                // var temp_imm = addr - text_build;
                 if(temp_imm != 0){
                     try {
                       element.imm = Uint32_t(temp_imm);
                     } catch (e) {
                       element;
                     }
-                    if(with_label16.contains(element)) {
-                        element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32_t(10);
+                    if(with_label16.contains(element.type)) {
+                        element._machine_code_i |= element.imm.bitRange(17, 2) << Uint32_t(10);
                     }
-                    else if(with_label26.contains(element)){
+                    else if(with_label26.contains(element.type)){
                         element._machine_code_i |= element.imm.bitRange(15, 0) << Uint32_t(10);
                         element._machine_code_i |= element.imm.bitRange(25, 16);
                     }
@@ -164,9 +164,9 @@ class Assembler{
     }
 
     int judge(Sentence a, Uint32 addr){
-        if (with_label16.contains(a.type) && ((a.addr - addr) > -(1 << 15) || (a.addr - addr) < (1 << 15) - 1)) return ((a.addr - addr));
-        else if (with_label26.contains(a.type) && ((a.addr - addr) > -(1 << 25) || (a.addr - addr) < (1 << 25) - 1)) return ((a.addr - addr));
-        else if (with_LDST.contains(a.type) && ((a.addr - addr) > -(1 << 11) || (a.addr - addr) < (1 << 11) - 1)) return a.addr - addr;
+        if (with_label16.contains(a.type) && ((a.addr - addr) > -(1 << 15) || (a.addr - addr) < (1 << 15) - 1)) return ((addr - a.addr));
+        else if (with_label26.contains(a.type) && ((a.addr - addr) > -(1 << 25) || (a.addr - addr) < (1 << 25) - 1)) return ((addr - a.addr));
+        else if (with_LDST.contains(a.type) && ((a.addr - addr) > -(1 << 11) || (a.addr - addr) < (1 << 11) - 1)) return addr - a.addr;
         else return 0;
     }
 
