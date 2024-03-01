@@ -287,7 +287,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildMemoryAddrInput(double width){
         return Container(
-            width: width / 6,
+            width: width / 8,
             child: TextField(
                 decoration: InputDecoration(
                     hintText: '输入内存地址(16进制)',
@@ -304,79 +304,90 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             ),
         );
     }
-    Widget _buildMemoryCheckButton(){
-        return ElevatedButton(
-            onPressed: (){
-                try{
-                    mem_search = int.parse(memtext_ctrl.text, radix: 16);
-                } catch(e){
-                    mem_search = 0x1c000000;
-                }
-                if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
-                setState(() {});
-            },
-            child: Text('查看内存')
-        );
-    }
-    Widget _buildCompileButton(){
-        return ElevatedButton(
-            onPressed: () async {
-                String text = _textEditingController.text + '\nBREAK';
-                // Split the text into lines
-                textLines = text.split('\n');
-                Warnings = [];
-                reg = List.filled(32, Uint32.zero);
-                reg_change = List.filled(32, false);
-                try {
-                    asm = Assembler(textLines);
-                } on SentenceException catch (e) {
-                    Warnings.add(e.toString());
-                } on MemoryException catch (e){
-                    Warnings.add(e.type.toString());
-                }
-
-                // if has warnings, show a dialog
-                if(Warnings.isNotEmpty){
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context){
-                            return _buildExceptionDialog(MediaQuery.of(context).size.width);
-                        }
-                    );
-                }
-                _scrollController.jumpTo(0);
-                setState(() {});
-
-                // Save the text to a file
-                try{
-                    if(Platform.isWindows){
-                        final directory = await getApplicationDocumentsDirectory();
-                        print(directory.path);
-                        final file = File('${directory.path}/input.txt');
-                        await file.writeAsString(text);
+    Widget _buildMemoryCheckButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    try{
+                        mem_search = int.parse(memtext_ctrl.text, radix: 16);
+                    } catch(e){
+                        mem_search = 0x1c000000;
                     }
-                }catch(e){
-                    print(e);
-                }
-                
-            },
-            child: Text('编译'),
+                    if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
+                    setState(() {});
+                },
+                child: Text('查看内存')
+            ),
+            width: width / 10
         );
+
     }
-    Widget _buildSingleStepButton(){
-        return ElevatedButton(
-            onPressed: (){
-                for(int i = 0; i < 32; i++){
-                    reg[i] = asm.reg[i];
-                }
-                asm.cycle();
-                for(int i = 0; i < 32; i++){
-                    // Uint32 a = reg[i], b = asm.reg[i];
-                    reg_change[i] = (reg[i] != asm.reg[i])?true:false;
-                }
-                setState(() {});
-            }, 
-            child: Text('单步执行')
+    Widget _buildCompileButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: () async {
+                    String text = _textEditingController.text + '\nBREAK';
+                    // Split the text into lines
+                    textLines = text.split('\n');
+                    Warnings = [];
+                    reg = List.filled(32, Uint32.zero);
+                    reg_change = List.filled(32, false);
+                    try {
+                        asm = Assembler(textLines);
+                    } on SentenceException catch (e) {
+                        Warnings.add(e.toString());
+                    } on MemoryException catch (e){
+                        Warnings.add(e.type.toString());
+                    }
+
+                    // if has warnings, show a dialog
+                    if(Warnings.isNotEmpty){
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context){
+                                return _buildExceptionDialog(width);
+                            }
+                        );
+                    }
+                    _scrollController.jumpTo(0);
+                    setState(() {});
+
+                    // Save the text to a file
+                    try{
+                        if(Platform.isWindows){
+                            final directory = await getApplicationDocumentsDirectory();
+                            print(directory.path);
+                            final file = File('${directory.path}/input.txt');
+                            await file.writeAsString(text);
+                        }
+                    }catch(e){
+                        print(e);
+                    }
+                    
+                },
+                child: Text('编译'),
+            ),
+            width: width / 10,
+        );
+        
+    }
+    Widget _buildSingleStepButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    for(int i = 0; i < 32; i++){
+                        reg[i] = asm.reg[i];
+                    }
+                    asm.cycle();
+                    for(int i = 0; i < 32; i++){
+                        // Uint32 a = reg[i], b = asm.reg[i];
+                        reg_change[i] = (reg[i] != asm.reg[i])?true:false;
+                    }
+                    setState(() {});
+                },
+                child: Text('单步执行')
+            ),
+            width: width / 10,
         );
     }
 
@@ -403,11 +414,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     Expanded(
                         flex: 2,
                         child: Row(children: [
-                            _buildCompileButton(),
+                            _buildCompileButton(width),
                             SizedBox(width: width / 120,),
-                            _buildSingleStepButton(),
-                            SizedBox(width: width / 18,),
-                            _buildMemoryCheckButton(),
+                            _buildSingleStepButton(width),
+                            SizedBox(width: width / 30,),
+                            _buildMemoryCheckButton(width),
                             SizedBox(width: width / 120,),
                             _buildMemoryAddrInput(width),
                         ],),
