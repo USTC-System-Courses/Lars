@@ -699,7 +699,7 @@ class Sentence{
         }
         // if(sentence_spilt.length < 2) sentence_spilt.addAll(['0', '0', '0']);
 
-        //TODO异常处理寄存器超出范围
+        // TODO异常处理寄存器超出范围
         if(!without_rd.contains(type)) {
             try{
                 rd = Uint32_t(int.parse(sentence_spilt[1].substring(2)));
@@ -738,7 +738,7 @@ class Sentence{
         }
         if(with_ui12.contains(type)) {
             try{
-                imm = Uint32_t(int.parse(sentence_spilt[3]));
+                imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
             } catch (e) {
                 throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
             }
@@ -746,7 +746,7 @@ class Sentence{
         }
         if(with_si12.contains(type)) {
             try{
-                imm = Uint32_t(int.parse(sentence_spilt[3]));
+                imm = Uint32_t(int.parse(sentence_spilt[3])& 0xfff);
             } catch (e) {
                 throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
             }
