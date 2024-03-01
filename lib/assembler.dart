@@ -444,6 +444,43 @@ class Assembler{
     }
 }
 
+String reg_name(int reg){
+        switch (reg) {
+            case 0: return r'ZERO';
+            case 1: return r'RA';
+            case 2: return r'TP';
+            case 3: return r'SP';
+            case 4: return r'A0';
+            case 5: return r'A1';
+            case 6: return r'A2';
+            case 7: return r'A3';
+            case 8: return r'A4';
+            case 9: return r'A5';
+            case 10: return r'A6';
+            case 11: return r'A7';
+            case 12: return r'T0';
+            case 13: return r'T1';
+            case 14: return r'T2';
+            case 15: return r'T3';
+            case 16: return r'T4';
+            case 17: return r'T5';
+            case 18: return r'T6';
+            case 19: return r'T7';
+            case 20: return r'T8';
+            case 21: return r'FP';
+            case 22: return r'S9';
+            case 23: return r'S0';
+            case 24: return r'S1';
+            case 25: return r'S2';
+            case 26: return r'S3';
+            case 27: return r'S4';
+            case 28: return r'S5';
+            case 29: return r'S6';
+            case 30: return r'S7';
+            case 31: return r'S8';
+            default: return '';
+        }
+    }
 String process(String temp){
     //将逗号替换为空格
     temp = temp.replaceAll(RegExp(','), ' ');
@@ -511,6 +548,7 @@ class Sentence{
     String print(){
         return _machine_code_i.toBinaryPadded();
     }
+
     
     String _rename_register(String inst){
         String res = inst;

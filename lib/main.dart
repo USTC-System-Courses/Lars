@@ -142,7 +142,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         border: Border.all(color: Colors.black),
                                         borderRadius: BorderRadius.all(Radius.circular(6))
                                     ),
-                                    child: Center(child:Text('R${4*i+j}\n0x${asm.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
+                                    child: Center(child:Text('R${4*i+j}/' + reg_name(4*i+j) + '\n0x${asm.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
                                 ),
                             ],
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -290,10 +290,12 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             width: width / 8,
             child: TextField(
                 decoration: InputDecoration(
+                    isDense: true,
                     hintText: '输入内存地址(16进制)',
                     // 减小字体
-                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic, fontSize: 12),
+                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
                 ),
                 controller: memtext_ctrl,
                 maxLines: 1,
