@@ -99,7 +99,8 @@ class Assembler{
             element.addr = text_build;
             if((with_label.contains(element.type) || with_LDST.contains(element.type)) && element.imm == Uint32.zero){
                 var addr = _label.find(element.sentence_spilt.last);//标签的地址
-                var temp_imm = judge(element, addr);
+                // var temp_imm = judge(element, addr);
+                var temp_imm = addr - text_build;
                 if(temp_imm != 0){
                     try {
                       element.imm = Uint32_t(temp_imm);
@@ -120,13 +121,44 @@ class Assembler{
                 else throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
             }
             if(element.type != Ins_type.NULL){
-                memory.write(text_build, Uint32_t(int.parse(element.print(), radix: 2)));
-                if(inst_rec.containsKey(text_build)){
-                    inst_rec[text_build] = element;
+                if(element.type == Ins_type.LIW){
+                    // li.w maybe need 
+                    Sentence element_temp = Sentence.copy(element);
+                    element._machine_code_i = Uint32_t(0x0C << 25) | element.rd | (element.imm << Uint32_t(5));
+                    if(element.imm != 0){
+                        element._machine_code_i = Uint32_t(0x0C << 25) | element.rd | (element.imm << Uint32_t(5));
+                        element.type = Ins_type.LU12IW;
+                        element.sentence = 'LU12IW R' + element.rd.toInt().toRadixString(10) + ' 0x' + element.imm.toInt().toRadixString(16);
+                        memory.write(text_build, element._machine_code_i);
+                        if(inst_rec.containsKey(text_build)){
+                            inst_rec[text_build] = element;
+                        }
+                        else inst_rec.putIfAbsent(text_build, () => (element));
+                        text_build = text_build.add(4);
+                        _machine_code.add(element.print());
+                    }
+                    element = element_temp;
+                    element.type = Ins_type.LU12IW;
+                    element.addr = text_build;
+                    element.sentence = 'ORI R' + element.rd.toInt().toRadixString(10) + ' R' + element.rj.toInt().toRadixString(10) + ' 0x' + element.imm.toInt().toRadixString(16);
+                    memory.write(text_build, element._machine_code_i);
+                    if(inst_rec.containsKey(text_build)){
+                        inst_rec[text_build] = element;
+                    }
+                    else inst_rec.putIfAbsent(text_build, () => (element));
+                    text_build = text_build.add(4);
+                    _machine_code.add(element.print());
+                
                 }
-                else inst_rec.putIfAbsent(text_build, () => (element));
-                text_build = text_build.add(4);
-                _machine_code.add(element.print());
+                else {
+                    memory.write(text_build, Uint32_t(int.parse(element.print(), radix: 2)));
+                    if(inst_rec.containsKey(text_build)){
+                        inst_rec[text_build] = element;
+                    }
+                    else inst_rec.putIfAbsent(text_build, () => (element));
+                    text_build = text_build.add(4);
+                    _machine_code.add(element.print());
+                }
             }
         }
     }
@@ -363,6 +395,8 @@ class Assembler{
             case Ins_type.BGEU:
                 pc = reg[rj] >= reg[rd] ? pc + Uint32_t(si16 << 2).signExtend(17) : pc.add(4);
                 break;
+            case Ins_type.LIW:
+                /* TODO */
             
         }
     }
@@ -526,7 +560,19 @@ class Sentence{
     
     Uint32 addr = Uint32_t(0);                            //指令所在内存地址
     
-    
+    // 拷贝构造函数
+    Sentence.copy(Sentence s){
+        this.sentence_ori = s.sentence_ori;
+        this.sentence = s.sentence;
+        this._machine_code_i = s._machine_code_i;
+        this.type = s.type;
+        this.sentence_spilt = s.sentence_spilt;
+        this.rd = s.rd;
+        this.rj = s.rj;
+        this.rk = s.rk;
+        this.imm = s.imm;
+        this.addr = s.addr;
+    }
 
     Sentence(this.sentence_ori){
 
@@ -732,6 +778,8 @@ class Sentence{
             case Ins_type.BREAK:
                 _machine_code_i = Uint32_t(0x54 << 15);
                 break;
+            case Ins_type.LIW:
+                _machine_code_i = Uint32_t(0x0E << 22);
             default:
                 break;
         }
@@ -791,7 +839,12 @@ class Sentence{
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si20.contains(type)){
-            var temp_int = int.parse(sentence_spilt[2]);
+            var temp_int = 0;
+            try{
+                temp_int = int.parse(sentence_spilt[2]);
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
             temp_int = temp_int.replaceBitRange(63, 32, 0);
             imm = Uint32_t(temp_int & 0xfffff);
             // if(imm > Uint32_t(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
@@ -814,6 +867,27 @@ class Sentence{
             else if(regnum10.hasMatch(sentence_spilt[3])){
                 imm = Uint32_t((int.parse(sentence_spilt[3]) & UI32_mask)) << Uint32_t(2);
             }
+        }
+        // li.w
+        if(with_imm32.contains(type)) {
+            try{
+                imm = Uint32_t(int.parse(sentence_spilt[2]) & 0xfff);
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
+            _machine_code_i |= (imm << Uint32_t(10));
+
+            rj = rd;
+            _machine_code_i |= (rj << Uint32_t(5));
+
+            var temp_int = 0;
+            try{
+                temp_int = int.parse(sentence_spilt[2]);
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
+            temp_int = temp_int.replaceBitRange(63, 32, 0);
+            imm = Uint32_t(temp_int & 0xfffff000) >> Uint32_t(12);
         }
     }
     

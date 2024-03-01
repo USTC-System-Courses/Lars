@@ -48,6 +48,8 @@ enum Ins_type{
     BLTU,
     BGEU,
     BREAK,
+    LIW,
+    // LALOCAL,
 }
 
 List<Ins_type> without_rd = [
@@ -63,6 +65,7 @@ without_rj = [
     Ins_type.LU12IW,
     Ins_type.PCADDU12I,
     Ins_type.BREAK,
+    Ins_type.LIW,
 ],
 without_rk = [
     Ins_type.NOP,
@@ -95,6 +98,7 @@ without_rk = [
     Ins_type.LDBU,
     Ins_type.LDHU,
     Ins_type.BREAK,
+    Ins_type.LIW,
 ],
 with_ui5 = [
     Ins_type.SLLIW,
@@ -134,6 +138,9 @@ with_label16 = [
 with_label26 = [
     Ins_type.B,
     Ins_type.BL,
+],
+with_imm32 = [
+    Ins_type.LIW,
 ],
 with_LDST = [
     Ins_type.LDB,
