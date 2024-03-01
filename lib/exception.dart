@@ -12,7 +12,7 @@ class SentenceException implements Exception {
         message = Exception_Info[type]!;
     }
 
-  @override
+    @override
     String toString() => 'in Sentence \' ' + Exception_String + '\' \n\t' + type.toString() + ': ' + message;
 }
 
