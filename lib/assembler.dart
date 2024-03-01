@@ -701,31 +701,55 @@ class Sentence{
 
         //TODO异常处理寄存器超出范围
         if(!without_rd.contains(type)) {
-            rd = Uint32_t(int.parse(sentence_spilt[1].substring(2)));
+            try{
+                rd = Uint32_t(int.parse(sentence_spilt[1].substring(2)));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
+            }
             if(rd > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= rd;
         } 
         if(!without_rj.contains(type)) {
-            rj = Uint32_t(int.parse(sentence_spilt[2].substring(2)));
+            try{
+                rj = Uint32_t(int.parse(sentence_spilt[2].substring(2)));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
+            }
             if(rj > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (rj << Uint32_t(5));
         }
         if(!without_rk.contains(type)) {
-            rk = Uint32_t(int.parse(sentence_spilt[3].substring(2)));
+            try{
+                rk = Uint32_t(int.parse(sentence_spilt[3].substring(2)));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
+            }
             if(rk > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (rk << Uint32_t(10));
         }
         if(with_ui5.contains(type)) {
-            imm = Uint32_t(int.parse(sentence_spilt[3]));
+            try{
+                imm = Uint32_t(int.parse(sentence_spilt[3]));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
             if(imm > Uint32_t(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_ui12.contains(type)) {
-            imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
+            try{
+                imm = Uint32_t(int.parse(sentence_spilt[3]));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si12.contains(type)) {
-            imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
+            try{
+                imm = Uint32_t(int.parse(sentence_spilt[3]));
+            } catch (e) {
+                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
+            }
             _machine_code_i |= (imm << Uint32_t(10));
         }
         if(with_si20.contains(type)){

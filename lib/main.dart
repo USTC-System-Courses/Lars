@@ -182,7 +182,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        color: Color.fromARGB(203, 247, 201, 168)
+                        color: Color.fromARGB(200, 115, 142, 255)
                     ),
                 ),
                 // reg info
@@ -195,7 +195,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            color: Color.fromARGB(203, 247, 201, 168)
+                            color: Color.fromARGB(200, 115, 142, 255)
                         ),
                     ),
                 ),
