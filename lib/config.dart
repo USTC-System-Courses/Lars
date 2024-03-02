@@ -49,7 +49,7 @@ enum Ins_type{
     BGEU,
     BREAK,
     LIW,
-    // LALOCAL,
+    LALOCAL,
 }
 
 List<Ins_type> without_rd = [
@@ -66,6 +66,7 @@ without_rj = [
     Ins_type.PCADDU12I,
     Ins_type.BREAK,
     Ins_type.LIW,
+    Ins_type.LALOCAL,
 ],
 without_rk = [
     Ins_type.NOP,
@@ -99,6 +100,7 @@ without_rk = [
     Ins_type.LDHU,
     Ins_type.BREAK,
     Ins_type.LIW,
+    Ins_type.LALOCAL,
 ],
 with_ui5 = [
     Ins_type.SLLIW,
@@ -139,9 +141,17 @@ with_label26 = [
     Ins_type.B,
     Ins_type.BL,
 ],
-with_imm32 = [
-    Ins_type.LIW,
+with_label32 = [
+    Ins_type.LALOCAL,
 ],
+// with_imm32 = [
+//     Ins_type.LIW,
+// ],
+
+// is_macro_inst = [
+//     Ins_type.LIW,
+// ],
+
 with_LDST = [
     Ins_type.LDB,
     Ins_type.LDH,
@@ -152,7 +162,7 @@ with_LDST = [
     Ins_type.LDBU,
     Ins_type.LDHU,
 ],
-with_label = with_label16 + with_label26;
+with_label = with_label16 + with_label26 + with_label32;
 
 enum analyze_mode{
     DATA,
