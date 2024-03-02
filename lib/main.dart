@@ -73,8 +73,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     TextFieldController _controller = TextFieldController(
       patternMatchMap: {
-        RegExp(opString):TextStyle(color:Colors.red),
-        RegExp(regString):TextStyle(color:Colors.green),
+        RegExp(opString):TextStyle(color:Color.fromARGB(255, 5, 107, 245)),
+        RegExp(regString): TextStyle(color:Color.fromARGB(255, 244, 161, 5)),
+        RegExp(immString):TextStyle(color:Color.fromARGB(255, 65, 155, 87)),
+
       },
       onMatch: (List<String> matches){
       },
@@ -89,7 +91,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2.0),
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                color: Color.fromARGB(255, 197, 244, 254),
+                color: Color.fromARGB(180, 207, 236, 254),
             ),
             child: SingleChildScrollView(
                 child: TextField(
@@ -310,7 +312,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             child: TextField(
                 decoration: InputDecoration(
                     isDense: true,
-                    hintText: '输入内存地址(16进制)',
+                    hintText: '输入16进制内存地址',
                     // 减小字体
                     hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     border: InputBorder.none,
