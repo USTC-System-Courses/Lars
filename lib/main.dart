@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
 import 'package:helloworld/exception.dart';
+import 'package:helloworld/frontend.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
@@ -58,7 +59,9 @@ class MyTextPaginatingWidget extends StatefulWidget {
 // }
 
 class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
-    TextEditingController _textEditingController = TextEditingController(), memtext_ctrl = TextEditingController();
+    // TextEditingController _textEditingController = TextFieldController();
+    // late TextFieldController _controller;
+    TextEditingController memtext_ctrl = TextEditingController();
     List<String> textLines = [];
     Assembler asm = Assembler([]);
     int mem_search = 0x1c000000;
@@ -66,6 +69,33 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<String> Warnings = [];
     List<Uint32> reg = List.filled(32, Uint32.zero);
     List<bool> reg_change = List.filled(32, false);
+
+    TextFieldController _controller = TextFieldController(
+      patternMatchMap: {
+        //
+        //* Returns every Hashtag with red color
+        //
+        RegExp(r"addi\.w"):TextStyle(color:Colors.green),
+        //
+        //* Returns every Hashtag with red color
+        //
+        RegExp(r"\B#[a-zA-Z0-9]+\b"):TextStyle(color:Colors.red),
+        //
+        //* Returns every Mention with blue color and bold style.
+        //
+        RegExp(r"\B@[a-zA-Z0-9]+\b"):TextStyle(fontWeight: FontWeight.w800 ,color:Colors.blue,),
+        //
+        //* Returns every word after '!' with yellow color and italic style.
+        //
+        RegExp(r"\B![a-zA-Z0-9]+\b"):TextStyle(color:Colors.yellow, fontStyle:FontStyle.italic),
+        // add as many expressions as you need!
+      },
+      onMatch: (List<String> matches){
+      },
+      deleteOnBack: true,
+      // You can control the [RegExp] options used:
+      regExpUnicode: true,
+    );
 
     /* build the code text */
     Widget _buildCodeText(){
@@ -77,13 +107,14 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             ),
             child: SingleChildScrollView(
                 child: TextField(
-                    controller: _textEditingController,
+                    controller: _controller,
                     maxLines: null,
                     minLines: 20,
                     expands: false,
                     decoration: InputDecoration(
                     hintText: '请输入LA32R汇编代码',
                     border: InputBorder.none,
+                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
                 ),
             ),
@@ -330,7 +361,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         return Container(
             child: ElevatedButton(
                 onPressed: () async {
-                    String text = _textEditingController.text + '\nBREAK';
+                    String text = _controller.text + '\nBREAK';
+                    // _textEditingController.value = TextEditingValue(text: text);
                     // Split the text into lines
                     textLines = text.split('\n');
                     Warnings = [];
