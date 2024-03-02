@@ -73,7 +73,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2.0),
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                color: Color.fromARGB(160, 188, 233, 254),
+                color: Color.fromARGB(255, 197, 244, 254),
             ),
             child: SingleChildScrollView(
                 child: TextField(
@@ -99,7 +99,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             margin: EdgeInsets.only(left: width/60, right: width/60),
             width: width*12/60,
             decoration: BoxDecoration(
-                color: Color.fromARGB(255, 252, 239, 0),
+                color: Color.fromARGB(255, 255, 231, 0),
                 border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
@@ -115,7 +115,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             width: width*12/60,
             margin: EdgeInsets.only(left: width/60, right: width/60),
             decoration: BoxDecoration(
-                color: Color.fromARGB(255, 252, 239, 0),
+                color: Color.fromARGB(255, 255, 231, 0),
                 border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
@@ -138,7 +138,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                     alignment: Alignment.center,
                                     margin: EdgeInsets.only(left: width/60, right: width/60),
                                     decoration: BoxDecoration(
-                                        color: reg_change[4*i+j]?Color.fromARGB(255, 255, 98, 98):Color.fromARGB(255, 249, 200, 104),
+                                        color: reg_change[4*i+j]?Color.fromARGB(255, 255, 98, 98):Color.fromARGB(255, 248, 174, 39),
                                         border: Border.all(color: Colors.black),
                                         borderRadius: BorderRadius.all(Radius.circular(6))
                                     ),
@@ -176,7 +176,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        color: Color.fromARGB(200, 115, 142, 255)
+                        color: Color.fromARGB(255, 151, 196, 255)
                     ),
                 ),
                 // reg info
@@ -189,7 +189,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            color: Color.fromARGB(200, 115, 142, 255)
+                            color: Color.fromARGB(255, 151, 196, 255)
                         ),
                     ),
                 ),
@@ -255,7 +255,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                 )
                         ],
                         decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 255, 224, 201)
+                            color: Color.fromARGB(255, 255, 231, 0)
                         )
                     ),
                     for (int i = 0; i < 10; i++)
@@ -277,7 +277,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                     ),
                             ],
                             decoration: BoxDecoration(
-                                color: (i%2==0)?Color.fromARGB(255, 218, 245, 251):Color.fromARGB(255, 198, 228, 252)
+                                color: (i%2==0)?Color.fromARGB(160, 151, 196, 255):Color.fromARGB(160, 110, 171, 255)
                             )
                         ),
                 ],
