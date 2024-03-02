@@ -136,6 +136,9 @@ class Assembler{
                         else inst_rec.putIfAbsent(text_build, () => (element));
                         text_build = text_build.add(4);
                         _machine_code.add(element.print());
+                        element_temp.rj = element.rd;
+                        element_temp._machine_code_i |= element_temp.rj << Uint32_t(5);
+
                     }
                     element = element_temp;
                     element.type = Ins_type.LU12IW;
@@ -876,9 +879,6 @@ class Sentence{
                 throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
             }
             _machine_code_i |= (imm << Uint32_t(10));
-
-            rj = rd;
-            _machine_code_i |= (rj << Uint32_t(5));
 
             var temp_int = 0;
             try{
