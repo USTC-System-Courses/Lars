@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
+import 'package:helloworld/config.dart';
 import 'package:helloworld/exception.dart';
 import 'package:helloworld/frontend.dart';
 import 'package:path_provider/path_provider.dart';
@@ -72,27 +73,12 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     TextFieldController _controller = TextFieldController(
       patternMatchMap: {
-        //
-        //* Returns every Hashtag with red color
-        //
-        RegExp(r"addi\.w"):TextStyle(color:Colors.green),
-        //
-        //* Returns every Hashtag with red color
-        //
-        RegExp(r"\B#[a-zA-Z0-9]+\b"):TextStyle(color:Colors.red),
-        //
-        //* Returns every Mention with blue color and bold style.
-        //
-        RegExp(r"\B@[a-zA-Z0-9]+\b"):TextStyle(fontWeight: FontWeight.w800 ,color:Colors.blue,),
-        //
-        //* Returns every word after '!' with yellow color and italic style.
-        //
-        RegExp(r"\B![a-zA-Z0-9]+\b"):TextStyle(color:Colors.yellow, fontStyle:FontStyle.italic),
-        // add as many expressions as you need!
+        RegExp(opString):TextStyle(color:Colors.red),
+        RegExp(regString):TextStyle(color:Colors.green),
       },
       onMatch: (List<String> matches){
       },
-      deleteOnBack: true,
+      deleteOnBack: false,
       // You can control the [RegExp] options used:
       regExpUnicode: true,
     );
