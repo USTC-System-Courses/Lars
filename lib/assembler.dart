@@ -599,9 +599,9 @@ class Sentence{
     
 
     Sentence(this.sentence_ori){
-
-        if(sentence_ori == '') return;
         sentence = process(sentence_ori);
+        if(sentence_ori == '') return;
+
         //将寄存器别名改为标准写法
         sentence = _rename_register(sentence);
         //判断指令类型的合法性并赋值
