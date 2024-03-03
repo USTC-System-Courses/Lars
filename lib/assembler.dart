@@ -42,20 +42,20 @@ class Assembler{
                         build = data_build;
                         break;
                     case Sign_type.BYTE:
-                        memory.write(data_build, pkg.sign_item, size: 1);
+                        memory.write(build, pkg.sign_item, size: 1);
                         build = build.add(1);
                         break;
                     case Sign_type.HALF:
-                        memory.write(data_build, pkg.sign_item, size: 2);
+                        memory.write(build, pkg.sign_item, size: 2);
                         build = build.add(2);
                         break;
                     case Sign_type.WORD:
-                        memory.write(data_build, pkg.sign_item, size: 4);
+                        memory.write(build, pkg.sign_item, size: 4);
                         build = build.add(4);
                         break;
                     case Sign_type.SPACE:
                         for(int i = 0; i < pkg.sign_item.toInt(); i++){
-                            memory.write(data_build, Uint32_t(0), size: 1);
+                            memory.write(build, Uint32_t(0), size: 1);
                         }
                         build = build.add(pkg.sign_item.toInt());
                         break;

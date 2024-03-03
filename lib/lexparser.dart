@@ -63,18 +63,20 @@ class LexParser {
 
     // regularize the input string
     String _regularize(String s){
+        // remove comments
+        s = s.replaceAll(RegExp(r'#.*'), '');
         // , -> " "
         s = s.replaceAll(RegExp(r','), " ");
         // \t -> " "
         s = s.replaceAll(RegExp(r'\t'), " ");
         // " " x n -> "
         s = s.replaceAll(RegExp(r' +'), " ");
-        // remove leading and trailing spaces
-        s = s.trim();
+
         // to upper case
         s = s.toUpperCase();
-        // remove comments
-        s = s.replaceAll(RegExp(r'#.*'), '');
+
+        // remove leading and trailing spaces
+        s = s.trim();
         return s;
     }
 
@@ -242,16 +244,16 @@ class LexParser {
         package.sentence = s_regular;
 
         // check if it is a sign
-        if(s_regular_spilt[0][0] == '.'){
+        if(s_regular[0] == '.'){
             package.is_sign = true;
             package.label = s_regular_spilt[0].substring(1);
             if(!Sign_type.values.map((e) => e.toString().split(".")[1]).contains(package.label)){
                 throw SentenceException(Exception_type.INVALID_SEGMENT, s); // TODO: add more info
             }
+            package.sign_type = Sign_type.values.byName(package.label);
             if(s_regular_spilt.length > 1){
                 try{
-                    package.sign_item = Uint32_t(int.parse(s_regular_spilt[1]));
-                    package.sign_type = Sign_type.values.byName(package.label);
+                    package.sign_item = Uint32_t(int.parse(s_regular_spilt[1]));  
                 }catch(e){
                     throw SentenceException(Exception_type.INVALID_IMM, s);
                 }
@@ -260,7 +262,7 @@ class LexParser {
         }
 
         // chcek if it is a label
-        if(s_regular_spilt[0][s_regular_spilt[0].length - 1] == ':'){
+        if(s_regular[s_regular.length - 1] == ':'){
             package.is_label = true;
             package.label = s_regular_spilt[0];
             return package;

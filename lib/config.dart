@@ -1,3 +1,4 @@
+import 'dart:core';
 enum Ins_type{
     NULL,
     NOP,
@@ -52,13 +53,13 @@ enum Ins_type{
     LALOCAL,
 }
 
-List<Ins_type> without_rd = [
+Set<Ins_type> without_rd = {
     Ins_type.NOP,
     Ins_type.B,
     Ins_type.BL,
     Ins_type.BREAK,
-],
-without_rj = [
+},
+without_rj = {
     Ins_type.NOP,
     Ins_type.B,
     Ins_type.BL,
@@ -67,8 +68,8 @@ without_rj = [
     Ins_type.BREAK,
     Ins_type.LIW,
     Ins_type.LALOCAL,
-],
-without_rk = [
+},
+without_rk = {
     Ins_type.NOP,
     Ins_type.B,
     Ins_type.BL,
@@ -101,18 +102,18 @@ without_rk = [
     Ins_type.BREAK,
     Ins_type.LIW,
     Ins_type.LALOCAL,
-],
-with_ui5 = [
+},
+with_ui5 = {
     Ins_type.SLLIW,
     Ins_type.SRLIW,
     Ins_type.SRAIW,
-],
-with_ui12 = [
+},
+with_ui12 = {
     Ins_type.ANDI,
     Ins_type.ORI,
     Ins_type.XORI,
-],
-with_si12 = [
+},
+with_si12 = {
     Ins_type.SLTI,
     Ins_type.SLTUI,
     Ins_type.ADDIW,
@@ -124,35 +125,27 @@ with_si12 = [
     Ins_type.STW,
     Ins_type.LDBU,
     Ins_type.LDHU,
-],
-with_si20 = [
+},
+with_si20 = {
     Ins_type.LU12IW,
     Ins_type.PCADDU12I,
-],
-with_label16 = [
+},
+with_label16 = {
     Ins_type.BEQ,
     Ins_type.BNE,
     Ins_type.BLT,
     Ins_type.BGE,
     Ins_type.BLTU,
     Ins_type.BGEU,
-],
-with_label26 = [
+},
+with_label26 = {
     Ins_type.B,
     Ins_type.BL,
-],
-with_label32 = [
+},
+with_label32 = {
     Ins_type.LALOCAL,
-],
-// with_imm32 = [
-//     Ins_type.LIW,
-// ],
-
-// is_macro_inst = [
-//     Ins_type.LIW,
-// ],
-
-with_LDST = [
+},
+with_LDST = {
     Ins_type.LDB,
     Ins_type.LDH,
     Ins_type.LDW,
@@ -161,8 +154,8 @@ with_LDST = [
     Ins_type.STW,
     Ins_type.LDBU,
     Ins_type.LDHU,
-],
-with_label = with_label16 + with_label26 + with_label32;
+};
+Set<Ins_type> with_label = (with_label16.toList() + with_label26.toList() + with_label32.toList()).toSet();
 
 enum analyze_mode{
     DATA,
