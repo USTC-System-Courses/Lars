@@ -8,7 +8,7 @@ import 'config.dart';
 import './memory.dart';
 import './label.dart';
 import './exception.dart';
-import 'lexparser.dart';
+import 'syntaxparser.dart';
 
 
 class Assembler{
@@ -19,7 +19,7 @@ class Assembler{
     Memory memory = Memory();
     Map<Uint32, SentenceBack> inst_rec = {};
     bool _isEnd = false;
-    LexParser lp = LexParser();
+    SyntaxParser lp = SyntaxParser();
     Assembler(List<String> temp){
         _isEnd = false;
         inst_input = temp;
@@ -476,7 +476,7 @@ class SentenceBack{
     Uint32       sign_item           = Uint32_t(0);
     Sign_type    sign_type           = Sign_type.TEXT;
 
-    SentenceBack(LexPackage l, bool use2){
+    SentenceBack(SyntaxPackage l, bool use2){
         if(!use2){
             sentence_ori    = l.sentence_ori;
             sentence        = l.sentence;

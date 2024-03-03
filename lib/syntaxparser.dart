@@ -5,7 +5,7 @@ import 'config.dart';
 import './exception.dart';
 import 'arch.dart';
 
-class LexPackage {
+class SyntaxPackage {
     bool is_empty = false;
     bool is_code = false;
     Uint32 machine_code = Uint32(0);
@@ -32,7 +32,7 @@ class LexPackage {
     String sentence_2 = "";
     String sentence_2_ori = "";
 
-    LexPackage(String s){
+    SyntaxPackage(String s){
         sentence_ori = s;
     }
     void clear(){
@@ -49,11 +49,11 @@ class LexPackage {
     }
 
 }
-class LexParser {
+class SyntaxParser {
     Map<String, String> _register_rename_table = register_rename_table;
     Map<Ins_type, Uint32> _opcode_table = opcode_table;
 
-    LexPackage package = LexPackage("");
+    SyntaxPackage package = SyntaxPackage("");
     String s = "";
     String s_regular = "";
     List<String> s_regular_spilt = [];
@@ -225,10 +225,8 @@ class LexParser {
         return Uint32.zero;
     }
     
-    
-
     // Parse the input string
-    LexPackage Parse(String _s){
+    SyntaxPackage Parse(String _s){
         // LexPackage package = LexPackage(s);
         // regularize the input string
         package.clear();
