@@ -69,6 +69,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<String> Warnings = [];
     List<Uint32> reg = List.filled(32, Uint32.zero);
     List<bool> reg_change = List.filled(32, false);
+    List<Uint32> breakpoints = [];
 
     TextFieldController _controller = TextFieldController(
       patternMatchMap: {
@@ -113,8 +114,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     expands: false,
                     decoration: InputDecoration(
                     hintText: '请输入LA32R汇编代码',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
                 ),
             ),
@@ -302,7 +303,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             verticalOffset: 8,
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
-                                            child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center,),
+                                            child: TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center,)),
                                         ),
                                         decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                     ),
