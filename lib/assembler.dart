@@ -25,9 +25,11 @@ class Assembler{
         Uint32 text_build = Uint32_t(0x1c000000);
         Uint32 data_build = Uint32_t(0x1c800000);
         for (var element in inst_input){
+            var temp = process(element);
+            if(temp == '') continue;
             try {
                 if(cur_mode == analyze_mode.TEXT){
-                    var _elem = Sentence(element);
+                    var _elem = Sentence(element, temp);
                     var elem1 = SentenceBack(_elem, false);
                     _inst.add(elem1);
                     text_build = text_build.add(4);
@@ -42,7 +44,7 @@ class Assembler{
                 }
                 else{
                     //这里处理数据段的Label
-                    String temp = process(element);
+                    // String temp = process(element);
                     List<String> temp_spilt = temp.split(' ');
                     if(temp_spilt.first == '.TEXT:') throw LabelException(temp_spilt);
                     if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL, element);
@@ -505,15 +507,18 @@ String reg_name(int reg){
 }
 
 String process(String temp){
-    //将逗号替换为空格
-    temp = temp.replaceAll(RegExp(','), ' ');
     temp = temp.replaceAll(RegExp(r'#.*'), '');
+    if(temp == '') return '';
+    //将逗号替换为空格
+    temp = temp.replaceAll(RegExp(r','), ' ');
+
     //将所有制表符替换为空格
     temp = temp.replaceAll(RegExp(r'\t'), ' ');
     //将多个空格替换为一个空格
     temp = temp.replaceAll(RegExp(r' +'), ' ');
     //将开头空格删除
     temp = temp.replaceAll(RegExp(r'^ +'), '');
+
     //将所有小写字母替换为大写字母
     temp = temp.toUpperCase();
     //保留代码段和数据段的标识符
@@ -598,9 +603,14 @@ class Sentence{
     Uint32          imm_2                   = Uint32_t(0);
     
 
-    Sentence(this.sentence_ori){
-        sentence = process(sentence_ori);
-        if(sentence_ori == '') return;
+    Sentence(this.sentence_ori, [processed_sentence]){
+        if(processed_sentence == null){
+            sentence = process(sentence_ori);
+        }else{
+            sentence = processed_sentence;
+        }
+        // sentence = process(sentence_ori);
+        // if(sentence_ori == '') return;
 
         //将寄存器别名改为标准写法
         sentence = _rename_register(sentence);

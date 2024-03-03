@@ -5,9 +5,9 @@ class TextFieldController extends TextEditingController {
   final Map<String, TextStyle>? stringMatchMap;
   final Function(List<String> match) onMatch;
   final Function(List<Map<String, List<int>>>)? onMatchIndex;
-  final bool? deleteOnBack;
+    final bool? deleteOnBack;
   String _lastValue = "";
-
+ 
   /// controls the caseSensitive property of the full [RegExp] used to pattern match
   final bool regExpCaseSensitive;
 
@@ -26,17 +26,17 @@ class TextFieldController extends TextEditingController {
 
   TextFieldController(
       {String? text,
-        this.patternMatchMap,
-        this.stringMatchMap,
-        required this.onMatch,
-        this.onMatchIndex,
-        this.deleteOnBack = false,
-        this.regExpCaseSensitive = true,
-        this.regExpDotAll = false,
-        this.regExpMultiLine = false,
-        this.regExpUnicode = false})
+      this.patternMatchMap,
+      this.stringMatchMap,
+      required this.onMatch,
+      this.onMatchIndex,
+      this.deleteOnBack = false,
+      this.regExpCaseSensitive = true,
+      this.regExpDotAll = false,
+      this.regExpMultiLine = false,
+      this.regExpUnicode = false})
       : assert((patternMatchMap != null && stringMatchMap == null) ||
-      (patternMatchMap == null && stringMatchMap != null)),
+            (patternMatchMap == null && stringMatchMap != null)),
         super(text: text);
 
   /// Setting this will notify all the listeners of this [TextEditingController]
@@ -54,13 +54,16 @@ class TextFieldController extends TextEditingController {
   @override
   TextSpan buildTextSpan(
       {required BuildContext context,
-        TextStyle? style,
-        required bool withComposing}) {
-    assert(!value.composing.isValid || !withComposing || value.isComposingRangeValid);
+      TextStyle? style,
+      required bool withComposing}) {
+    assert(!value.composing.isValid ||
+        !withComposing ||
+        value.isComposingRangeValid);
     // If the composing range is out of range for the current text, ignore it to
     // preserve the tree integrity, otherwise in release mode a RangeError will
     // be thrown and this EditableText will be built with a broken subtree.
-    final bool composingRegionOutOfRange = !value.isComposingRangeValid || !withComposing;
+    final bool composingRegionOutOfRange =
+        !value.isComposingRangeValid || !withComposing;
 
     if (composingRegionOutOfRange) {
       List<TextSpan> children = [];
@@ -71,21 +74,21 @@ class TextFieldController extends TextEditingController {
       RegExp? allRegex;
       allRegex = patternMatchMap != null
           ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "",
-          caseSensitive: regExpCaseSensitive,
-          dotAll: regExpDotAll,
-          multiLine: regExpMultiLine,
-          unicode: regExpUnicode)
+              caseSensitive: regExpCaseSensitive,
+              dotAll: regExpDotAll,
+              multiLine: regExpMultiLine,
+              unicode: regExpUnicode)
           : null;
       // Validating with Strings
       RegExp? stringRegex;
       stringRegex = stringMatchMap != null
           ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\$',
-          caseSensitive: regExpCaseSensitive,
-          dotAll: regExpDotAll,
-          multiLine: regExpMultiLine,
-          unicode: regExpUnicode)
+              caseSensitive: regExpCaseSensitive,
+              dotAll: regExpDotAll,
+              multiLine: regExpMultiLine,
+              unicode: regExpUnicode)
           : null;
-      
+
       text.splitMapJoin(
         stringMatchMap == null ? allRegex! : stringRegex!,
         onNonMatch: (String span) {
@@ -93,13 +96,13 @@ class TextFieldController extends TextEditingController {
               children.isNotEmpty &&
               stringMatchMap!.keys.contains("${children.last.text}$span")) {
             final String? ks =
-            stringMatchMap!["${children.last.text}$span"] != null
-                ? stringMatchMap?.entries.lastWhere((element) {
-              return element.key
-                  .allMatches("${children.last.text}$span")
-                  .isNotEmpty;
-            }).key
-                : '';
+                stringMatchMap!["${children.last.text}$span"] != null
+                    ? stringMatchMap?.entries.lastWhere((element) {
+                        return element.key
+                            .allMatches("${children.last.text}$span")
+                            .isNotEmpty;
+                      }).key
+                    : '';
 
             children.add(TextSpan(text: span, style: stringMatchMap![ks!]));
             return span.toString();
@@ -116,8 +119,8 @@ class TextFieldController extends TextEditingController {
 
           final String? ks = stringMatchMap?[m[0]] != null
               ? stringMatchMap?.entries.firstWhere((element) {
-            return element.key.allMatches(m[0]!).isNotEmpty;
-          }).key
+                  return element.key.allMatches(m[0]!).isNotEmpty;
+                }).key
               : '';
           if (deleteOnBack!) {
             if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
@@ -163,16 +166,24 @@ class TextFieldController extends TextEditingController {
       return TextSpan(style: style, children: children);
     }
 
-    final TextStyle composingStyle = style?.merge(const TextStyle(decoration: TextDecoration.underline))
-        ?? const TextStyle(decoration: TextDecoration.underline);
+    final TextStyle composingStyle =
+        style?.merge(const TextStyle(decoration: TextDecoration.underline)) ??
+            const TextStyle(decoration: TextDecoration.underline);
     return TextSpan(
       children: <TextSpan>[
-        TextSpan(style: style, children: buildRegExpSpan(context: context, text: value.composing.textBefore(value.text))),
+        TextSpan(
+            style: style,
+            children: buildRegExpSpan(
+                context: context,
+                text: value.composing.textBefore(value.text))),
         TextSpan(
           style: composingStyle,
           text: value.composing.textInside(value.text),
         ),
-        TextSpan(style: style, children: buildRegExpSpan(context: context, text: value.composing.textAfter(value.text))),
+        TextSpan(
+            style: style,
+            children: buildRegExpSpan(
+                context: context, text: value.composing.textAfter(value.text))),
       ],
     );
   }
@@ -192,8 +203,8 @@ class TextFieldController extends TextEditingController {
 
   List<TextSpan> buildRegExpSpan(
       {required BuildContext context,
-        TextStyle? style,
-        required String? text}) {
+      TextStyle? style,
+      required String? text}) {
     List<TextSpan> children = [];
     if (!(text != null && text.isNotEmpty)) {
       return children;
@@ -205,21 +216,21 @@ class TextFieldController extends TextEditingController {
     RegExp? allRegex;
     allRegex = patternMatchMap != null
         ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "",
-        caseSensitive: regExpCaseSensitive,
-        dotAll: regExpDotAll,
-        multiLine: regExpMultiLine,
-        unicode: regExpUnicode)
+            caseSensitive: regExpCaseSensitive,
+            dotAll: regExpDotAll,
+            multiLine: regExpMultiLine,
+            unicode: regExpUnicode)
         : null;
     // Validating with Strings
     RegExp? stringRegex;
     stringRegex = stringMatchMap != null
         ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\$',
-        caseSensitive: regExpCaseSensitive,
-        dotAll: regExpDotAll,
-        multiLine: regExpMultiLine,
-        unicode: regExpUnicode)
+            caseSensitive: regExpCaseSensitive,
+            dotAll: regExpDotAll,
+            multiLine: regExpMultiLine,
+            unicode: regExpUnicode)
         : null;
-    
+
     text.splitMapJoin(
       stringMatchMap == null ? allRegex! : stringRegex!,
       onNonMatch: (String span) {
@@ -227,13 +238,13 @@ class TextFieldController extends TextEditingController {
             children.isNotEmpty &&
             stringMatchMap!.keys.contains("${children.last.text}$span")) {
           final String? ks =
-          stringMatchMap!["${children.last.text}$span"] != null
-              ? stringMatchMap?.entries.lastWhere((element) {
-            return element.key
-                .allMatches("${children.last.text}$span")
-                .isNotEmpty;
-          }).key
-              : '';
+              stringMatchMap!["${children.last.text}$span"] != null
+                  ? stringMatchMap?.entries.lastWhere((element) {
+                      return element.key
+                          .allMatches("${children.last.text}$span")
+                          .isNotEmpty;
+                    }).key
+                  : '';
 
           children.add(TextSpan(text: span, style: stringMatchMap![ks!]));
           return span.toString();
@@ -250,8 +261,8 @@ class TextFieldController extends TextEditingController {
 
         final String? ks = stringMatchMap?[m[0]] != null
             ? stringMatchMap?.entries.firstWhere((element) {
-          return element.key.allMatches(m[0]!).isNotEmpty;
-        }).key
+                return element.key.allMatches(m[0]!).isNotEmpty;
+              }).key
             : '';
         if (deleteOnBack!) {
           if ((isBack(text!, _lastValue) && m.end == selection.baseOffset)) {

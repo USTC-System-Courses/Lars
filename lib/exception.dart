@@ -13,7 +13,7 @@ class SentenceException implements Exception {
     }
 
     @override
-    String toString() => 'In Sentence \' ' + Exception_String + '\' \n\t' + type.toString() + ': ' + message;
+    String toString() => 'In Sentence \'' + Exception_String + '\' \n\t' + type.toString() + ': ' + message;
 }
 
 class MemoryException implements Exception {

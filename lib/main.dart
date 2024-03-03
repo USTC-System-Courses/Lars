@@ -5,7 +5,7 @@ import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
 import 'package:helloworld/config.dart';
 import 'package:helloworld/exception.dart';
-import 'package:helloworld/frontend.dart';
+import 'package:helloworld/codefield.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
@@ -73,17 +73,17 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<Uint32> breakpoints = [];
 
     TextFieldController _controller = TextFieldController(
-      patternMatchMap: {
-        RegExp(opString):TextStyle(color:Color.fromARGB(255, 5, 107, 245)),
-        RegExp(regString): TextStyle(color:Color.fromARGB(255, 244, 161, 5)),
-        RegExp(immString):TextStyle(color:Color.fromARGB(255, 65, 155, 87)),
+        patternMatchMap: {
+            RegExp(opString):TextStyle(color:Color.fromARGB(255, 5, 107, 245)),
+            RegExp(regString): TextStyle(color:Color.fromARGB(255, 244, 161, 5)),
+            RegExp(immString):TextStyle(color:Color.fromARGB(255, 65, 155, 87)),
 
-      },
-      onMatch: (List<String> matches){
-      },
-      deleteOnBack: false,
-      // You can control the [RegExp] options used:
-      regExpUnicode: true,
+        },
+        onMatch: (List<String> matches){
+        },
+        deleteOnBack: false,
+        // You can control the [RegExp] options used:
+        regExpUnicode: true,
     );
 
     /* build the code text */

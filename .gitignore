@@ -1,5 +1,7 @@
 .dart_tool/
 .idea/
+.metals/
+.vscode/
 android/
 build/
 ios/
