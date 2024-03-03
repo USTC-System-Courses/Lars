@@ -97,12 +97,13 @@ class SyntaxParser {
         } catch(e){
             throw SentenceException(Exception_type.INVALID_IMM, s_regular);
         }
-        if(imm.bitRange(31, 20) != Uint32.zero){
+        if(imm.bitRange(31, 12) != Uint32.zero){
             // 1. lu12i.w rd, imm & 0xfffff000 >> 12
             var imm_1 = imm.bitRange(31, 12);
             package.machine_code = (Uint32_t(0x0C << 25) | (imm_1 << Uint32_t(5)) | rd);
             package.sentence = "LU12I.W " + s_regular_spilt[1] + ", 0x" + imm_1.toSignedInt().toRadixString(16);
             package.type = Ins_type.LU12IW;
+            if(imm.bitRange(11, 0) == Uint32.zero) return;
             // 2. ori rd, rd, imm & 0x00000fff
             var imm_2 = imm.bitRange(11, 0);
             package.machine_code_2 = (Uint32_t(0x0E << 22) | (imm_2 << Uint32_t(10)) | rd << Uint32_t(5) | rd);
@@ -137,7 +138,7 @@ class SyntaxParser {
     Uint32 _parse_reg(Ins_type type){
         Uint32 result = Uint32_t(0);
         if(!without_rd.contains(type)){
-            String rd_s = _rename_register(s_regular_spilt[1]).split("\$")[1].substring(1);
+            String rd_s = _rename_register(s_regular_spilt[1]).replaceAll(RegExp(r'\$'), '').substring(1);
             try{
                 rd = Uint32_t(int.parse(rd_s));
             } catch(e){
@@ -149,7 +150,7 @@ class SyntaxParser {
             result |= rd;
         }
         if(!without_rj.contains(type)){
-            String rj_s = _rename_register(s_regular_spilt[2]).split("\$")[1].substring(1);
+            String rj_s = _rename_register(s_regular_spilt[2]).replaceAll(RegExp(r'\$'), '').substring(1);
             try{
                 rj = Uint32_t(int.parse(rj_s));
             } catch(e){
@@ -161,7 +162,7 @@ class SyntaxParser {
             result |= rj << Uint32_t(5);
         }
         if(!without_rk.contains(type)){
-            String rk_s = _rename_register(s_regular_spilt[3]).split("\$")[1].substring(1);
+            String rk_s = _rename_register(s_regular_spilt[3]).replaceAll(RegExp(r'\$'), '').substring(1);
             try{
                 rk = Uint32_t(int.parse(rk_s));
             } catch(e){
