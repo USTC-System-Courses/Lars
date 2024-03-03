@@ -281,24 +281,28 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     for (int i = 0; i < 10; i++)
                         TableRow(
                             children: [
-                                Container(
-                                    child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                                    decoration: BoxDecoration(border: Border.all(color: Colors.black),),
+                                TableCell(
+                                    child: Container(
+                                        child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+                                        // decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: Colors.black), end: BorderSide(color: Colors.black))),
+                                    ),
+                                    verticalAlignment: TableCellVerticalAlignment.middle,
                                 ),
+                                
                                 for(int j = 0; j < 16; j += 4)
                                     Container(
                                         child: Tooltip(
                                             verticalOffset: 8,
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
-                                            child: TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center,)),
+                                            child: TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
                                         decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                     ),
                             ],
                             decoration: BoxDecoration(
-                                color: (i%2==0)?Color.fromARGB(160, 151, 196, 255):Color.fromARGB(160, 110, 171, 255)
-                            )
+                                color: (i%2==0)?Color.fromARGB(160, 151, 196, 255):Color.fromARGB(160, 110, 171, 255),
+                            ),
                         ),
                 ],
             ),
