@@ -8,6 +8,7 @@ import 'config.dart';
 import './memory.dart';
 import './label.dart';
 import './exception.dart';
+import 'lexparser.dart';
 
 
 class Assembler{
@@ -18,151 +19,108 @@ class Assembler{
     Memory memory = Memory();
     Map<Uint32, SentenceBack> inst_rec = {};
     bool _isEnd = false;
+    LexParser lp = LexParser();
     Assembler(List<String> temp){
         _isEnd = false;
         inst_input = temp;
-        analyze_mode cur_mode = analyze_mode.TEXT;
         Uint32 text_build = Uint32_t(0x1c000000);
         Uint32 data_build = Uint32_t(0x1c800000);
+        // build: mark the current address
+        Uint32 build = text_build;
         for (var element in inst_input){
-            var temp = process(element);
-            if(temp == '') continue;
-            try {
-                if(cur_mode == analyze_mode.TEXT){
-                    var _elem = Sentence(element, temp);
-                    var elem1 = SentenceBack(_elem, false);
-                    _inst.add(elem1);
-                    text_build = text_build.add(4);
-                    if(_elem.isdouble){
-                        var elem2 = SentenceBack(_elem, true);
-                        _inst.add(elem2);
-                        text_build = text_build.add(4);
-                    }
-
-                    // memory.write(text_build, Uint32_t(int.parse(_inst.last.print(), radix: 2)));
-                    // text_build = text_build.add(4);
+            var pkg = lp.Parse(element);
+            if(pkg.is_empty) continue;
+            // sign: execute the opration
+            if(pkg.is_sign){
+                switch(pkg.sign_type){
+                    case Sign_type.TEXT:
+                        data_build = build;
+                        build = text_build;
+                        break;
+                    case Sign_type.DATA:
+                        text_build = build;
+                        build = data_build;
+                        break;
+                    case Sign_type.BYTE:
+                        memory.write(data_build, pkg.sign_item, size: 1);
+                        build = build.add(1);
+                        break;
+                    case Sign_type.HALF:
+                        memory.write(data_build, pkg.sign_item, size: 2);
+                        build = build.add(2);
+                        break;
+                    case Sign_type.WORD:
+                        memory.write(data_build, pkg.sign_item, size: 4);
+                        build = build.add(4);
+                        break;
+                    case Sign_type.SPACE:
+                        for(int i = 0; i < pkg.sign_item.toInt(); i++){
+                            memory.write(data_build, Uint32_t(0), size: 1);
+                        }
+                        build = build.add(pkg.sign_item.toInt());
+                        break;
+                    default: break;
                 }
-                else{
-                    //这里处理数据段的Label
-                    // String temp = process(element);
-                    List<String> temp_spilt = temp.split(' ');
-                    if(temp_spilt.first == '.TEXT:') throw LabelException(temp_spilt);
-                    if(temp_spilt.length != 3) throw SentenceException(Exception_type.INVALID_LABEL, element);
-                    switch (temp_spilt[1]) {
-                        case '.BYTE':
-                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 1);
-                            _label.add(temp_spilt[0], data_build);
-                            data_build = data_build.add(1);
-                            break;
-                        case '.HALF':
-                            if (data_build.isSet(0)) data_build = data_build.add(1);
-                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 2);
-                            _label.add(temp_spilt[0], data_build);
-                            data_build = data_build.add(2);
-                            break;
-                        case '.WORD':
-                            if (data_build.isSet(0)) data_build = data_build.add(1);
-                            if (data_build.isSet(1)) data_build = data_build.add(2);
-                            memory.write(data_build, Uint32_t((int.parse(temp_spilt[2]) & UI32_mask)), size: 4);
-                            _label.add(temp_spilt[0], data_build);
-                            data_build = data_build.add(4);
-                            break;
-                        // case '.DWORD':
-                        //     if (data_build.isSet(0)) data_build = data_build.add(1);
-                        //     if (data_build.isSet(1)) data_build = data_build.add(2);
-                        //     if (data_build.isSet(2)) data_build = data_build.add(4);
-                        //     memory.write(data_build, Uint32_t(int.parse(temp_spilt[2])), size: 8);
-                        //     _label.add(temp_spilt[0], data_build);
-                        //     data_build = data_build.add(8);
-                        //     break;
-                        case '.SPACE':
-                            _label.add(temp_spilt[0], data_build);
-                            for(int i = 0; i < int.parse(temp_spilt[2]); i++){
-                                memory.write(data_build, Uint32_t(0), size: 1);
-                                data_build = data_build.add(1);
-                            }
-                            break;
-                        default:
-                            throw SentenceException(Exception_type.INVALID_LABEL, element);
-                    }
+                continue;
+            }
+            // label: add label to label table
+            if(pkg.is_label){
+                _label.add(pkg.label, build);
+                continue;
+            }
+            // code: add code to inst list
+            if(pkg.is_code){
+                _inst.add(SentenceBack(pkg, false));
+                build = build.add(4);
+                if(pkg.is_double){
+                    _inst.add(SentenceBack(pkg, true));
+                    build = build.add(4);
                 }
-            } on LabelException catch (e) {
-                var spilt = e.Sentence_Spilt;
-                //这里切换模式
-                if(spilt.first == '.DATA:'){
-                    cur_mode = analyze_mode.DATA;
-                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT, element);
-                }
-                else if(spilt.first == '.TEXT:'){
-                    cur_mode = analyze_mode.TEXT;
-                    if (spilt.length != 1) throw SentenceException(Exception_type.INVALID_SEGMENT, element);
-                }
-                //这里处理代码段的Label
-                else{
-                    _label.add(spilt.first, text_build);
-                    var sen_temp = Sentence(element.replaceAll(RegExp(r'^[^:]*:'), ''));
-                    var elem1 = SentenceBack(sen_temp, false);
-                    _inst.add(elem1);
-                    text_build = text_build.add(4);
-                    if(sen_temp.isdouble){
-                        var elem2 = SentenceBack(sen_temp, true);
-                        _inst.add(elem2);
-                        text_build = text_build.add(4);
-                    }
-                    // _inst.add(Sentence(element.replaceAll(RegExp(r'^[^:]*:'), '')));
-                    // _inst.last.addr = text_build;
-                    // memory.write(text_build, Uint32_t((int.parse(_inst.last.print(), radix: 2) & UI32_mask)));
-                    // text_build = text_build.add(4);
-                }
+                continue;
             }
         }
-        text_build = Uint32_t(0x1c000000);
+        build = Uint32_t(0x1c000000);
+        // redirect and write inst
         for (var element in _inst) {
-            element.addr = text_build;
-            if((with_label.contains(element.type)) || element.gen_by_lalocal){
-                var addr = _label.find(element.sentence_spilt.last);//标签的地址
-                var valid = judge(element, addr);
-                if(valid){
-                    var pc_offset = Uint32_t(element.addr - addr);
-                    var absolute  = addr;
-                    if(with_label16.contains(element.type)) {
-                        element.machine_code |= pc_offset.bitRange(17, 2) << Uint32_t(10);
-                    }
-                    else if(with_label26.contains(element.type)){
-                        element.machine_code |= pc_offset.bitRange(17, 2) << Uint32_t(10);
-                        element.machine_code |= pc_offset.bitRange(27, 18);
-                    }
-                    else{
-                        if(element.type == Ins_type.LU12IW){
-                            element.machine_code |= absolute.bitRange(31, 12) << Uint32_t(5);
-                            element.sentence_spilt[2] = '0x' + absolute.bitRange(31, 12).toInt().toRadixString(16);
-                            element.sentence = element.sentence_spilt.join(' ');
-                        }else{
-                            element.machine_code |= absolute.bitRange(11, 0) << Uint32_t(10);
-                            element.sentence_spilt[3] = '0x' + absolute.bitRange(11, 0).toInt().toRadixString(16);
-                            element.sentence = element.sentence_spilt.join(' ');
-                        }
+            if(element.has_label){
+                var addr = _label.find(element.label); // throw exception in it
+                if(!addr_range_check(element.type, addr, build)){
+                    throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
+                }
+                var pc_offset = Uint32_t(addr - build);
+                if(with_label16.contains(element.type)){
+                    element.machine_code |= pc_offset.bitRange(17, 2) << Uint32_t(10);
+                }
+                else if(with_label26.contains(element.type)){
+                    element.machine_code |= pc_offset.bitRange(17, 2) << Uint32_t(10);
+                    element.machine_code |= pc_offset.bitRange(27, 18);
+                }
+                else{
+                    if(element.type == Ins_type.LU12IW){
+                        element.machine_code |= addr.bitRange(31, 12) << Uint32_t(5);
+                        element.sentence += '0x' + addr.bitRange(31, 12).toInt().toRadixString(16);
+                    }else{
+                        element.machine_code |= addr.bitRange(11, 0) << Uint32_t(10);
+                        element.sentence += '0x' + addr.bitRange(11, 0).toInt().toRadixString(16);
                     }
                 }
-                else throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
             }
-            if(element.type != Ins_type.NULL){
-                memory.write(text_build, Uint32_t(int.parse(element.print(), radix: 2)));
-                if(inst_rec.containsKey(text_build)){
-                    inst_rec[text_build] = element;
-                }
-                else inst_rec.putIfAbsent(text_build, () => (element));
-                text_build = text_build.add(4);
-                _machine_code.add(element.print());
+            memory.write(build, Uint32_t(int.parse(element.print(), radix: 2)));
+            if(inst_rec.containsKey(build)){
+                inst_rec[build] = element;
             }
+            else inst_rec.putIfAbsent(build, () => (element));
+            build = build.add(4);
+            _machine_code.add(element.print());
         }
     }
 
-    bool judge(SentenceBack a, Uint32 addr){
-        if (with_label16.contains(a.type) && ((a.addr - addr) > -(1 << 15) || (a.addr - addr) < (1 << 15) - 1)) return true;
-        else if (with_label26.contains(a.type) && ((a.addr - addr) > -(1 << 25) || (a.addr - addr) < (1 << 25) - 1)) return true;
-        else if(a.gen_by_lalocal) return true;
-        else return false;
+    bool addr_range_check(Ins_type type, Uint32 addr, Uint32 build){
+        if (with_label16.contains(type) && !((build - addr) > -(1 << 15) || (build - addr) < (1 << 15) - 1)) return false;
+        else if (with_label26.contains(type) && !((build - addr) > -(1 << 25) || (build - addr) < (1 << 25) - 1)) return false;
+        // else if(a.gen_by_lalocal) return true;
+        // else return false;
+        else return true;
     }
 
     List<Uint32> reg = List.filled(32, Uint32.zero);
@@ -505,351 +463,47 @@ String reg_name(int reg){
         default: return '';
     }
 }
-
-String process(String temp){
-    temp = temp.replaceAll(RegExp(r'#.*'), '');
-    if(temp == '') return '';
-    //将逗号替换为空格
-    temp = temp.replaceAll(RegExp(r','), ' ');
-
-    //将所有制表符替换为空格
-    temp = temp.replaceAll(RegExp(r'\t'), ' ');
-    //将多个空格替换为一个空格
-    temp = temp.replaceAll(RegExp(r' +'), ' ');
-    //将开头空格删除
-    temp = temp.replaceAll(RegExp(r'^ +'), '');
-
-    //将所有小写字母替换为大写字母
-    temp = temp.toUpperCase();
-    //保留代码段和数据段的标识符
-    temp = temp.replaceAll(RegExp(r'.DATA'), '\$DATA');
-    temp = temp.replaceAll(RegExp(r'.TEXT'), '\$TEXT');
-    temp = temp.replaceAll(RegExp(r'.BYTE'), '\$BYTE');
-    temp = temp.replaceAll(RegExp(r'.HALF'), '\$HALF');
-    temp = temp.replaceAll(RegExp(r'.WORD'), '\$WORD');
-    // temp = temp.replaceAll(RegExp(r'.DWORD'), '\$DWORD');
-    temp = temp.replaceAll(RegExp(r'.SPACE'), '\$SPACE');
-    //将所有点(.)删除
-    temp = temp.replaceAll(RegExp(r'\.'), '');//TODO: ADDW这种可能会遮掩问题
-    //还原代码段/数据段的标识符
-    temp = temp.replaceAll(RegExp(r'\$DATA'), '.DATA:');
-    temp = temp.replaceAll(RegExp(r'\$TEXT'), '.TEXT:');
-    temp = temp.replaceAll(RegExp(r'\$BYTE'), '.BYTE');
-    temp = temp.replaceAll(RegExp(r'\$HALF'), '.HALF');
-    temp = temp.replaceAll(RegExp(r'\$WORD'), '.WORD');
-    // temp = temp.replaceAll(RegExp(r'$DWORD'), '.DWORD');
-    temp = temp.replaceAll(RegExp(r'\$SPACE'), '.SPACE');
-    return temp;
-}
 class SentenceBack{
     String       sentence_ori        = '';
     String       sentence            = '';
-    List<String> sentence_spilt      = [];
     Uint32       machine_code        = Uint32_t(0);
-    Uint32       addr                = Uint32_t(0);
     Ins_type     type                = Ins_type.NULL;
-    bool         gen_by_lalocal      = false;
+    bool         is_code             = false;
+    bool         is_label            = false;
+    bool         has_label           = false;
+    String       label               = '';
+    bool         is_sign             = false;
+    Uint32       sign_item           = Uint32_t(0);
+    Sign_type    sign_type           = Sign_type.TEXT;
 
-    SentenceBack(Sentence s, bool use2){
+    SentenceBack(LexPackage l, bool use2){
         if(!use2){
-            sentence_ori    = s.sentence_ori;
-            sentence        = s.sentence;
-            sentence_spilt  = s.sentence_spilt;
-            machine_code    = s._machine_code_i;
-            addr            = s.addr;
-            type            = s.type;
-            gen_by_lalocal  = s.gen_by_lalocal;
+            sentence_ori    = l.sentence_ori;
+            sentence        = l.sentence;
+            machine_code    = l.machine_code;
+            type            = l.type;
+            is_code         = l.is_code;
+            is_label        = l.is_label;
+            has_label       = l.has_label;
+            label           = l.label;
+            is_sign         = l.is_sign;
+            sign_item       = l.sign_item;
+            sign_type       = l.sign_type;
         }else{
-            sentence_ori    = s.sentence_ori;
-            sentence        = s.sentence_2;
-            sentence_spilt  = s.sentence_spilt_2;
-            machine_code    = s._machine_code_i_2;
-            addr            = s.addr;
-            type            = s.type_2;
-            gen_by_lalocal  = s.gen_by_lalocal;
+            sentence_ori    = l.sentence_2_ori;
+            sentence        = l.sentence_2;
+            machine_code    = l.machine_code_2;
+            type            = l.type_2;
+            is_code         = l.is_code;
+            is_label        = l.is_label;
+            has_label       = l.has_label;
+            label           = l.label;
+            is_sign         = l.is_sign;
+            sign_item       = l.sign_item;
+            sign_type       = l.sign_type;
         }
     }
     String print(){
         return machine_code.toBinaryPadded();
     }
-}
-
-class Sentence{
-    String          sentence_ori            = '';                           //输入的汇编指令(原始)
-    String          sentence                = '';                               //输入的汇编指令(经处理)
-    Uint32          _machine_code_i         = Uint32_t(0);                  //输出的机器码
-    
-    Ins_type        type                    = Ins_type.NULL;                       //指令类型
-    List<String>    sentence_spilt          = [];                   //将输入的汇编指令按空格分词结果
-    Uint32          rd                      = Uint32_t(0);
-    Uint32          rj                      = Uint32_t(0);
-    Uint32          rk                      = Uint32_t(0);  //寄存器编号
-    Uint32          imm                     = Uint32_t(0);                             //立即数
-    bool            gen_by_lalocal          = false;
-    
-    Uint32          addr                    = Uint32_t(0);                            //指令所在内存地址
-
-    bool            isdouble                = false;
-
-    // some inst has two basic inst
-    String          sentence_2              = '';
-    List<String>    sentence_spilt_2        = [];
-    Uint32          _machine_code_i_2       = Uint32_t(0);
-    Ins_type        type_2                  = Ins_type.NULL;       
-    
-    Uint32          rd_2                    = Uint32_t(0);
-    Uint32          rj_2                    = Uint32_t(0);
-    Uint32          rk_2                    = Uint32_t(0);
-    Uint32          imm_2                   = Uint32_t(0);
-    
-
-    Sentence(this.sentence_ori, [processed_sentence]){
-        if(processed_sentence == null){
-            sentence = process(sentence_ori);
-        }else{
-            sentence = processed_sentence;
-        }
-        // sentence = process(sentence_ori);
-        // if(sentence_ori == '') return;
-
-        //将寄存器别名改为标准写法
-        sentence = _rename_register(sentence);
-        //判断指令类型的合法性并赋值
-        sentence_spilt = sentence.split(' ');
-        if(!Ins_type.values.map((inst) => inst.toString()).contains('Ins_type.' + sentence_spilt.first)) {
-            if(sentence_spilt.first == '.DATA:' || sentence_spilt.first == '.TEXT:') throw LabelException(sentence_spilt);
-            else if(RegExp(r'\.?[A-Za-z0-9_]+:').hasMatch(sentence_spilt.first)) throw LabelException(sentence_spilt);
-            else throw SentenceException(Exception_type.UNKNOWN_INST, this.sentence_ori);
-        }
-        type = Ins_type.values.byName(sentence_spilt.first);
-        _machine_code_i = opcode_gen();
-        _machine_code_i |= reg_gen();
-        _machine_code_i |= imm_gen();
-
-        if(type == Ins_type.LIW){
-            liw_gen();
-        }
-        if(type == Ins_type.LALOCAL){
-            lalocal_gen();
-        }
-    }
-
-    String print(){
-        return _machine_code_i.toBinaryPadded();
-    }
-
-    
-    String _rename_register(String inst){
-        String res = inst;
-        res = res.replaceAll(r'$ZERO', r'$R0');
-        res = res.replaceAll(r'$RA', r'$R1');
-        res = res.replaceAll(r'$TP', r'$R2');
-        res = res.replaceAll(r'$SP', r'$R3');
-        res = res.replaceAll(r'$A0', r'$R4');
-        res = res.replaceAll(r'$A1', r'$R5');
-        res = res.replaceAll(r'$A2', r'$R6');
-        res = res.replaceAll(r'$A3', r'$R7');
-        res = res.replaceAll(r'$A4', r'$R8');
-        res = res.replaceAll(r'$A5', r'$R9');
-        res = res.replaceAll(r'$A6', r'$R10');
-        res = res.replaceAll(r'$A7', r'$R11');
-        res = res.replaceAll(r'$T0', r'$R12');
-        res = res.replaceAll(r'$T1', r'$R13');
-        res = res.replaceAll(r'$T2', r'$R14');
-        res = res.replaceAll(r'$T3', r'$R15');
-        res = res.replaceAll(r'$T4', r'$R16');
-        res = res.replaceAll(r'$T5', r'$R17');
-        res = res.replaceAll(r'$T6', r'$R18');
-        res = res.replaceAll(r'$T7', r'$R19');
-        res = res.replaceAll(r'$T8', r'$R20');
-        res = res.replaceAll(r'$FP', r'$R22');
-        res = res.replaceAll(r'$S9', r'$R22');
-        res = res.replaceAll(r'$S0', r'$R23');
-        res = res.replaceAll(r'$S1', r'$R24');
-        res = res.replaceAll(r'$S2', r'$R25');
-        res = res.replaceAll(r'$S3', r'$R26');
-        res = res.replaceAll(r'$S4', r'$R27');
-        res = res.replaceAll(r'$S5', r'$R28');
-        res = res.replaceAll(r'$S6', r'$R29');
-        res = res.replaceAll(r'$S7', r'$R30');
-        res = res.replaceAll(r'$S8', r'$R31');
-        return res;
-    }
-    
-    Uint32 opcode_gen(){
-        switch (type) {
-            case Ins_type.NOP:       return Uint32_t(0x0A << 20);
-            case Ins_type.ADDW:      return Uint32_t(0x00100 << 12);
-            case Ins_type.SUBW:      return Uint32_t(0x00110 << 12);
-            case Ins_type.SLT:       return Uint32_t(0x00120 << 12);
-            case Ins_type.SLTU:      return Uint32_t(0x00128 << 12);
-            case Ins_type.NOR:       return Uint32_t(0x00140 << 12);
-            case Ins_type.AND:       return Uint32_t(0x00148 << 12); 
-            case Ins_type.OR:        return Uint32_t(0x00150 << 12);
-            case Ins_type.XOR:       return Uint32_t(0x00158 << 12);  
-            case Ins_type.SLLW:      return Uint32_t(0x00170 << 12);
-            case Ins_type.SRLW:      return Uint32_t(0x00178 << 12);  
-            case Ins_type.SRAW:      return Uint32_t(0x00180 << 12);
-            case Ins_type.MULW:      return Uint32_t(0x001C0 << 12);    
-            case Ins_type.MULHW:     return Uint32_t(0x001C8 << 12);
-            case Ins_type.MULHWU:    return Uint32_t(0x001D0 << 12);
-            case Ins_type.DIVW:      return Uint32_t(0x00200 << 12);
-            case Ins_type.MODW:      return Uint32_t(0x00208 << 12);
-            case Ins_type.DIVWU:     return Uint32_t(0x00210 << 12);
-            case Ins_type.MODWU:     return Uint32_t(0x00218 << 12);
-            case Ins_type.SLLIW:     return Uint32_t(0x00408 << 12);
-            case Ins_type.SRLIW:     return Uint32_t(0x00448 << 12);
-            case Ins_type.SRAIW:     return Uint32_t(0x00488 << 12);
-            case Ins_type.SLTI:      return Uint32_t(0x08 << 22);
-            case Ins_type.SLTUI:     return Uint32_t(0x09 << 22);
-            case Ins_type.ADDIW:     return Uint32_t(0x0A << 22);
-            case Ins_type.ANDI:      return Uint32_t(0x0D << 22);
-            case Ins_type.ORI:       return Uint32_t(0x0E << 22);
-            case Ins_type.XORI:      return Uint32_t(0x0F << 22);
-            case Ins_type.LU12IW:    return Uint32_t(0x0C << 25);
-            case Ins_type.PCADDU12I: return Uint32_t(0x0E << 25);
-            case Ins_type.LDB:       return Uint32_t(0xA0 << 22);
-            case Ins_type.LDH:       return Uint32_t(0xA1 << 22);
-            case Ins_type.LDW:       return Uint32_t(0xA2 << 22);
-            case Ins_type.STB:       return Uint32_t(0xA4 << 22);
-            case Ins_type.STH:       return Uint32_t(0xA5 << 22);
-            case Ins_type.STW:       return Uint32_t(0xA6 << 22);
-            case Ins_type.LDBU:      return Uint32_t(0xA8 << 22);
-            case Ins_type.LDHU:      return Uint32_t(0xA9 << 22);
-            case Ins_type.JIRL:      return Uint32_t(0x13 << 26);  
-            case Ins_type.B:         return Uint32_t(0x14 << 26);
-            case Ins_type.BL:        return Uint32_t(0x15 << 26);    
-            case Ins_type.BEQ:       return Uint32_t(0x16 << 26);
-            case Ins_type.BNE:       return Uint32_t(0x17 << 26);
-            case Ins_type.BLT:       return Uint32_t(0x18 << 26);
-            case Ins_type.BGE:       return Uint32_t(0x19 << 26);
-            case Ins_type.BLTU:      return Uint32_t(0x1A << 26);
-            case Ins_type.BGEU:      return Uint32_t(0x1B << 26);
-            case Ins_type.BREAK:     return Uint32_t(0x54 << 15);
-            default:                 return Uint32_t(0);
-        }
-    }
-    
-    Uint32 reg_gen(){
-        Uint32 result = Uint32_t(0);
-        if(!without_rd.contains(type)) {
-            try{
-                rd = Uint32_t(int.parse(sentence_spilt[1].substring(2)));
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
-            }
-            if(rd > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
-            result |= rd;
-        } 
-        if(!without_rj.contains(type)) {
-            try{
-                rj = Uint32_t(int.parse(sentence_spilt[2].substring(2)));
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
-            }
-            if(rj > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
-            result |= (rj << Uint32_t(5));
-        }
-        if(!without_rk.contains(type)) {
-            try{
-                rk = Uint32_t(int.parse(sentence_spilt[3].substring(2)));
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_REGNAME, this.sentence_ori);
-            }
-            if(rk > Uint32_t(31)) throw SentenceException(Exception_type.REG_OUT_OF_RANGE, this.sentence_ori);
-            result |= (rk << Uint32_t(10));
-        }
-        return result;
-    }
-    
-    Uint32 imm_gen(){
-        if(with_ui5.contains(type)) {
-            try{
-                imm = Uint32_t(int.parse(sentence_spilt[3]));
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
-            }
-            if(imm > Uint32_t(31)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            return (imm << Uint32_t(10));
-        }
-        if(with_ui12.contains(type)) {
-            try{
-                imm = Uint32_t(int.parse(sentence_spilt[3]) & 0xfff);
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
-            }
-            return (imm << Uint32_t(10));
-        }
-        if(with_si12.contains(type)) {
-            try{
-                imm = Uint32_t(int.parse(sentence_spilt[3])& 0xfff);
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
-            }
-            return (imm << Uint32_t(10));
-        }
-        if(with_si20.contains(type)){
-            var temp_int = 0;
-            try{
-                temp_int = int.parse(sentence_spilt[2]);
-            } catch (e) {
-                throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
-            }
-            temp_int = temp_int.replaceBitRange(63, 32, 0);
-            imm = Uint32_t(temp_int & 0xfffff);
-            // if(imm > Uint32_t(0xfffff)) throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, this.sentence_ori);
-            return (imm << Uint32_t(5));
-        }
-        return Uint32_t(0);
-    }
-    
-    void liw_gen(){
-        try{
-            imm = Uint32_t(int.parse(sentence_spilt[2]));
-        } catch (e) {
-            throw SentenceException(Exception_type.INVALID_IMM, this.sentence_ori);
-        }
-        if(imm.bitRange(31, 20) != Uint32_t(0)){
-                // 1. lu12i.w rd, imm & 0xfffff000 >> 12
-                var imm_lu12iw = imm & Uint32_t(0xfffff000) >> Uint32_t(12);
-                _machine_code_i |= (Uint32_t(0x0C << 25) | (imm_lu12iw << Uint32_t(5)));
-                type = Ins_type.LU12IW;
-                sentence = "LU12IW " + sentence_spilt[1] + " 0x" + imm_lu12iw.toSignedInt().toRadixString(16);
-                sentence_spilt = sentence.split(' ');
-
-                // 2. ori rd, rd, imm & 0xfff
-                var imm_ori = imm & Uint32_t(0xfff);
-                _machine_code_i_2 |= Uint32_t(0x0E << 22) | ((rd << Uint32_t(5)) | rd)| (imm_ori << Uint32_t(10));
-                type_2 = Ins_type.ORI;
-                sentence_2 = "ORI " + sentence_spilt[1] + " " + sentence_spilt[1] + " 0x" + imm_ori.toInt().toRadixString(16);
-                sentence_spilt_2 = sentence_2.split(' ');
-                isdouble = true;
-
-            }else{
-                // 2. ori rd, zero, imm & 0xfff
-                var imm_ori = imm & Uint32_t(0xfff);
-                _machine_code_i = Uint32_t(0x0E << 22) | rd | imm_ori << Uint32_t(10);
-                type = Ins_type.ORI;
-                sentence = "ORI " + sentence_spilt[1] + " " + "\$R0" + " 0x" + imm_ori.toSignedInt().toRadixString(16);
-                sentence_spilt = sentence.split(' ');
-            }
-    }
-    
-    void lalocal_gen(){
-        // 1. lu12i.w rd, label
-        type = Ins_type.LU12IW;
-        _machine_code_i |= (Uint32_t(0x0C << 25) | (Uint32_t(0) << Uint32_t(5)));
-        sentence = "LU12IW " + sentence_spilt[1] + " " + sentence_spilt[2];
-        sentence_spilt = sentence.split(' ');
-
-        // 2. ori rd, rd, label
-        type_2 = Ins_type.ORI;
-        _machine_code_i_2 |= Uint32_t(0x0E << 22) | ((rd << Uint32_t(5)) | rd)| (Uint32_t(0) << Uint32_t(10));
-        sentence_2 = "ORI " + sentence_spilt[1] + " " + sentence_spilt[1] + " " + sentence_spilt[2];
-        sentence_spilt_2 = sentence_2.split(' ');
-
-        isdouble = true;
-        gen_by_lalocal = true;
-    }
-    
 }
