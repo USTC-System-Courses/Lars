@@ -1,6 +1,6 @@
 import 'package:binary/binary.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:helloworld/arch.dart';
 import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
@@ -108,6 +108,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
                 ),
+                
             ),
         );
     }
@@ -280,7 +281,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             color: Color.fromARGB(255, 255, 231, 0)
                         )
                     ),
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < 7; i++)
                         TableRow(
                             children: [
                                 TableCell(
@@ -297,17 +298,19 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             verticalOffset: 8,
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
+                                            padding: EdgeInsets.all(0),
                                             // child: UnconstrainedBox(
                                                 child: TextButton(
                                                     onPressed: (){},
                                                     child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
                                                     style: ButtonStyle(
-                                                        // minimumSize: MaterialStateProperty.all(Size(width/20, height/23)),
                                                         visualDensity: VisualDensity.compact,
-                                                    ),
-                                                // ),
-                                            )
-                                            //TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
+                                                        padding: MaterialStateProperty.all(EdgeInsets.zero),
+                                                        minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                    )
+                                                ),
+                                            // )
+                                            //child: TextButton(onPressed: (){}, child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
                                         decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                         // height: height/23,
@@ -474,7 +477,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             SizedBox(height: height / 60,),
                             // memory table
                             Expanded(
-                                flex: 25,
+                                flex: 0,
                                 child: _buildMemoryTable(width, height),
                             ),
                         ],)

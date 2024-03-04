@@ -35,147 +35,138 @@ class Simulator{
                 pc = pc.add(4);
                 break;
             case Ins_type.ADDW:
-                if(rd != 0) reg[rd] = reg[rj] + reg[rk];
+                reg[rd] = reg[rj] + reg[rk];
                 pc = pc.add(4);
                 break;
             case Ins_type.SUBW:
-                if(rd != 0) reg[rd] = Uint32_t((reg[rj] - reg[rk]) & UI32_mask);
+                reg[rd] = Uint32_t((reg[rj] - reg[rk]) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLT:
-                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < reg[rk].toSignedInt() ? Uint32_t(1) : Uint32_t(0);
+                reg[rd] = reg[rj].toSignedInt() < reg[rk].toSignedInt() ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTU:
-                if(rd != 0) reg[rd] = reg[rj] < reg[rk] ? Uint32_t(1) : Uint32_t(0);
+                reg[rd] = reg[rj] < reg[rk] ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.NOR:
-                if(rd != 0) reg[rd] = ~(reg[rj] | reg[rk]);
+                reg[rd] = ~(reg[rj] | reg[rk]);
                 pc = pc.add(4);
                 break;
             case Ins_type.AND:
-                if(rd != 0) reg[rd] = reg[rj] & reg[rk];
+                reg[rd] = reg[rj] & reg[rk];
                 pc = pc.add(4);
                 break;
             case Ins_type.OR:
-                if(rd != 0) reg[rd] = reg[rj] | reg[rk];
+                reg[rd] = reg[rj] | reg[rk];
                 pc = pc.add(4);
                 break;
             case Ins_type.XOR:
-                if(rd != 0) reg[rd] = reg[rj] ^ reg[rk];
+                reg[rd] = reg[rj] ^ reg[rk];
                 pc = pc.add(4);
                 break;
             case Ins_type.SLLW:
-                if(rd != 0) reg[rd] = reg[rj] << (reg[rk].bitRange(4, 0));
-                pc = pc.add(4);
-                break;
-            case Ins_type.SRLW:
-                if(rd != 0) {
-                    if(reg[rk] != Uint32.zero) {
-                        reg[rd] = reg[rj] >> Uint32_t(1);
-                        reg[rd] = reg[rd].clearBit(31);
-                        reg[rd] = reg[rd] >> Uint32_t((reg[rk] - Uint32_t(1)) & UI32_mask);
-                    }
-                    else reg[rd] = reg[rj];
-                }
+                reg[rd] = reg[rj] << (reg[rk].bitRange(4, 0));
                 pc = pc.add(4);
                 break;
             case Ins_type.SRAW:
-                if(rd != 0) reg[rd] = reg[rj] >> (reg[rk]);
+                var sign = reg[rj].getBit(31);
+                Uint32 mask = ~(Uint32_t(sign != 0 ? 0xffffffff : 0) >> reg[rk]);
+                reg[rd] = reg[rj] >> reg[rk];
+                reg[rd] = reg[rd] | mask;
+                pc = pc.add(4);
+                break;
+            case Ins_type.SRLW:
+                reg[rd] = reg[rj] >> (reg[rk]);
                 pc = pc.add(4);
                 break;
             case Ins_type.MULW:
-                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() * reg[rk].toSignedInt() & UI32_mask);
+                reg[rd] = Uint32_t(reg[rj].toSignedInt() * reg[rk].toSignedInt() & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.MULHW:
-                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toSignedInt() * reg[rk].toSignedInt() >> 32) & UI32_mask);
+                reg[rd] = Uint32_t((reg[rj].toSignedInt() * reg[rk].toSignedInt() >> 32) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.MULHWU:
-                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toInt() * reg[rk].toInt() >> 32) & UI32_mask);
+                reg[rd] = Uint32_t((reg[rj].toInt() * reg[rk].toInt() >> 32) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.DIVW:
-                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() ~/ reg[rk].toSignedInt());
+                reg[rd] = Uint32_t(reg[rj].toSignedInt() ~/ reg[rk].toSignedInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.MODW:
-                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toSignedInt() % reg[rk].toSignedInt());
+                reg[rd] = Uint32_t(reg[rj].toSignedInt() % reg[rk].toSignedInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.DIVWU:
-                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toInt() ~/ reg[rk].toInt());
+                reg[rd] = Uint32_t(reg[rj].toInt() ~/ reg[rk].toInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.MODWU:
-                if(rd != 0) reg[rd] = Uint32_t(reg[rj].toInt() % reg[rk].toInt());
+                reg[rd] = Uint32_t(reg[rj].toInt() % reg[rk].toInt());
                 pc = pc.add(4);
                 break;
             case Ins_type.SLLIW:
-                if(rd != 0) reg[rd] = reg[rj] << Uint32_t(ui5);
-                pc = pc.add(4);
-                break;
-            case Ins_type.SRLIW:
-                if(rd != 0) {
-                    if(ui5 != 0){
-                        reg[rd] = reg[rj] >> Uint32_t(1);
-                        reg[rd] = reg[rd].clearBit(31);
-                        reg[rd] = reg[rd] >> Uint32_t(ui5 - 1);
-                    }
-                    else {
-                    reg[rd] = reg[rj];
-                    }
-                }
+                reg[rd] = reg[rj] << Uint32_t(ui5);
                 pc = pc.add(4);
                 break;
             case Ins_type.SRAIW:
-                if(rd != 0) reg[rd] = reg[rj] >> Uint32_t(ui5);
+                var sign = reg[rj].getBit(31);
+                Uint32 mask = ~(Uint32_t(sign != 0 ? 0xffffffff : 0) >> Uint32_t(ui5));
+                
+                reg[rd] = reg[rj] >> (Uint32_t(ui5));
+                reg[rd] = reg[rd] | mask;
+                pc = pc.add(4);
+                break;
+            case Ins_type.SRLIW:
+                reg[rd] = reg[rj] >> Uint32_t(ui5);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTI:
-                if(rd != 0) reg[rd] = reg[rj].toSignedInt() < si12 ? Uint32_t(1) : Uint32_t(0);
+                reg[rd] = reg[rj].toSignedInt() < si12 ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTUI:
-                if(rd != 0) reg[rd] = reg[rj] < Uint32_t(ui12) ? Uint32_t(1) : Uint32_t(0);
+                reg[rd] = reg[rj] < Uint32_t(ui12) ? Uint32_t(1) : Uint32_t(0);
                 pc = pc.add(4);
                 break;
             case Ins_type.ADDIW:
-                if(rd != 0) reg[rd] = Uint32_t((reg[rj].toSignedInt() + si12) & UI32_mask);
+                reg[rd] = Uint32_t((reg[rj].toSignedInt() + si12) & UI32_mask);
                 pc = pc.add(4);
                 break;
             case Ins_type.ANDI:
-                if(rd != 0) reg[rd] = reg[rj] & Uint32_t(ui12);
+                reg[rd] = reg[rj] & Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.ORI:
-                if(rd != 0) reg[rd] = reg[rj] | Uint32_t(ui12);
+                reg[rd] = reg[rj] | Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.XORI:
-                if(rd != 0) reg[rd] = reg[rj] ^ Uint32_t(ui12);
+                reg[rd] = reg[rj] ^ Uint32_t(ui12);
                 pc = pc.add(4);
                 break;
             case Ins_type.LU12IW:
-                if(rd != 0) reg[rd] = Uint32_t(si20) << Uint32_t(12);
+                reg[rd] = Uint32_t(si20) << Uint32_t(12);
                 pc = pc.add(4);
                 break;
             case Ins_type.PCADDU12I:
-                if(rd != 0) reg[rd] = pc.add(si20 << 12);
+                reg[rd] = pc.add(si20 << 12);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDB:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1).signExtend(7);
+                reg[rd] = memory.read(reg[rj].add(si12), size: 1).signExtend(7);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDH:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2).signExtend(15);
+                reg[rd] = memory.read(reg[rj].add(si12), size: 2).signExtend(15);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDW:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 4);
+                reg[rd] = memory.read(reg[rj].add(si12), size: 4);
                 pc = pc.add(4);
                 break;
             case Ins_type.STB:
@@ -191,15 +182,15 @@ class Simulator{
                 pc = pc.add(4);
                 break;
             case Ins_type.LDBU:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 1);
+                reg[rd] = memory.read(reg[rj].add(si12), size: 1);
                 pc = pc.add(4);
                 break;
             case Ins_type.LDHU:
-                if(rd != 0) reg[rd] = memory.read(reg[rj].add(si12), size: 2);
+                reg[rd] = memory.read(reg[rj].add(si12), size: 2);
                 pc = pc.add(4);
                 break;
             case Ins_type.JIRL:
-                if(rd != 0) reg[rd] = pc.add(4);
+                reg[rd] = pc.add(4);
                 pc = reg[rj] + Uint32_t(si16 << 2).signExtend(17);
                 break;
             case Ins_type.B:
@@ -229,6 +220,7 @@ class Simulator{
                 break;
             default: break;
         }
+        reg[0] = Uint32.zero;
     }
     Ins_type get_inst_type(Uint32 ins){
         if(ins.getBit(30) == 1)
@@ -279,11 +271,12 @@ class Simulator{
                 case 0x24: return Ins_type.SLT;
                 case 0x25: return Ins_type.SLTU;
                 case 0x28: return Ins_type.NOR;
-                case 0x29: return Ins_type.OR;
-                case 0x2A: return Ins_type.XOR;
-                case 0x2B: return Ins_type.SLLW;
-                case 0x2E: return Ins_type.SRLW;
-                case 0x2F: return Ins_type.SRAW;
+                case 0x29: return Ins_type.AND;
+                case 0x2A: return Ins_type.OR;
+                case 0x2B: return Ins_type.XOR;
+                case 0x2E: return Ins_type.SLLW;
+                case 0x2F: return Ins_type.SRLW;
+                case 0x30: return Ins_type.SRAW;
                 case 0x38: return Ins_type.MULW;
                 case 0x39: return Ins_type.MULHW;
                 case 0x3A: return Ins_type.MULHWU;
