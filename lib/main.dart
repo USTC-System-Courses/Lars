@@ -281,7 +281,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             color: Color.fromARGB(255, 255, 231, 0)
                         )
                     ),
-                    for (int i = 0; i < 7; i++)
+                    for (int i = 0; i < 10; i++)
                         TableRow(
                             children: [
                                 TableCell(
@@ -299,7 +299,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
                                             padding: EdgeInsets.all(0),
-                                            // child: UnconstrainedBox(
+                                            child: UnconstrainedBox(
                                                 child: TextButton(
                                                     onPressed: (){
                                                         if(breakpoints.contains(Uint32(mem_search + i*16 + j))){
@@ -313,11 +313,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                                     style: ButtonStyle(
                                                         visualDensity: VisualDensity.compact,
                                                         padding: MaterialStateProperty.all(EdgeInsets.zero),
-                                                        minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                        // minimumSize: MaterialStateProperty.all(Size(0, 0)),
                                                         backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
                                                     )
                                                 ),
-                                            // )
+                                            )
                                             //child: TextButton(onPressed: (){}, child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
                                         decoration: BoxDecoration(border: Border.all(color: Colors.black),),
@@ -491,23 +491,23 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     // code write
                     SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 40,
+                        flex: 100,
                         child: _buildCodeText(),
                     ),
                     SizedBox(width: width / 60,),
                     // processor state info
                     Expanded(
-                        flex: 40,
+                        flex: 100,
                         child: Column(children: [
                             // processor state info
                             Expanded(
-                                flex: 20,
+                                flex: 24,
                                 child: _buildProcessorStateInfo(width, height),
                             ),
                             SizedBox(height: height / 60,),
                             // memory table
                             Expanded(
-                                flex: 0,
+                                flex: 30,
                                 child: _buildMemoryTable(width, height),
                             ),
                         ],)
