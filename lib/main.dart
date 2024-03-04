@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
             home: Scaffold(
             appBar: AppBar(
                 leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
-                title: Text('Lars', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 215, 0))),
+                title: Text('LARS', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 215, 0))),
                 backgroundColor: Colors.black,
             ),
             body: Stack(
@@ -107,6 +107,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         border: InputBorder.none,
                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
+                    // style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
                 ),
                 
             ),
@@ -427,7 +428,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('编译'),
             ),
-            width: width / 10,
+            width: width / 16,
         );
         
     }
@@ -450,7 +451,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('单步执行')
             ),
-            width: width / 10,
+            width: width / 16,
         );
     }
     Widget _buildRunButton(double width){
@@ -472,7 +473,29 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('运行')
             ),
-            width: width / 10,
+            width: width / 16,
+        );
+    }
+    Widget _buildStepBackButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    for(int i = 0; i < 32; i++){
+                        reg[i] = sim.reg[i];
+                    }
+                    sim.step_back();
+                    for(int i = 0; i < 32; i++){
+                        // Uint32 a = reg[i], b = asm.reg[i];
+                        reg_change[i] = (reg[i] != sim.reg[i])?true:false;
+                    }
+                    setState(() {});
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                child: Text('单步回退')
+            ),
+            width: width / 16,
         );
     }
 
@@ -531,6 +554,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildSingleStepButton(width),
                             SizedBox(width: width / 60,),
                             _buildRunButton(width),
+                            SizedBox(width: width / 60,),
+                            _buildStepBackButton(width),
                         ],)
                     ),
                     SizedBox(width: width / 60,),

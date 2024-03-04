@@ -22,7 +22,7 @@ Map<String, String> register_rename_table = {
 };
 
 Map<Ins_type, Uint32> opcode_table = {
-    Ins_type.NOP:           Uint32_t(0x0A << 20),
+    Ins_type.NOP:           Uint32_t(0x0A << 22),
     Ins_type.ADDW:          Uint32_t(0x00100 << 12),
     Ins_type.SUBW:          Uint32_t(0x00110 << 12),
     Ins_type.SLT:           Uint32_t(0x00120 << 12),
