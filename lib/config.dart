@@ -171,7 +171,7 @@ enum Sign_type{
     SPACE,
 }
 
-String opString = r"(^|\s+)(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|li\.w|la\.local)(\s+|$)";
+String opString = r"(^|\s+)(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|li\.w|la\.local)";
 String regString = r"(^|\s+)(\$?)([Rr][0-9]+|zero|ra|tp|sp|a[0-7]|t[0-8]|fp|s[0-9])";
 String immString = r"-?[0-9]+";
 

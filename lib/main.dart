@@ -1,4 +1,5 @@
 import 'package:binary/binary.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/arch.dart';
@@ -20,7 +21,9 @@ List<String> temp = [];
 class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
+        
         return MaterialApp(
+            theme: ThemeData(fontFamily: 'FireCode'),
             home: Scaffold(
             appBar: AppBar(
                 leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
@@ -262,27 +265,33 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     /* memory table */
     Widget _buildMemoryTable(double width, double height){
         return Container(
-            width: width*44/60,
-            child: Table(
-                border: TableBorder.all(),
+            // width: width*44/60,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                // color: Color.fromARGB(255, 151, 196, 255)
+            ),
+            child: SingleChildScrollView(child:
+            Table(
+                border: TableBorder.all(color: Colors.black),
                 children: [
                     TableRow(
                         children: [
                             Container(
                                 child: Text('Memory', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                                decoration: BoxDecoration(border: Border.all(color: Colors.black),),
+                                // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                             ),
                             for(int i = 0; i < 16; i += 4)
                                 Container(
                                     child: Text('+${i.toRadixString(16)}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                                    decoration: BoxDecoration(border: Border.all(color: Colors.black),),
+                                    // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                 )
                         ],
                         decoration: BoxDecoration(
                             color: Color.fromARGB(255, 255, 231, 0)
                         )
                     ),
-                    for (int i = 0; i < 7; i++)
+                    for (int i = 0; i < 16; i++)
                         TableRow(
                             children: [
                                 TableCell(
@@ -300,7 +309,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
                                             padding: EdgeInsets.all(0),
-                                            // child: UnconstrainedBox(
+                                            child: UnconstrainedBox(
                                                 child: TextButton(
                                                     onPressed: (){
                                                         if(breakpoints.contains(Uint32(mem_search + i*16 + j))){
@@ -314,14 +323,14 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                                     style: ButtonStyle(
                                                         visualDensity: VisualDensity.compact,
                                                         padding: MaterialStateProperty.all(EdgeInsets.zero),
-                                                        minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                        // minimumSize: MaterialStateProperty.all(Size(0, 0)),
                                                         backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
                                                     )
                                                 ),
-                                            // )
+                                            )
                                             //child: TextButton(onPressed: (){}, child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
-                                        decoration: BoxDecoration(border: Border.all(color: Colors.black),),
+                                        // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                         // height: height/23,
                                     ),
                             ],
@@ -331,7 +340,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         ),
                 ],
             ),
-        );
+        ));
     }
 
     Widget _buildMemoryAddrInput(double width){
@@ -339,7 +348,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             alignment: Alignment.center,
             width: width / 8,
             height: 30,
+            
             child: TextField(
+                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                     isDense: true,
                     hintText: '输入16进制内存地址',
@@ -510,27 +521,28 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             SizedBox(height: height / 60,),
             Expanded(
                 flex: 100,
+                // height: height * 0.82,
                 child: Row(children: [
                     // code write
                     SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 40,
+                        // flex: 100,
                         child: _buildCodeText(),
                     ),
                     SizedBox(width: width / 60,),
                     // processor state info
                     Expanded(
-                        flex: 40,
+                        // flex: 100,
                         child: Column(children: [
                             // processor state info
                             Expanded(
-                                flex: 20,
+                                flex: 24,
                                 child: _buildProcessorStateInfo(width, height),
                             ),
                             SizedBox(height: height / 60,),
                             // memory table
                             Expanded(
-                                flex: 0,
+                                flex: 30,
                                 child: _buildMemoryTable(width, height),
                             ),
                         ],)
@@ -542,10 +554,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             // secode column: tools
             Expanded(
                 flex: 10,
+                // height: height /20,
                 child: Row(children: [
                     SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 40,
+                        // flex: 40,
                         child: Row(children: [
                             // compile button
                             _buildCompileButton(width),
@@ -560,7 +573,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     ),
                     SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 40,
+                        // flex: 40,
                         child: Row(children: [
                             // memory check button
                             _buildMemoryCheckButton(width),
