@@ -347,7 +347,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             alignment: Alignment.center,
             width: width / 8,
             height: 30,
+            
             child: TextField(
+                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                     isDense: true,
                     hintText: '输入16进制内存地址',
