@@ -306,3 +306,42 @@ class TextFieldController extends TextEditingController {
     return children;
   }
 }
+
+
+class InsertTabIntent extends Intent {
+    const InsertTabIntent(this.numSpaces, this.textController);
+    final int numSpaces;
+    final TextEditingController textController;
+}
+
+class InsertTabAction extends Action {
+  @override
+  Object invoke(covariant Intent intent) {
+    if (intent is InsertTabIntent) {
+      // TODO: rewrite value and text 
+      final oldValue = intent.textController.value;
+      final lineoffset = intent.textController.text.substring(0, intent.textController.selection.baseOffset).split('\n').last.length;
+      final offset_space = intent.numSpaces - (lineoffset & (intent.numSpaces-1));
+      final newComposing = TextRange.collapsed(oldValue.composing.start);
+      final newSelection = TextSelection.collapsed(
+          offset: (oldValue.selection.start + offset_space));
+
+      final newText = StringBuffer(oldValue.selection.isValid
+          ? oldValue.selection.textBefore(oldValue.text)
+          : oldValue.text);
+      for (var i = 0; i < offset_space; i++) {
+        newText.write(' ');
+      }
+    //   newText.write('\t');
+      newText.write(oldValue.selection.isValid
+          ? oldValue.selection.textAfter(oldValue.text)
+          : '');
+      intent.textController.value = intent.textController.value.copyWith(
+        composing: newComposing,
+        text: newText.toString(),
+        selection: newSelection,
+      );
+    }
+    return '';
+  }
+}

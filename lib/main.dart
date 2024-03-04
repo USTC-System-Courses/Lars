@@ -12,6 +12,7 @@ import 'package:helloworld/memory.dart';
 import 'package:helloworld/simulator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:helloworld/dump.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
 
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
             // theme: ThemeData(fontFamily: 'FiraCode'),
             home: Scaffold(
             appBar: AppBar(
-                leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
+                leading: Icon(Icons.memory, color: Color.fromARGB(255, 255, 215, 0)),
                 title: Text('LARS', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 215, 0))),
                 backgroundColor: Colors.black,
             ),
@@ -102,18 +103,30 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 color: Color.fromARGB(180, 207, 236, 254),
             ),
             child: SingleChildScrollView(
-                child: TextField(
-                    controller: _controller,
-                    maxLines: null,
-                    minLines: 40,
-                    expands: false,
-                    decoration: InputDecoration(
-                    hintText: '请输入LA32R汇编代码',
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
-                    ),
-                    style: TextStyle(fontFamily: 'FiraCode'),
-                ),
+                child: Column(
+                    children: <Widget>[
+                        Actions(
+                            actions: {InsertTabIntent: InsertTabAction()},
+                            child: Shortcuts(
+                                shortcuts: {
+                                    LogicalKeySet(LogicalKeyboardKey.tab): InsertTabIntent(4, _controller),
+                                },
+                                child: TextField(
+                                    controller: _controller,
+                                    maxLines: null,
+                                    minLines: 40,
+                                    expands: false,
+                                    decoration: InputDecoration(
+                                    hintText: '请输入LA32R汇编代码',
+                                        border: InputBorder.none,
+                                        hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
+                                    ),
+                                    style: TextStyle(fontFamily: 'FiraCode'),
+                                ),
+                            )
+                        )
+                    ]
+                )
                 
             ),
         );
