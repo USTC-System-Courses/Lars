@@ -138,7 +138,7 @@ class SyntaxParser {
     Uint32 _parse_reg(Ins_type type){
         Uint32 result = Uint32_t(0);
         if(!without_rd.contains(type)){
-            String rd_s = _rename_register(s_regular_spilt[1]).replaceAll(RegExp(r'\$'), '').substring(1);
+            String rd_s = _rename_register(s_regular_spilt[1].replaceAll(RegExp(r'\$'), '')).substring(1);
             try{
                 rd = Uint32_t(int.parse(rd_s));
             } catch(e){
@@ -150,7 +150,7 @@ class SyntaxParser {
             result |= rd;
         }
         if(!without_rj.contains(type)){
-            String rj_s = _rename_register(s_regular_spilt[2]).replaceAll(RegExp(r'\$'), '').substring(1);
+            String rj_s = _rename_register(s_regular_spilt[2].replaceAll(RegExp(r'\$'), '')).substring(1);
             try{
                 rj = Uint32_t(int.parse(rj_s));
             } catch(e){
@@ -162,7 +162,7 @@ class SyntaxParser {
             result |= rj << Uint32_t(5);
         }
         if(!without_rk.contains(type)){
-            String rk_s = _rename_register(s_regular_spilt[3]).replaceAll(RegExp(r'\$'), '').substring(1);
+            String rk_s = _rename_register(s_regular_spilt[3].replaceAll(RegExp(r'\$'), '')).substring(1);
             try{
                 rk = Uint32_t(int.parse(rk_s));
             } catch(e){
