@@ -18,15 +18,13 @@ class Assembler{
     Label _label = Label();
     // Memory memory = Memory();
     Map<Uint32, SentenceBack> inst_rec = {};
-    // bool _isEnd = false;
     SyntaxParser lp = SyntaxParser();
     Assembler(List<String> temp){
-        // _isEnd = false;
         inst_input = temp;
         Uint32 text_build = Uint32_t(0x1c000000);
         Uint32 data_build = Uint32_t(0x1c800000);
-        // build: mark the current address
         Uint32 build = text_build;
+        analyze_mode mode = analyze_mode.TEXT;
         for (var element in inst_input){
             var pkg = lp.Parse(element);
             if(pkg.is_empty) continue;
@@ -36,10 +34,12 @@ class Assembler{
                     case Sign_type.TEXT:
                         data_build = build;
                         build = text_build;
+                        mode = analyze_mode.TEXT;
                         break;
                     case Sign_type.DATA:
                         text_build = build;
                         build = data_build;
+                        mode = analyze_mode.DATA;
                         break;
                     case Sign_type.BYTE:
                         memory.write(build, pkg.sign_item, size: 1);
@@ -78,6 +78,15 @@ class Assembler{
                 }
                 continue;
             }
+        }
+        // write the upper bound of text and data
+        if(mode == analyze_mode.TEXT){
+            memory.text_upper = build;
+            memory.data_upper = data_build;
+        }
+        else{
+            memory.data_upper = build;
+            memory.text_upper = text_build;
         }
         build = Uint32_t(0x1c000000);
         // redirect and write inst

@@ -8,6 +8,9 @@ class Memory{
 
     Map<Uint32, Uint8> pmem = {};
 
+    Uint32 text_upper = Uint32.zero;
+    Uint32 data_upper = Uint32.zero;
+
     bool in_pmem(Uint32 addr) {
         return addr >= (CONFIG_PMEM_BASE) && addr < (CONFIG_PMEM_BASE + CONFIG_PMEM_SIZE);
     }
@@ -60,6 +63,21 @@ class Memory{
         return (temp);
     }
     Memory(){}
+
+    String DumpInstCoe(){
+        String res = "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
+        for(Uint32 i = Uint32_t(0x1c000000); i < text_upper; i = i.add(4)){
+            res += read(i).toInt().toRadixString(16).padLeft(8, '0') + ",\n";
+        }
+        return res;
+    }
+    String DumpDataCoe(){
+        String res = "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
+        for(Uint32 i = Uint32_t(0x1c800000); i < data_upper; i = i.add(4)){
+            res += read(i).toInt().toRadixString(16).padLeft(8, '0') + ",\n";
+        }
+        return res;
+    }
 }
 
 Memory memory = Memory();

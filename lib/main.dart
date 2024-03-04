@@ -11,6 +11,7 @@ import 'package:helloworld/codefield.dart';
 import 'package:helloworld/memory.dart';
 import 'package:helloworld/simulator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:helloworld/dump.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
     Widget build(BuildContext context) {
         
         return MaterialApp(
-            theme: ThemeData(fontFamily: 'FireCode'),
+            theme: ThemeData(fontFamily: 'FiraCode'),
             home: Scaffold(
             appBar: AppBar(
                 leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
@@ -70,6 +71,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<String> textLines = [];
     Assembler asm = Assembler([]);
     Simulator sim = Simulator();
+    // DumpCode dp = DumpCode();
     int mem_search = 0x1c000000;
     final ScrollController _scrollController = ScrollController();
     List<String> Warnings = [];
@@ -110,7 +112,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         border: InputBorder.none,
                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
-                    // style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
+                    // style: TextStyle(fontFamily: 'Monospace'),
                 ),
                 
             ),
@@ -510,6 +512,20 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
 
+    Widget _buildDumpTextButton(){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    downloadTxtFile('text.coe', memory.DumpInstCoe());
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                child: Text('导出')
+            ),
+        );
+    }
+
     @override
     Widget build(BuildContext context) {
         final size = MediaQuery.of(context).size;
@@ -580,6 +596,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             SizedBox(width: width / 60,),
                             // memory addr input
                             _buildMemoryAddrInput(width),
+                            SizedBox(width: width / 60,),
+                            // dump text button
+                            _buildDumpTextButton(),
                         ],)
                     ),
                     SizedBox(width: width / 60,),
