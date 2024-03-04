@@ -222,6 +222,13 @@ class Simulator{
         }
         reg[0] = Uint32.zero;
     }
+    void run(Set<Uint32> breakpoints){
+        bool moved = false;
+        while(!_isEnd && (!breakpoints.contains(pc) || !moved)){
+            moved = true;
+            cycle();
+        }
+    }
     Ins_type get_inst_type(Uint32 ins){
         if(ins.getBit(30) == 1)
             switch(ins.bitRange(31, 26).toInt()){

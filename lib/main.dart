@@ -72,7 +72,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<String> Warnings = [];
     List<Uint32> reg = List.filled(32, Uint32.zero);
     List<bool> reg_change = List.filled(32, false);
-    List<Uint32> breakpoints = [];
+    Set<Uint32> breakpoints = {};
 
     TextFieldController _controller = TextFieldController(
         patternMatchMap: {
@@ -301,12 +301,20 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             padding: EdgeInsets.all(0),
                                             // child: UnconstrainedBox(
                                                 child: TextButton(
-                                                    onPressed: (){},
+                                                    onPressed: (){
+                                                        if(breakpoints.contains(Uint32(mem_search + i*16 + j))){
+                                                            breakpoints.remove(Uint32(mem_search + i*16 + j));
+                                                        } else {
+                                                            breakpoints.add(Uint32(mem_search + i*16 + j));
+                                                        }
+                                                        setState(() {});
+                                                    },
                                                     child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
                                                     style: ButtonStyle(
                                                         visualDensity: VisualDensity.compact,
                                                         padding: MaterialStateProperty.all(EdgeInsets.zero),
                                                         minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                        backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
                                                     )
                                                 ),
                                             // )
@@ -445,6 +453,28 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             width: width / 10,
         );
     }
+    Widget _buildRunButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    for(int i = 0; i < 32; i++){
+                        reg[i] = sim.reg[i];
+                    }
+                    sim.run(breakpoints);
+                    for(int i = 0; i < 32; i++){
+                        // Uint32 a = reg[i], b = asm.reg[i];
+                        reg_change[i] = (reg[i] != sim.reg[i])?true:false;
+                    }
+                    setState(() {});
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                child: Text('运行')
+            ),
+            width: width / 10,
+        );
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -499,6 +529,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             SizedBox(width: width / 60,),
                             // single step button
                             _buildSingleStepButton(width),
+                            SizedBox(width: width / 60,),
+                            _buildRunButton(width),
                         ],)
                     ),
                     SizedBox(width: width / 60,),
