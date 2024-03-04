@@ -12,11 +12,8 @@ void downloadTxtFile(String name, String textList) {
 
     // 创建一个 <a> 元素
     var anchor = html.AnchorElement(href: url);
-        // ..setAttribute('download', name)
-        // ..click();
     anchor.setAttribute('download', name);
     anchor.href = url;
-    anchor.download = null;
     anchor.click();
     // 释放 URL 对象
     html.Url.revokeObjectUrl(url);
@@ -24,3 +21,13 @@ void downloadTxtFile(String name, String textList) {
     // 释放 anchor 对象
     anchor.remove();
 }
+
+/* test code
+.data
+a:
+.word 8
+
+.text
+la.local $r1, a
+ld.w $r2, $r1, 0
+*/

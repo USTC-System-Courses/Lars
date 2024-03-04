@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     Widget build(BuildContext context) {
         
         return MaterialApp(
-            theme: ThemeData(fontFamily: 'FiraCode'),
+            // theme: ThemeData(fontFamily: 'FiraCode'),
             home: Scaffold(
             appBar: AppBar(
                 leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
@@ -112,7 +112,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         border: InputBorder.none,
                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                     ),
-                    // style: TextStyle(fontFamily: 'Monospace'),
+                    style: TextStyle(fontFamily: 'FiraCode'),
                 ),
                 
             ),
@@ -441,7 +441,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('编译'),
             ),
-            width: width / 16,
+            width: width / 10,
         );
         
     }
@@ -464,7 +464,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('单步执行')
             ),
-            width: width / 16,
+            width: width / 10,
         );
     }
     Widget _buildRunButton(double width){
@@ -486,7 +486,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('运行')
             ),
-            width: width / 16,
+            width: width / 10,
         );
     }
     Widget _buildStepBackButton(double width){
@@ -508,11 +508,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 child: Text('单步回退')
             ),
-            width: width / 16,
+            width: width / 10,
         );
     }
 
-    Widget _buildDumpTextButton(){
+    Widget _buildDumpTextButton(double width){
         return Container(
             child: ElevatedButton(
                 onPressed: (){
@@ -521,8 +521,24 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('导出')
+                child: Text('导出代码')
             ),
+            width: width / 10,
+        );
+    }
+
+    Widget _buildDumpDataButton(double width){
+        return Container(
+            child: ElevatedButton(
+                onPressed: (){
+                    downloadTxtFile('data.coe', memory.DumpDataCoe());
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                child: Text('导出数据')
+            ),
+            width: width / 10,
         );
     }
 
@@ -589,7 +605,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     ),
                     SizedBox(width: width / 60,),
                     Expanded(
-                        // flex: 40,
+                        // flex: 20,
                         child: Row(children: [
                             // memory check button
                             _buildMemoryCheckButton(width),
@@ -598,7 +614,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildMemoryAddrInput(width),
                             SizedBox(width: width / 60,),
                             // dump text button
-                            _buildDumpTextButton(),
+                            _buildDumpTextButton(width),
+                            SizedBox(width: width / 60,),
+                            // dump data button
+                            _buildDumpDataButton(width),
                         ],)
                     ),
                     SizedBox(width: width / 60,),
