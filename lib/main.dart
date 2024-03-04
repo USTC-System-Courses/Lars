@@ -20,7 +20,9 @@ List<String> temp = [];
 class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
+        
         return MaterialApp(
+            theme: ThemeData(fontFamily: 'FireCode'),
             home: Scaffold(
             appBar: AppBar(
                 leading: Icon(Icons.copyright, color: Color.fromARGB(255, 255, 215, 0)),
