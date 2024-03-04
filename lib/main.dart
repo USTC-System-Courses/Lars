@@ -507,7 +507,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             SizedBox(height: height / 60,),
                             // memory table
                             Expanded(
-                                flex: 30,
+                                flex: 0,
                                 child: _buildMemoryTable(width, height),
                             ),
                         ],)
