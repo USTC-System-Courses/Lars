@@ -61,3 +61,5 @@ class Memory{
     }
     Memory(){}
 }
+
+Memory memory = Memory();

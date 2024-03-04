@@ -1,11 +1,14 @@
 import 'package:binary/binary.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+// import 'package:flutter/widgets.dart';
+import 'package:helloworld/arch.dart';
 import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
 import 'package:helloworld/config.dart';
 import 'package:helloworld/exception.dart';
 import 'package:helloworld/codefield.dart';
+import 'package:helloworld/memory.dart';
+import 'package:helloworld/simulator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
@@ -60,11 +63,10 @@ class MyTextPaginatingWidget extends StatefulWidget {
 // }
 
 class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
-    // TextEditingController _textEditingController = TextFieldController();
-    // late TextFieldController _controller;
     TextEditingController memtext_ctrl = TextEditingController();
     List<String> textLines = [];
     Assembler asm = Assembler([]);
+    Simulator sim = Simulator();
     int mem_search = 0x1c000000;
     final ScrollController _scrollController = ScrollController();
     List<String> Warnings = [];
@@ -98,7 +100,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 child: TextField(
                     controller: _controller,
                     maxLines: null,
-                    minLines: 20,
+                    minLines: 40,
                     expands: false,
                     decoration: InputDecoration(
                     hintText: '请输入LA32R汇编代码',
@@ -114,7 +116,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     Widget _buildPCStateInfo(double width){
         return Container(
             child: Center(
-                child:Text('PC\n0x${asm.pc.toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
+                child:Text('PC\n0x${sim.pc.toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
             ),
             margin: EdgeInsets.only(left: width/60, right: width/60),
             width: width*12/60,
@@ -130,7 +132,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     Widget _buildInstStateInfo(double width){
         return Container(
             child: Center(
-                child:Text('Inst\n${asm.inst_rec[asm.pc]==null?'NOP':asm.inst_rec[asm.pc]!.sentence}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
+                child:Text('Inst\n${asm.inst_rec[sim.pc]==null?'NOP':asm.inst_rec[sim.pc]!.sentence}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
             ),
             width: width*12/60,
             margin: EdgeInsets.only(left: width/60, right: width/60),
@@ -162,7 +164,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         border: Border.all(color: Colors.black),
                                         borderRadius: BorderRadius.all(Radius.circular(6))
                                     ),
-                                    child: Center(child:Text('R${4*i+j} / ' + reg_name(4*i+j) + '\n0x${asm.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
+                                    child: Center(child:Text('R${4*i+j} / ' + register_name[4*i+j] + '\n0x${sim.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
                                 ),
                             ],
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -256,7 +258,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
 
     /* memory table */
-    Widget _buildMemoryTable(double width){
+    Widget _buildMemoryTable(double width, double height){
         return Container(
             width: width*44/60,
             child: Table(
@@ -295,9 +297,20 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                             verticalOffset: 8,
                                             // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
-                                            child: TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
+                                            // child: UnconstrainedBox(
+                                                child: TextButton(
+                                                    onPressed: (){},
+                                                    child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
+                                                    style: ButtonStyle(
+                                                        // minimumSize: MaterialStateProperty.all(Size(width/20, height/23)),
+                                                        visualDensity: VisualDensity.compact,
+                                                    ),
+                                                // ),
+                                            )
+                                            //TextButton(onPressed: (){}, child: Text('0x${asm.memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
                                         decoration: BoxDecoration(border: Border.all(color: Colors.black),),
+                                        // height: height/23,
                                     ),
                             ],
                             decoration: BoxDecoration(
@@ -344,7 +357,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
                     setState(() {});
                 },
-                child: Text('查看内存')
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                child: Text('查看内存'),
             ),
             width: width / 10
         );
@@ -392,8 +408,12 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     }catch(e){
                         print(e);
                     }
+                    sim.reset();
                     
                 },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
                 child: Text('编译'),
             ),
             width: width / 10,
@@ -405,15 +425,18 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             child: ElevatedButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
-                        reg[i] = asm.reg[i];
+                        reg[i] = sim.reg[i];
                     }
-                    asm.cycle();
+                    sim.cycle();
                     for(int i = 0; i < 32; i++){
                         // Uint32 a = reg[i], b = asm.reg[i];
-                        reg_change[i] = (reg[i] != asm.reg[i])?true:false;
+                        reg_change[i] = (reg[i] != sim.reg[i])?true:false;
                     }
                     setState(() {});
                 },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
                 child: Text('单步执行')
             ),
             width: width / 10,
@@ -425,59 +448,70 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         final size = MediaQuery.of(context).size;
         final width = size.width;
         final height = size.height;
-        return Row(children: [
+        return Column(children: [
             // orgnize the items by column
-            // first column: Code write, compile and single step, use two row
-            SizedBox(width: width / 60,),
+            // first column: Code write, state and memory
+            SizedBox(height: height / 60,),
             Expanded(
-                flex: 40,
-                child: Column(children: [
-                    SizedBox(height: height / 60,),
-                    // 1. code write
+                flex: 100,
+                child: Row(children: [
+                    // code write
+                    SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 38,
+                        flex: 40,
                         child: _buildCodeText(),
                     ),
-                    SizedBox(height: height / 60,),
-                    // 2. compile and single step
+                    SizedBox(width: width / 60,),
+                    // processor state info
                     Expanded(
-                        flex: 2,
-                        child: Row(children: [
-                            _buildCompileButton(width),
-                            SizedBox(width: width / 120,),
-                            _buildSingleStepButton(width),
-                            SizedBox(width: width / 30,),
-                            _buildMemoryCheckButton(width),
-                            SizedBox(width: width / 120,),
-                            _buildMemoryAddrInput(width),
-                        ],),
+                        flex: 40,
+                        child: Column(children: [
+                            // processor state info
+                            Expanded(
+                                flex: 20,
+                                child: _buildProcessorStateInfo(width, height),
+                            ),
+                            SizedBox(height: height / 60,),
+                            // memory table
+                            Expanded(
+                                flex: 25,
+                                child: _buildMemoryTable(width, height),
+                            ),
+                        ],)
                     ),
-                    SizedBox(height: height / 60,),
+                    SizedBox(width: width / 60,),
                 ],)
             ),
-            SizedBox(width: width / 60,),
-            // second column: Processor state info, memory table, use two row
+            SizedBox(height: height / 60,),
+            // secode column: tools
             Expanded(
-                flex: 40,
-                child: Column(children: [
-                    SizedBox(height: height / 60,),
-                    // 1. processor state info
+                flex: 10,
+                child: Row(children: [
+                    SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 12,
-                        child: _buildProcessorStateInfo(width, height),
+                        flex: 40,
+                        child: Row(children: [
+                            // compile button
+                            _buildCompileButton(width),
+                            SizedBox(width: width / 60,),
+                            // single step button
+                            _buildSingleStepButton(width),
+                        ],)
                     ),
-                    SizedBox(height: height / 60,),
-                    // 2. memory table
+                    SizedBox(width: width / 60,),
                     Expanded(
-                        flex: 12,
-                        child: _buildMemoryTable(width),
+                        flex: 40,
+                        child: Row(children: [
+                            // memory check button
+                            _buildMemoryCheckButton(width),
+                            SizedBox(width: width / 60,),
+                            // memory addr input
+                            _buildMemoryAddrInput(width),
+                        ],)
                     ),
-                    SizedBox(height: height / 60,),
+                    SizedBox(width: width / 60,),
                 ],)
             ),
-            SizedBox(width: width / 60,),
-            
-        ],);
-        
+        ]);
     }
 }

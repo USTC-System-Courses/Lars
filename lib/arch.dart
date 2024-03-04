@@ -64,5 +64,16 @@ Map<Ins_type, Uint32> opcode_table = {
     Ins_type.BREAK:         Uint32_t(0x54 << 15),
 };
 
+List<String> register_name = [
+    r"ZERO", r"RA", r"TP", r"SP",
+    r"A0", r"A1", r"A2", r"A3",
+    r"A4", r"A5", r"A6", r"A7",
+    r"T0", r"T1", r"T2", r"T3",
+    r"T4", r"T5", r"T6", r"T7",
+    r"S0", r"S1", r"S2", r"S3",
+    r"S4", r"S5", r"S6", r"S7",
+    r"S8", r"S9", r"S10", r"S11",
+];
+
 
 
