@@ -8,17 +8,9 @@ Map<String, String> register_rename_table = {
     r"A4": r"R8", r"A5": r"R9", r"A6": r"R10", r"A7": r"R11",
     r"T0": r"R12", r"T1": r"R13", r"T2": r"R14", r"T3": r"R15",
     r"T4": r"R16", r"T5": r"R17", r"T6": r"R18", r"T7": r"R19",
-    r"S0": r"R20", r"S1": r"R21", r"S2": r"R22", r"S3": r"R23",
-    r"S4": r"R24", r"S5": r"R25", r"S6": r"R26", r"S7": r"R27",
-    r"S8": r"R28", r"S9": r"R29", r"S10": r"R30", r"S11": r"R31",
-    // r"$ZERO": r"R0", r"$RA": r"R1", r"$TP": r"R2", r"$SP": r"R3",
-    // r"$A0": r"R4", r"$A1": r"R5", r"$A2": r"R6", r"$A3": r"R7",
-    // r"$A4": r"R8", r"$A5": r"R9", r"$A6": r"R10", r"$A7": r"R11",
-    // r"$T0": r"R12", r"$T1": r"R13", r"$T2": r"R14", r"$T3": r"R15",
-    // r"$T4": r"R16", r"$T5": r"R17", r"$T6": r"R18", r"$T7": r"R19",
-    // r"$S0": r"R20", r"$S1": r"R21", r"$S2": r"R22", r"$S3": r"R23",
-    // r"$S4": r"R24", r"$S5": r"R25", r"$S6": r"R26", r"$S7": r"R27",
-    // r"$S8": r"R28", r"$S9": r"R29", r"$S10": r"R30", r"$S11": r"R31",
+    r"S0": r"R23", r"S1": r"R24", r"S2": r"R25", r"S3": r"R26",
+    r"S4": r"R27", r"S5": r"R28", r"S6": r"R29", r"S7": r"R30",
+    r"S8": r"R31", r"S9": r"R22", r"FP": r"R22",
 };
 
 Map<Ins_type, Uint32> opcode_table = {
