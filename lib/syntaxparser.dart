@@ -213,7 +213,7 @@ class SyntaxParser {
         }
         if(with_si20.contains(type)){
             try{
-                imm = Uint32_t(int.parse(s_regular_spilt[3]));
+                imm = Uint32_t(int.parse(s_regular_spilt[2]));
             } catch(e){
                 throw SentenceException(Exception_type.INVALID_IMM, s_regular);
             }
