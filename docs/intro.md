@@ -66,7 +66,7 @@ LARS支持LA32R架构的绝大部分**基础整数指令**和一条自定义停�
 |ld.hu rd, rj, imm|rd = Mem[rj + imm]|加载半字并零拓展|
 |jirl rd, rj, *label*|rd = pc + 4; pc = *label*|间接相对跳转并链接|
 |b *label*|pc = *label*|无条件跳转|
-|bl *label*|$ra = pc + 4; pc = *label*|函数（子程序）调用并链接|
+|bl *label*|$RA = pc + 4; pc = *label*|函数（子程序）调用并链接|
 |beq rj, rd, *label*|if (rj == rd) pc = *label*|相等跳转|
 |bne rj, rd, *label*|if (rj != rd) pc = *label*|不等跳转|
 |blt rj, rd, *label*|if (rj.s < rd.s) pc = *label*|有符号小于跳转|
