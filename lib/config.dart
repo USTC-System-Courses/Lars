@@ -49,6 +49,7 @@ enum Ins_type{
     BLTU,
     BGEU,
     BREAK,
+    HALT,
     LIW,
     LALOCAL,
 }
@@ -58,6 +59,7 @@ Set<Ins_type> without_rd = {
     Ins_type.B,
     Ins_type.BL,
     Ins_type.BREAK,
+    Ins_type.HALT,
 },
 without_rj = {
     Ins_type.NOP,
@@ -66,6 +68,7 @@ without_rj = {
     Ins_type.LU12IW,
     Ins_type.PCADDU12I,
     Ins_type.BREAK,
+    Ins_type.HALT,
     Ins_type.LIW,
     Ins_type.LALOCAL,
 },
@@ -100,6 +103,7 @@ without_rk = {
     Ins_type.LDBU,
     Ins_type.LDHU,
     Ins_type.BREAK,
+    Ins_type.HALT,
     Ins_type.LIW,
     Ins_type.LALOCAL,
 },
@@ -171,9 +175,9 @@ enum Sign_type{
     SPACE,
 }
 
-String opString = r"(^|\s+)(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|li\.w|la\.local)";
+String opString = r"(^|\s+)(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|halt|li\.w|la\.local)";
 String regString = r"(^|\s+)(\$?)([Rr][0-9]+|zero|ra|tp|sp|a[0-7]|t[0-8]|fp|s[0-9])";
 String immString = r"-?[0-9]+";
 
-String opcheckString = r"NOP|ADD\.W|SUB\.W|SLT|SLTU|NOR|AND|OR|XOR|SLL\.W|SRL\.W|SRA.W|MUL.W|MULH\.W|MULHU\.W|DIV\.W|MOD\.W|DIVU\.W|MODU\.W|SLLI\.W|SRLI\.W|SRAI\.W|SLTI|SLTIU|ADDI\.W|ANDI|ORI|XORI|LU12I\.W|PCADDU12I|LD\.B|LD\.H|LD\.W|ST\.B|ST\.H|ST\.W|LD\.BU|LD\.HU|JIRL|B|BL|BEQ|BNE|BLT|BGE|BLTU|BGEU|BREAK|LI\.W|LA\.LOCAL";
+String opcheckString = r"NOP|ADD\.W|SUB\.W|SLT|SLTU|NOR|AND|OR|XOR|SLL\.W|SRL\.W|SRA.W|MUL.W|MULH\.W|MULHU\.W|DIV\.W|MOD\.W|DIVU\.W|MODU\.W|SLLI\.W|SRLI\.W|SRAI\.W|SLTI|SLTIU|ADDI\.W|ANDI|ORI|XORI|LU12I\.W|PCADDU12I|LD\.B|LD\.H|LD\.W|ST\.B|ST\.H|ST\.W|LD\.BU|LD\.HU|JIRL|B|BL|BEQ|BNE|BLT|BGE|BLTU|BGEU|BREAK|HALT|LI\.W|LA\.LOCAL";
 

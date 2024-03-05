@@ -32,6 +32,7 @@ class Simulator{
         int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(16)).signExtend(25).toSignedInt():ui26;
         switch(get_inst_type(ins)){
             case Ins_type.BREAK:
+            case Ins_type.HALT:
             case Ins_type.NULL:
                 _isEnd = true;
                 break;
@@ -329,6 +330,8 @@ class Simulator{
         }
     }
     Ins_type get_inst_type(Uint32 ins){
+        if(ins.getBit(31) == 1)
+            return Ins_type.HALT;
         if(ins.getBit(30) == 1)
             switch(ins.bitRange(31, 26).toInt()){
                 case 0x13: return Ins_type.JIRL;
