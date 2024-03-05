@@ -100,7 +100,7 @@ class SyntaxParser {
         if(imm.bitRange(31, 12) != Uint32.zero){
             // 1. lu12i.w rd, imm & 0xfffff000 >> 12
             var imm_1 = imm.bitRange(31, 12);
-            package.machine_code = (Uint32_t(0x0C << 25) | (imm_1 << Uint32_t(5)) | rd);
+            package.machine_code = (Uint32_t(0x0A << 25) | (imm_1 << Uint32_t(5)) | rd);
             package.sentence = "LU12I.W " + s_regular_spilt[1] + ", 0x" + imm_1.toSignedInt().toRadixString(16);
             package.type = Ins_type.LU12IW;
             if(imm.bitRange(11, 0) == Uint32.zero) return;

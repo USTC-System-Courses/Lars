@@ -360,7 +360,7 @@ class Simulator{
             }
         else if (ins.getBit(28) == 1)
             switch(ins.bitRange(31, 25).toInt()){
-                case 0x0C: return Ins_type.LU12IW;
+                case 0x0A: return Ins_type.LU12IW;
                 case 0x0E: return Ins_type.PCADDU12I;
                 default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
             }
