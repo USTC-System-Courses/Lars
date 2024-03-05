@@ -28,8 +28,8 @@ class Simulator{
         int si20 = ins.getBit(24) == 1 ? (ins.bitRange(24, 5).signExtend(19)).toSignedInt():ui20;
         int ui16 = ins.bitRange(25, 10).toInt();
         int si16 = ins.getBit(25) == 1 ? (ins.bitRange(25, 10).signExtend(15)).toSignedInt():ui16;
-        int ui26 = (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(15)).toInt();
-        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + ins.bitRange(9, 0) << Uint32_t(16)).signExtend(25).toSignedInt():ui26;
+        int ui26 = (ins.bitRange(25, 10) + (ins.bitRange(9, 0) << Uint32_t(16))).toInt();
+        int si26 = ins.getBit(9) == 1 ? (ins.bitRange(25, 10) + (ins.bitRange(9, 0) << Uint32_t(16))).signExtend(25).toSignedInt():ui26;
         switch(get_inst_type(ins)){
             case Ins_type.BREAK:
             case Ins_type.HALT:
@@ -320,6 +320,7 @@ class Simulator{
         if(info.mem != null){
             memory.write(info.mem!.$1, info.mem!.$2);
         }
+        _isEnd = false;
         pc = info.pc;
     }
     void run(Set<Uint32> breakpoints){
