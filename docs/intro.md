@@ -27,52 +27,52 @@
 ### 架构指令
 LARS支持LA32R架构的绝大部分**基础整数指令**和一条自定义停机指令，指令定义及说明如下：
 
-|指令格式|指令功能|说明|
-|:---:|:---:|:---:|
-|add.w rd, rj, rk|rd = rj + rk|整数加法|
-|sub.w rd, rj, rk|rd = rj - rk|整数减法|
-|slt rd, rj, rk|rd = (rj.s < rk.s)|有符号整数比较|
-|sltu rd, rj, rk|rd = (rj < rk)|无符号整数比较|
-|and rd, rj, rk|rd = rj & rk|按位与|
-|or rd, rj, rk|rd = rj \| rk|按位或|
-|xor rd, rj, rk|rd = rj ^ rk|按位异或|
-|sll.w rd, rj, rk|rd = rj << rk|逻辑左移|
-|srl.w rd, rj, rk|rd = rj >> rk|逻辑右移|
-|sra.w rd, rj, rk|rd = rj >>> rk|算术右移|
-|mul.w rd, rj, rk|rd = rj * rk|整数乘法|
-|mulh.w rd, rj, rk|rd = (rj.s * rk.s) >> 32|有符号整数乘法，取高32位|
-|mulh.wu rd, rj, rk|rd = (rj * rk) >> 32|无符号整数乘法，取高32位|
-|div.w rd, rj, rk|rd = rj / rk|有符号整数除法|
-|mod.w rd, rj, rk|rd = rj % rk|有符号整数取模|
-|divu.w rd, rj, rk|rd = rj / rk|无符号整数除法|
-|modu.w rd, rj, rk|rd = rj % rk|无符号整数取模|
-|slli.w rd, rj, imm|rd = rj << imm|逻辑左移|
-|srli.w rd, rj, imm|rd = rj >> imm|逻辑右移|
-|srai.w rd, rj, imm|rd = rj >>> imm|算术右移|
-|slti rd, rj, imm|rd = (rj.s < imm.s)|有符号整数比较|
-|sltiu rd, rj, imm|rd = (rj < imm)|无符号整数比较|
-|andi rd, rj, imm|rd = rj & imm|按位与|
-|ori rd, rj, imm|rd = rj \| imm|按位或|
-|xori rd, rj, imm|rd = rj ^ imm|按位异或|
-|lu12i rd, imm|rd = imm << 12|加载高20位立即数|
-|auipc rd, imm|rd = pc + (imm << 12)|加载加上pc的高20位立即数|
-|ld.b rd, rj, imm|rd = SE(Mem[rj + imm])|加载字节并符号拓展|
-|ld.h rd, rj, imm|rd = SE(Mem[rj + imm])|加载半字并符号拓展|
-|ld.w rd, rj, imm|rd = Mem[rj + imm]|加载字|
-|st.b rd, rj, imm|Mem[rj + imm] = rd|存储字节|
-|st.h rd, rj, imm|Mem[rj + imm] = rd|存储半字|
-|st.w rd, rj, imm|Mem[rj + imm] = rd|存储字|
-|ld.bu rd, rj, imm|rd = Mem[rj + imm]|加载字节并零拓展|
-|ld.hu rd, rj, imm|rd = Mem[rj + imm]|加载半字并零拓展|
-|jirl rd, rj, *label*|rd = pc + 4; pc = *label*|间接相对跳转并链接|
-|b *label*|pc = *label*|无条件跳转|
-|bl *label*|$RA = pc + 4; pc = *label*|函数（子程序）调用并链接|
-|beq rj, rd, *label*|if (rj == rd) pc = *label*|相等跳转|
-|bne rj, rd, *label*|if (rj != rd) pc = *label*|不等跳转|
-|blt rj, rd, *label*|if (rj.s < rd.s) pc = *label*|有符号小于跳转|
-|bge rj, rd, *label*|if (rj.s >= rd.s) pc = *label*|有符号大于等于跳转|
-|bltu rj, rd, *label*|if (rj < rd) pc = *label*|无符号小于跳转|
-|bgeu rj, rd, *label*|if (rj >= rd) pc = *label*|无符号大于等于跳转|
+|指令格式|指令功能|说明|RV32I中对应指令|
+|:---:|:---:|:---:|:---:|
+|add.w rd, rj, rk|rd = rj + rk|整数加法|add rd, rs1, rs2|
+|sub.w rd, rj, rk|rd = rj - rk|整数减法|sub rd, rs1, rs2|
+|slt rd, rj, rk|rd = (rj.s < rk.s)|有符号整数比较|slt rd, rs1, rs2|
+|sltu rd, rj, rk|rd = (rj < rk)|无符号整数比较|sltu rd, rs1, rs2|
+|and rd, rj, rk|rd = rj & rk|按位与|and rd, rs1, rs2|
+|or rd, rj, rk|rd = rj \| rk|按位或|or rd, rs1, rs2|
+|xor rd, rj, rk|rd = rj ^ rk|按位异或|xor rd, rs1, rs2|
+|sll.w rd, rj, rk|rd = rj << rk|逻辑左移|sll rd, rs1, rs2|
+|srl.w rd, rj, rk|rd = rj >> rk|逻辑右移|srl rd, rs1, rs2|
+|sra.w rd, rj, rk|rd = rj >>> rk|算术右移|sra rd, rs1, rs2|
+|mul.w rd, rj, rk|rd = rj * rk|整数乘法|mul rd, rs1, rs2|
+|mulh.w rd, rj, rk|rd = (rj.s * rk.s) >> 32|有符号整数乘法，取高32位|mulh rd, rs1, rs2|
+|mulh.wu rd, rj, rk|rd = (rj * rk) >> 32|无符号整数乘法，取高32位|mulhu rd, rs1, rs2|
+|div.w rd, rj, rk|rd = rj / rk|有符号整数除法|div rd, rs1, rs2|
+|mod.w rd, rj, rk|rd = rj % rk|有符号整数取模|rem rd, rs1, rs2|
+|divu.w rd, rj, rk|rd = rj / rk|无符号整数除法|divu rd, rs1, rs2|
+|modu.w rd, rj, rk|rd = rj % rk|无符号整数取模|remu rd, rs1, rs2|
+|slli.w rd, rj, imm|rd = rj << imm|逻辑左移|slli rd, rs1, shamt|
+|srli.w rd, rj, imm|rd = rj >> imm|逻辑右移|srli rd, rs1, shamt|
+|srai.w rd, rj, imm|rd = rj >>> imm|算术右移|srai rd, rs1, shamt|
+|slti rd, rj, imm|rd = (rj.s < imm.s)|有符号整数比较|slti rd, rs1, shamt|
+|sltiu rd, rj, imm|rd = (rj < imm)|无符号整数比较|sltiu rd, rs1, shamt|
+|andi rd, rj, imm|rd = rj & imm|按位与|andi rd, rs1, shamt|
+|ori rd, rj, imm|rd = rj \| imm|按位或|ori rd, rs1, shamt|
+|xori rd, rj, imm|rd = rj ^ imm|按位异或|xori rd, rs1, shamt|
+|lu12i rd, imm|rd = imm << 12|加载高20位立即数|lui rd, imm|
+|auipc rd, imm|rd = pc + (imm << 12)|加载加上pc的高20位立即数|auipc rd, imm|
+|ld.b rd, rj, imm|rd = SE(Mem[rj + imm])|加载字节并符号拓展|lb rd, rs1, imm|
+|ld.h rd, rj, imm|rd = SE(Mem[rj + imm])|加载半字并符号拓展|lh rd, rs1, imm|
+|ld.w rd, rj, imm|rd = Mem[rj + imm]|加载字|lw rd, rs1, imm|
+|st.b rd, rj, imm|Mem[rj + imm] = rd|存储字节|sb rs1, rs2, imm|
+|st.h rd, rj, imm|Mem[rj + imm] = rd|存储半字|sh rs1, rs2, imm|
+|st.w rd, rj, imm|Mem[rj + imm] = rd|存储字|sw rs1, rs2, imm|
+|ld.bu rd, rj, imm|rd = Mem[rj + imm]|加载字节并零拓展|lbu rd, rs1, imm|
+|ld.hu rd, rj, imm|rd = Mem[rj + imm]|加载半字并零拓展|lhu rd, rs1, imm|
+|jirl rd, rj, *label*|rd = pc + 4; pc = *label*|间接相对跳转并链接|jalr rd, offset(rs1)|
+|b *label*|pc = *label*|无条件跳转|j offset(jal x0, offset)|
+|bl *label*|$RA = pc + 4; pc = *label*|函数（子程序）调用并链接|jal rd, offset|
+|beq rj, rd, *label*|if (rj == rd) pc = *label*|相等跳转|beq rs1, rs2, imm|
+|bne rj, rd, *label*|if (rj != rd) pc = *label*|不等跳转|bne rs1, rs2, imm|
+|blt rj, rd, *label*|if (rj.s < rd.s) pc = *label*|有符号小于跳转|blt rs1, rs2, imm|
+|bge rj, rd, *label*|if (rj.s >= rd.s) pc = *label*|有符号大于等于跳转|bge rs1, rs2, imm|
+|bltu rj, rd, *label*|if (rj < rd) pc = *label*|无符号小于跳转|bltu rs1, rs2, imm|
+|bgeu rj, rd, *label*|if (rj >= rd) pc = *label*|无符号大于等于跳转|bgeu rs1, rs2, imm|
 
 > 注：
 > * **rd, rj, rk, rs**为32位整数寄存器，**imm**为32位立即数，***label***为标签。

@@ -281,11 +281,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     Widget _buildMemoryTable(double width, double height){
         return Container(
             // width: width*44/60,
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                // borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                // color: Color.fromARGB(255, 151, 196, 255)
-            ),
+            // decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.black),
+            //     // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            //     // color: Color.fromARGB(255, 151, 196, 255)
+            // ),
             child: SingleChildScrollView(child:
             Table(
                 border: TableBorder.all(color: Colors.black),
@@ -412,6 +412,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     // _textEditingController.value = TextEditingValue(text: text);
                     // Split the text into lines
                     textLines = text.split('\n');
+                    memory = Memory();
                     Warnings = [];
                     reg = List.filled(32, Uint32.zero);
                     reg_change = List.filled(32, false);
