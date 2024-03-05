@@ -175,9 +175,12 @@ enum Sign_type{
     SPACE,
 }
 
-String opString = r"(^|\s+)(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|halt|li\.w|la\.local)";
-String regString = r"(^|\s+)(\$?)([Rr][0-9]+|zero|ra|tp|sp|a[0-7]|t[0-8]|fp|s[0-9])";
-String immString = r"-?[0-9]+";
+String opString = r"\b(nop|add\.w|sub\.w|slt|sltu|nor|and|or|xor|sll\.w|srl\.w|sra.w|mul.w|mulh\.w|mulhu\.w|div\.w|mod\.w|divu\.w|modu\.w|slli\.w|srli\.w|srai\.w|slti|sltiu|addi\.w|andi|ori|xori|lu12i\.w|pcaddu12i|ld\.b|ld\.h|ld\.w|st\.b|st\.h|st\.w|ld\.bu|ld\.hu|jirl|b|bl|beq|bne|blt|bge|bltu|bgeu|break|halt|li\.w|la\.local)\b";
+String signString = r"(\.)(text|data|word|byte|half|space)|((^|\s+)([a-zA-Z_][a-zA-Z0-9_]*):)";
+// String labelString = r"(^|\s+)([a-zA-Z_][a-zA-Z0-9_]*):";
+String regString = r"((\s+)(\$?)([Rr][0-9]+|zero|ra|tp|sp|a[0-7]|t[0-8]|fp|s[0-9])\b)";
+// String immString = r"(\s+)?(0x)?[0-9]+\b";
+
 
 String opcheckString = r"NOP|ADD\.W|SUB\.W|SLT|SLTU|NOR|AND|OR|XOR|SLL\.W|SRL\.W|SRA.W|MUL.W|MULH\.W|MULHU\.W|DIV\.W|MOD\.W|DIVU\.W|MODU\.W|SLLI\.W|SRLI\.W|SRAI\.W|SLTI|SLTIU|ADDI\.W|ANDI|ORI|XORI|LU12I\.W|PCADDU12I|LD\.B|LD\.H|LD\.W|ST\.B|ST\.H|ST\.W|LD\.BU|LD\.HU|JIRL|B|BL|BEQ|BNE|BLT|BGE|BLTU|BGEU|BREAK|HALT|LI\.W|LA\.LOCAL";
 

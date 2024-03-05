@@ -83,8 +83,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     TextFieldController _controller = TextFieldController(
         patternMatchMap: {
             RegExp(opString):TextStyle(color:Color.fromARGB(255, 5, 107, 245)),
-            RegExp(regString): TextStyle(color:Color.fromARGB(255, 244, 161, 5)),
-            RegExp(immString):TextStyle(color:Color.fromARGB(255, 65, 155, 87)),
+            RegExp(regString): TextStyle(color:Color.fromARGB(255, 239, 157, 5)),
+            RegExp(signString):TextStyle(color:Color.fromARGB(255, 65, 155, 87)),
 
         },
         onMatch: (List<String> matches){
