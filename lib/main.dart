@@ -408,7 +408,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         return Container(
             child: ElevatedButton(
                 onPressed: () async {
-                    String text = _controller.text + '\nHALT';
+                    String text = _controller.text + '\n';
                     // _textEditingController.value = TextEditingValue(text: text);
                     // Split the text into lines
                     textLines = text.split('\n');

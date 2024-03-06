@@ -14,7 +14,7 @@ import 'syntaxparser.dart';
 class Assembler{
     List<String> inst_input = [];
     List<SentenceBack> _inst = [];
-    List<String> _machine_code = [];
+    // List<String> _machine_code = [];
     Label _label = Label();
     // Memory memory = Memory();
     Map<Uint32, SentenceBack> inst_rec = {};
@@ -32,12 +32,12 @@ class Assembler{
             if(pkg.is_sign){
                 switch(pkg.sign_type){
                     case Sign_type.TEXT:
-                        data_build = build;
+                        data_build = mode == analyze_mode.TEXT ? build : data_build;
                         build = text_build;
                         mode = analyze_mode.TEXT;
                         break;
                     case Sign_type.DATA:
-                        text_build = build;
+                        text_build = mode == analyze_mode.DATA ? build : text_build;
                         build = data_build;
                         mode = analyze_mode.DATA;
                         break;
@@ -59,7 +59,7 @@ class Assembler{
                         }
                         build = build.add(pkg.sign_item.toInt());
                         break;
-                    default: break;
+                    default: throw SentenceException(Exception_type.INVALID_LABEL, pkg.sentence);
                 }
                 continue;
             }
@@ -120,7 +120,7 @@ class Assembler{
             }
             else inst_rec.putIfAbsent(build, () => (element));
             build = build.add(4);
-            _machine_code.add(element.print());
+            // _machine_code.add(element.print());
         }
     }
 
@@ -130,9 +130,9 @@ class Assembler{
         else return true;
     }
 
-    List<String> print(){
-        return _machine_code;
-    }
+    // List<String> print(){
+    //     return _machine_code;
+    // }
 }
 
 class SentenceBack{

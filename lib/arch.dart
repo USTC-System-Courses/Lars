@@ -62,7 +62,7 @@ Map<Ins_type, Uint32> opcode_table = {
     Ins_type.BLTU:          Uint32_t(0x1A << 26),
     Ins_type.BGEU:          Uint32_t(0x1B << 26),
     Ins_type.BREAK:         Uint32_t(0x54 << 15),
-    Ins_type.HALT:          Uint32_t(0x1  << 30),
+    Ins_type.HALT:          Uint32_t(0x1  << 31),
 };
 
 List<String> register_name = [
