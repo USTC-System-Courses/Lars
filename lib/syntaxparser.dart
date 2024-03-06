@@ -124,7 +124,7 @@ class SyntaxParser {
     // generate la.local
     void _gen_lalocal(){
         // 1. lu12i.w rd, label
-        package.machine_code = (Uint32_t(0x0C << 25) | rd);
+        package.machine_code = (Uint32_t(0x0A << 25) | rd);
         package.sentence = "LU12I.W " + s_regular_spilt[1] + ", ";
         package.type = Ins_type.LU12IW;
         // 2. ori rd, rd, imm & 0x00000fff
@@ -138,7 +138,9 @@ class SyntaxParser {
     Uint32 _parse_reg(Ins_type type){
         Uint32 result = Uint32_t(0);
         if(!without_rd.contains(type)){
-            String rd_s = _rename_register(s_regular_spilt[1].replaceAll(RegExp(r'\$'), '')).substring(1);
+            int rd_pos = 1;
+            if(with_label16.contains(type)) rd_pos = 2;
+            String rd_s = _rename_register(s_regular_spilt[rd_pos].replaceAll(RegExp(r'\$'), '')).substring(1);
             try{
                 rd = Uint32_t(int.parse(rd_s));
             } catch(e){
@@ -150,7 +152,9 @@ class SyntaxParser {
             result |= rd;
         }
         if(!without_rj.contains(type)){
-            String rj_s = _rename_register(s_regular_spilt[2].replaceAll(RegExp(r'\$'), '')).substring(1);
+            int rj_pos = 2;
+            if(with_label16.contains(type)) rj_pos = 1;
+            String rj_s = _rename_register(s_regular_spilt[rj_pos].replaceAll(RegExp(r'\$'), '')).substring(1);
             try{
                 rj = Uint32_t(int.parse(rj_s));
             } catch(e){

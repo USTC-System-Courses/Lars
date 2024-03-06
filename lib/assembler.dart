@@ -97,7 +97,7 @@ class Assembler{
                     throw SentenceException(Exception_type.LABEL_TOO_FAR, element.sentence_ori);
                 }
                 var pc_offset = Uint32_t(addr - build);
-                if(with_label16.contains(element.type)){
+                if(with_label16.contains(element.type) || element.type == Ins_type.JIRL){
                     element.machine_code |= pc_offset.bitRange(17, 2) << Uint32_t(10);
                 }
                 else if(with_label26.contains(element.type)){
@@ -125,7 +125,7 @@ class Assembler{
     }
 
     bool addr_range_check(Ins_type type, Uint32 addr, Uint32 build){
-        if (with_label16.contains(type) && !((build - addr) > -(1 << 15) || (build - addr) < (1 << 15) - 1)) return false;
+        if ((with_label16.contains(type) || type == Ins_type.JIRL) && !((build - addr) > -(1 << 15) || (build - addr) < (1 << 15) - 1)) return false;
         else if (with_label26.contains(type) && !((build - addr) > -(1 << 25) || (build - addr) < (1 << 25) - 1)) return false;
         else return true;
     }

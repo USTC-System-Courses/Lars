@@ -42,7 +42,7 @@ Map<Ins_type, Uint32> opcode_table = {
     Ins_type.ANDI:          Uint32_t(0x0D << 22),
     Ins_type.ORI:           Uint32_t(0x0E << 22),
     Ins_type.XORI:          Uint32_t(0x0F << 22),
-    Ins_type.LU12IW:        Uint32_t(0x0C << 25),
+    Ins_type.LU12IW:        Uint32_t(0x0A << 25),
     Ins_type.PCADDU12I:     Uint32_t(0x0E << 25),
     Ins_type.LDB:           Uint32_t(0xA0 << 22),
     Ins_type.LDH:           Uint32_t(0xA1 << 22),
