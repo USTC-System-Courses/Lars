@@ -215,6 +215,17 @@ class SyntaxParser {
             }
             return (imm << Uint32_t(10)).bitRange(21, 0);
         }
+        if(with_si16.contains(type)){
+            try{
+                imm = Uint32_t(int.parse(s_regular_spilt[3]));
+            } catch(e){
+                throw SentenceException(Exception_type.INVALID_IMM, s_regular);
+            }
+            if(imm.toSignedInt() > 32767 || imm.toSignedInt() < -32768){
+                throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, s_regular);
+            }
+            return (imm << Uint32_t(10)).bitRange(25, 0);
+        }
         if(with_si20.contains(type)){
             try{
                 imm = Uint32_t(int.parse(s_regular_spilt[2]));

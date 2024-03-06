@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
                 leading: Icon(Icons.memory, color: Color.fromARGB(255, 255, 215, 0)),
                 title: Text('LARS', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 215, 0))),
                 backgroundColor: Colors.black,
+                toolbarHeight: 50,
             ),
             body: Stack(
                 children: [
@@ -95,13 +96,14 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     );
 
     /* build the code text */
-    Widget _buildCodeText(){
+    Widget _buildCodeText(double height){
         return Container(
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2.0),
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 color: Color.fromARGB(180, 207, 236, 254),
             ),
+            margin: EdgeInsets.only(top: height/120, bottom: height/120),
             child: SingleChildScrollView(
                 child: Column(
                     children: <Widget>[
@@ -114,7 +116,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                 child: TextField(
                                     controller: _controller,
                                     maxLines: null,
-                                    minLines: 40,
+                                    minLines: 30,
                                     expands: false,
                                     decoration: InputDecoration(
                                     hintText: '请输入LA32R汇编代码',
@@ -127,7 +129,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         )
                     ]
                 )
-                
             ),
         );
     }
@@ -207,7 +208,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 Container(
                     child: Row(
                         children: [
-                            SizedBox(width: width / 240,),
+                            SizedBox(width: width / 40,),
                             // pc
                             _buildPCStateInfo(width),
                             // inst
@@ -385,7 +386,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
     Widget _buildMemoryCheckButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     try{
                         mem_search = int.parse(memtext_ctrl.text, radix: 16);
@@ -398,19 +399,19 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('查看内存'),
+                // child: Text('查看内存'),
+                icon: Icon(Icons.search),
+                tooltip: '查看内存',
             ),
-            width: width / 10
+            // width: width / 10
         );
 
     }
     Widget _buildCompileButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: () async {
                     String text = _controller.text + '\n';
-                    // _textEditingController.value = TextEditingValue(text: text);
-                    // Split the text into lines
                     textLines = text.split('\n');
                     memory = Memory();
                     Warnings = [];
@@ -453,15 +454,18 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('编译'),
+                // child: Text('编译'),
+                icon: Icon(Icons.build, color: Colors.white),
+                tooltip: '编译',
             ),
-            width: width / 10,
+            // width: width / 10,
+            
         );
         
     }
     Widget _buildSingleStepButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
                         reg[i] = sim.reg[i];
@@ -476,14 +480,16 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('单步执行')
+                // child: Text('单步执行')
+                icon: Icon(Icons.arrow_forward, color: Colors.white),
+                tooltip: '单步执行',
             ),
-            width: width / 10,
+            // width: width / 10,
         );
     }
     Widget _buildRunButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
                         reg[i] = sim.reg[i];
@@ -498,14 +504,16 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('运行')
+                // child: Text('运行')
+                icon: Icon(Icons.play_arrow, color: Colors.white),
+                tooltip: '运行',
             ),
-            width: width / 10,
+            // width: width / 10,
         );
     }
     Widget _buildStepBackButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
                         reg[i] = sim.reg[i];
@@ -520,39 +528,45 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('单步回退')
+                // child: Text('单步回退')
+                icon: Icon(Icons.undo, color: Colors.white),
+                tooltip: '单步回退',
             ),
-            width: width / 10,
+            // width: width / 10,
         );
     }
 
     Widget _buildDumpTextButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     downloadTxtFile('text.coe', memory.DumpInstCoe());
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('导出代码')
+                // child: Text('导出代码')
+                icon: Icon(Icons.file_download, color: Colors.white),
+                tooltip: '导出代码',
             ),
-            width: width / 10,
+            // width: width / 10,
         );
     }
 
     Widget _buildDumpDataButton(double width){
         return Container(
-            child: ElevatedButton(
+            child: IconButton(
                 onPressed: (){
                     downloadTxtFile('data.coe', memory.DumpDataCoe());
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
                 ),
-                child: Text('导出数据')
+                // child: Text('导出数据')
+                icon: Icon(Icons.vertical_align_bottom, color: Colors.white),
+                tooltip: '导出数据',
             ),
-            width: width / 10,
+            // width: width / 10,
         );
     }
 
@@ -561,82 +575,68 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         final size = MediaQuery.of(context).size;
         final width = size.width;
         final height = size.height;
-        return Column(children: [
-            // orgnize the items by column
-            // first column: Code write, state and memory
-            SizedBox(height: height / 60,),
-            Expanded(
-                flex: 100,
-                // height: height * 0.82,
-                child: Row(children: [
-                    // code write
-                    SizedBox(width: width / 60,),
-                    Expanded(
-                        // flex: 100,
-                        child: _buildCodeText(),
-                    ),
-                    SizedBox(width: width / 60,),
-                    // processor state info
-                    Expanded(
-                        // flex: 100,
+        return Row(children: [
+                // code write
+                // SizedBox(width: width / 60,),
+                Expanded(
+                    flex: 5,
+                    child: Container(
                         child: Column(children: [
-                            // processor state info
-                            Expanded(
-                                flex: 24,
-                                child: _buildProcessorStateInfo(width, height),
-                            ),
-                            SizedBox(height: height / 60,),
-                            // memory table
-                            Expanded(
-                                flex: 30,
-                                child: _buildMemoryTable(width, height),
-                            ),
-                        ],)
-                    ),
-                    SizedBox(width: width / 60,),
-                ],)
-            ),
-            SizedBox(height: height / 60,),
-            // secode column: tools
-            Expanded(
-                flex: 10,
-                // height: height /20,
-                child: Row(children: [
-                    SizedBox(width: width / 60,),
-                    Expanded(
-                        // flex: 40,
-                        child: Row(children: [
-                            // compile button
+                            SizedBox(height: height / 120,),
                             _buildCompileButton(width),
-                            SizedBox(width: width / 60,),
-                            // single step button
                             _buildSingleStepButton(width),
-                            SizedBox(width: width / 60,),
                             _buildRunButton(width),
-                            SizedBox(width: width / 60,),
                             _buildStepBackButton(width),
-                        ],)
-                    ),
-                    SizedBox(width: width / 60,),
-                    Expanded(
-                        // flex: 20,
-                        child: Row(children: [
-                            // memory check button
-                            _buildMemoryCheckButton(width),
-                            SizedBox(width: width / 60,),
-                            // memory addr input
-                            _buildMemoryAddrInput(width),
-                            SizedBox(width: width / 60,),
-                            // dump text button
                             _buildDumpTextButton(width),
-                            SizedBox(width: width / 60,),
-                            // dump data button
                             _buildDumpDataButton(width),
-                        ],)
-                    ),
-                    SizedBox(width: width / 60,),
-                ],)
-            ),
-        ]);
+                            SizedBox(height: height / 120,),
+                        ],),
+                        decoration: BoxDecoration(
+                            // border: Border.all(color: Colors.black),
+                            // borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            color: Colors.black
+                        ),
+                    )
+                ),
+                SizedBox(width: width / 90,),
+                Expanded(
+                    flex: 80,
+                    child: //Column(children: [
+                        // SizedBox(height: height / 120,),
+                        _buildCodeText(height),
+                        // SizedBox(height: height / 120,),
+                    //])
+                    
+                ),
+                SizedBox(width: width / 60,),
+                // processor state info
+                Expanded(
+                    flex: 100,
+                    child: Column(children: [
+                        // processor state info
+                        SizedBox(height: height / 120,),
+                        Expanded(
+                            flex: 22,
+                            child: _buildProcessorStateInfo(width, height),
+                        ),
+                        // SizedBox(height: height / 120,),
+                        Expanded(
+                            flex: 4,
+                            child: Row(children: [
+                                _buildMemoryCheckButton(width),
+                                _buildMemoryAddrInput(width),
+                                SizedBox(width: width / 60,),
+                            ],)
+                        ),
+                        // memory table
+                        Expanded(
+                            flex: 30,
+                            child: _buildMemoryTable(width, height),
+                        ),
+                        SizedBox(height: height / 120,),
+                    ],)
+                ),
+                SizedBox(width: width / 60,),
+            ],);
     }
 }

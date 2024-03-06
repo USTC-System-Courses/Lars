@@ -130,6 +130,9 @@ with_si12 = {
     Ins_type.LDBU,
     Ins_type.LDHU,
 },
+with_si16 = {
+    Ins_type.JIRL
+},
 with_si20 = {
     Ins_type.LU12IW,
     Ins_type.PCADDU12I,
@@ -159,7 +162,7 @@ with_LDST = {
     Ins_type.LDBU,
     Ins_type.LDHU,
 };
-Set<Ins_type> with_label = ([Ins_type.JIRL] + with_label16.toList() + with_label26.toList() + with_label32.toList()).toSet();
+Set<Ins_type> with_label = (with_label16.toList() + with_label26.toList() + with_label32.toList()).toSet();
 
 enum analyze_mode{
     DATA,
