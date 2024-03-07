@@ -237,7 +237,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     child: Container(
                         child: _buildRegStateInfo(width, height),
                         padding: EdgeInsets.only(top: 1, bottom: 1),
-                        margin: EdgeInsets.only(top: height / 240, bottom: height / 120),
+                        margin: EdgeInsets.only(top: height / 240),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -296,17 +296,19 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             child: SingleChildScrollView(child:
             Table(
                 border: TableBorder.all(color: Colors.black),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
                     TableRow(
+                        // 修改高度
                         children: [
-                            Container(
-                                alignment: Alignment.center,
+                            TableCell(
+                                // verticalAlignment: TableCellVerticalAlignment.middle,
                                 child: Text('Memory', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                 // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                             ),
                             for(int i = 0; i < 16; i += 4)
-                                Container(
-                                    alignment: Alignment.center,
+                                TableCell(
+                                    // verticalAlignment: TableCellVerticalAlignment.middle,
                                     child: Text('+${i.toRadixString(16)}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                     // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                 )
@@ -315,26 +317,23 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             color: Color.fromARGB(255, 255, 231, 0)
                         )
                     ),
-                    for (int i = 0; i < 16; i++)
+                    for (int i = 0; i < height ~/ 80; i++)
                         TableRow(
                             children: [
                                 TableCell(
-                                    child: Container(
-                                        alignment: Alignment.center,
-                                        child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+                                    child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                         // decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: Colors.black), end: BorderSide(color: Colors.black))),
-                                    ),
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    // verticalAlignment: TableCellVerticalAlignment.middle,
                                 ),
                                 
                                 for(int j = 0; j < 16; j += 4)
-                                    Container(
-                                        alignment: Alignment.center,
+                                    TableCell(
+                                        // alignment: Alignment.center,
+                                        // verticalAlignment: TableCellVerticalAlignment.middle,
                                         child: Tooltip(
                                             verticalOffset: 8,
-                                            // 设置边框
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
-                                            padding: EdgeInsets.all(0),
+                                            padding: EdgeInsets.all(1),
                                             child: UnconstrainedBox(
                                                 child: TextButton(
                                                     onPressed: (){
@@ -345,19 +344,17 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                                         }
                                                         setState(() {});
                                                     },
+                                                    
                                                     child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
                                                     style: ButtonStyle(
                                                         visualDensity: VisualDensity.compact,
                                                         padding: MaterialStateProperty.all(EdgeInsets.zero),
-                                                        // minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                        minimumSize: MaterialStateProperty.all(Size(0, 0)),
                                                         backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
                                                     )
                                                 ),
                                             )
-                                            //child: TextButton(onPressed: (){}, child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),)),
                                         ),
-                                        // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
-                                        // height: height/23,
                                     ),
                             ],
                             decoration: BoxDecoration(
@@ -369,11 +366,11 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         ));
     }
 
-    Widget _buildMemoryAddrInput(double width){
+    Widget _buildMemoryAddrInput(double width, double height){
         return Container(
             alignment: Alignment.center,
             width: width / 8,
-            height: 30,
+            height: height / 30,
             
             child: TextField(
                 textAlign: TextAlign.center,
@@ -394,7 +391,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             ),
         );
     }
-    Widget _buildMemoryCheckButton(double width){
+    Widget _buildMemoryCheckButton(double width, double height){
         return Container(
             alignment: Alignment.center,
             child: IconButton(
@@ -412,6 +409,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('查看内存'),
                 icon: Icon(Icons.search),
+                iconSize: height/30,
                 tooltip: '查看内存',
             ),
             // width: width / 10
@@ -638,8 +636,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         Expanded(
                             flex: 4,
                             child: Row(children: [
-                                _buildMemoryCheckButton(width),
-                                _buildMemoryAddrInput(width),
+                                _buildMemoryCheckButton(width, height),
+                                _buildMemoryAddrInput(width, height),
                             ],)
                         ),
                         // memory table
