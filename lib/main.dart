@@ -103,6 +103,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 color: Color.fromARGB(180, 207, 236, 254),
             ),
+            alignment: Alignment.center,
             margin: EdgeInsets.only(top: height/120, bottom: height/120),
             child: SingleChildScrollView(
                 child: Column(
@@ -123,6 +124,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         border: InputBorder.none,
                                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                                     ),
+                                    // inputFormatters: [
+                                    //     // 限制只能输入英文字母和数字
+                                    //     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\n\s\,\.\:\(\)\[\]\+\-\*\/\%\&\|\^\~\!\=\>\<\_\#]+')),
+                                    // ],
                                     style: TextStyle(fontFamily: 'FiraCode'),
                                 ),
                             )
@@ -140,6 +145,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 child:Text('PC\n0x${sim.pc.toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)
             ),
             margin: EdgeInsets.only(left: width/60, right: width/60),
+            alignment: Alignment.center,
             width: width*12/60,
             decoration: BoxDecoration(
                 color: Color.fromARGB(255, 255, 231, 0),
@@ -157,6 +163,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             ),
             width: width*12/60,
             margin: EdgeInsets.only(left: width/60, right: width/60),
+            alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: Color.fromARGB(255, 255, 231, 0),
                 border: Border.all(color: Colors.black),
@@ -215,7 +222,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildInstStateInfo(width),
                         ],
                     ),
-                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(top: height/120, bottom: height/120),
+                    margin: EdgeInsets.only(top: height / 120, bottom: 0),
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -228,12 +237,13 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     child: Container(
                         child: _buildRegStateInfo(width, height),
                         padding: EdgeInsets.only(top: 1, bottom: 1),
-                        margin: EdgeInsets.only(top: 5, bottom: 0),
+                        margin: EdgeInsets.only(top: height / 240, bottom: height / 120),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             color: Color.fromARGB(255, 151, 196, 255)
                         ),
+                        alignment: Alignment.center,
                     ),
                 ),
                 // SizedBox(height: 5,),
@@ -281,12 +291,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     /* memory table */
     Widget _buildMemoryTable(double width, double height){
         return Container(
-            // width: width*44/60,
-            // decoration: BoxDecoration(
-            //     border: Border.all(color: Colors.black),
-            //     // borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            //     // color: Color.fromARGB(255, 151, 196, 255)
-            // ),
+            margin: EdgeInsets.only(bottom: height/120),
+            alignment: Alignment.center,
             child: SingleChildScrollView(child:
             Table(
                 border: TableBorder.all(color: Colors.black),
@@ -294,11 +300,13 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     TableRow(
                         children: [
                             Container(
+                                alignment: Alignment.center,
                                 child: Text('Memory', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                 // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                             ),
                             for(int i = 0; i < 16; i += 4)
                                 Container(
+                                    alignment: Alignment.center,
                                     child: Text('+${i.toRadixString(16)}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                     // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                                 )
@@ -312,6 +320,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             children: [
                                 TableCell(
                                     child: Container(
+                                        alignment: Alignment.center,
                                         child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                         // decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: Colors.black), end: BorderSide(color: Colors.black))),
                                     ),
@@ -320,6 +329,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                 
                                 for(int j = 0; j < 16; j += 4)
                                     Container(
+                                        alignment: Alignment.center,
                                         child: Tooltip(
                                             verticalOffset: 8,
                                             // 设置边框
@@ -386,6 +396,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
     Widget _buildMemoryCheckButton(double width){
         return Container(
+            alignment: Alignment.center,
             child: IconButton(
                 onPressed: (){
                     try{
@@ -536,7 +547,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     elevation: MaterialStateProperty.all(2),
                 ),
                 // child: Text('单步回退')
-                icon: Icon(Icons.undo, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 tooltip: '单步回退',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
@@ -590,36 +601,28 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         final height = size.height;
         return Row(children: [
                 // code write
-                // SizedBox(width: width / 60,),
                 Expanded(
                     flex: 5,
                     child: Container(
                         child: Column(children: [
                             SizedBox(height: height / 120,),
                             _buildCompileButton(width),
-                            _buildSingleStepButton(width),
                             _buildRunButton(width),
+                            _buildSingleStepButton(width),
                             _buildStepBackButton(width),
                             _buildDumpTextButton(width),
                             _buildDumpDataButton(width),
                             SizedBox(height: height / 120,),
                         ],),
                         decoration: BoxDecoration(
-                            // border: Border.all(color: Colors.black),
-                            // borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             color: Colors.black
                         ),
-                        // padding: EdgeInsets.only(right: width / 360),
                     )
                 ),
                 SizedBox(width: width / 90,),
                 Expanded(
                     flex: 80,
-                    child: //Column(children: [
-                        // SizedBox(height: height / 120,),
-                        _buildCodeText(height),
-                        // SizedBox(height: height / 120,),
-                    //])
+                    child: _buildCodeText(height),
                     
                 ),
                 SizedBox(width: width / 60,),
@@ -628,18 +631,15 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     flex: 100,
                     child: Column(children: [
                         // processor state info
-                        SizedBox(height: height / 120,),
                         Expanded(
                             flex: 22,
                             child: _buildProcessorStateInfo(width, height),
                         ),
-                        // SizedBox(height: height / 120,),
                         Expanded(
                             flex: 4,
                             child: Row(children: [
                                 _buildMemoryCheckButton(width),
                                 _buildMemoryAddrInput(width),
-                                SizedBox(width: width / 60,),
                             ],)
                         ),
                         // memory table
@@ -647,7 +647,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             flex: 30,
                             child: _buildMemoryTable(width, height),
                         ),
-                        SizedBox(height: height / 120,),
                     ],)
                 ),
                 SizedBox(width: width / 60,),
