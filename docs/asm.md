@@ -1,4 +1,4 @@
-#  LARS使用手册
+#  汇编语言规范
 
 ## 目录
 
@@ -84,22 +84,22 @@ LARS支持LA32R架构的绝大部分**基础整数指令**和一条自定义停�
 ### 宏指令
 LARS支持LA32R编译器规定的两条宏指令，指令定义及说明如下：
 
-#### 加载32位立即数：li rd, imm
+#### 加载32位立即数：li.w rd, imm
 
 该指令将32位立即数imm加载到寄存器rd中，指令格式如下：
 
 ```assembly
-li rd, imm
+li.w rd, imm
 ```
 
 该指令会尽可能少地转换为lu12i.w和ori指令，最多转换为两条指令。
 
-#### 加载地址：la rd, *label*
+#### 加载地址：la.local rd, *label*
 
 该指令将标签*label*的地址加载到寄存器rd中，指令格式如下：
 
 ```assembly
-la rd, label
+la.local rd, label
 ```
 
 该指令会转换为一条lu12i.w指令和一条ori指令。
@@ -117,6 +117,8 @@ LARS支持LA32R编译器规定的6个标记，标记定义及说明如下：
 |.byte num| 此处存放一个8位立即数num|
 |.half num| 此处存放一个16位立即数num|
 |.space num| 此处存放num个字节的0|
+
+特别需要注意的是：**.word、.byte、.half、.space 只能在.data段中使用。**
 
 ### 标签
 

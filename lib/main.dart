@@ -457,6 +457,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('编译'),
                 icon: Icon(Icons.build, color: Colors.white),
                 tooltip: '编译',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+                // iconSize: width / 60,
             ),
             // width: width / 10,
             
@@ -483,6 +486,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('单步执行')
                 icon: Icon(Icons.arrow_forward, color: Colors.white),
                 tooltip: '单步执行',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
             ),
             // width: width / 10,
         );
@@ -507,6 +512,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('运行')
                 icon: Icon(Icons.play_arrow, color: Colors.white),
                 tooltip: '运行',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
             ),
             // width: width / 10,
         );
@@ -531,6 +538,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('单步回退')
                 icon: Icon(Icons.undo, color: Colors.white),
                 tooltip: '单步回退',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
             ),
             // width: width / 10,
         );
@@ -548,6 +557,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('导出代码')
                 icon: Icon(Icons.file_download, color: Colors.white),
                 tooltip: '导出代码',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
             ),
             // width: width / 10,
         );
@@ -565,6 +576,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 // child: Text('导出数据')
                 icon: Icon(Icons.vertical_align_bottom, color: Colors.white),
                 tooltip: '导出数据',
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
             ),
             // width: width / 10,
         );
@@ -596,6 +609,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             // borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             color: Colors.black
                         ),
+                        // padding: EdgeInsets.only(right: width / 360),
                     )
                 ),
                 SizedBox(width: width / 90,),
