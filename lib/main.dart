@@ -331,6 +331,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         // alignment: Alignment.center,
                                         // verticalAlignment: TableCellVerticalAlignment.middle,
                                         child: Tooltip(
+                                            waitDuration: Duration(seconds: 1),
                                             verticalOffset: 8,
                                             message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
                                             padding: EdgeInsets.all(1),
@@ -417,7 +418,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     }
     Widget _buildCompileButton(double width){
-        return Container(
+        return Tooltip(
+            message: '编译',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: () async {
                     String text = _controller.text + '\n';
@@ -465,7 +468,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('编译'),
                 icon: Icon(Icons.build, color: Colors.white),
-                tooltip: '编译',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
                 // iconSize: width / 60,
@@ -476,7 +478,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         
     }
     Widget _buildSingleStepButton(double width){
-        return Container(
+        return Tooltip(
+            message: '单步执行',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
@@ -494,7 +498,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('单步执行')
                 icon: Icon(Icons.arrow_forward, color: Colors.white),
-                tooltip: '单步执行',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
             ),
@@ -502,7 +505,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
     Widget _buildRunButton(double width){
-        return Container(
+        return Tooltip(
+            message: '运行',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
@@ -520,7 +525,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('运行')
                 icon: Icon(Icons.play_arrow, color: Colors.white),
-                tooltip: '运行',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
             ),
@@ -528,7 +532,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
     Widget _buildStepBackButton(double width){
-        return Container(
+        return Tooltip(
+            message: '单步回退',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
                     for(int i = 0; i < 32; i++){
@@ -546,7 +552,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('单步回退')
                 icon: Icon(Icons.arrow_back, color: Colors.white),
-                tooltip: '单步回退',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
             ),
@@ -555,7 +560,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
 
     Widget _buildDumpTextButton(double width){
-        return Container(
+        return Tooltip(
+            message: '导出代码',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
                     downloadTxtFile('text.coe', memory.DumpInstCoe());
@@ -565,7 +572,6 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('导出代码')
                 icon: Icon(Icons.file_download, color: Colors.white),
-                tooltip: '导出代码',
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
             ),
@@ -574,7 +580,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     }
 
     Widget _buildDumpDataButton(double width){
-        return Container(
+        return Tooltip(
+            message: '导出数据',
+            waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
                     downloadTxtFile('data.coe', memory.DumpDataCoe());
@@ -584,7 +592,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('导出数据')
                 icon: Icon(Icons.vertical_align_bottom, color: Colors.white),
-                tooltip: '导出数据',
+                
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
             ),
