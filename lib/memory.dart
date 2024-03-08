@@ -48,7 +48,7 @@ class Memory{
             var temp = pmem[r_addr];
             return Uint32(temp!.toInt());
         }
-        else throw MemoryException(MEM_EXP_type.MEM_READ_UNINIT);
+        else return Uint32.zero;
     }
 
     int operator [](Uint32 r_addr){
@@ -73,7 +73,7 @@ class Memory{
     }
     String DumpDataCoe(){
         String res = "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
-        for(Uint32 i = Uint32_t(0x1c800000); i < data_upper; i = i.add(4)){
+        for(Uint32 i = Uint32_t(0x30000000); i < data_upper; i = i.add(4)){
             res += read(i).toInt().toRadixString(16).padLeft(8, '0') + ",\n";
         }
         return res;

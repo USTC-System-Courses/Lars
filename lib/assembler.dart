@@ -22,7 +22,7 @@ class Assembler{
     Assembler(List<String> temp){
         inst_input = temp;
         Uint32 text_build = Uint32_t(0x1c000000);
-        Uint32 data_build = Uint32_t(0x1c800000);
+        Uint32 data_build = Uint32_t(0x30000000);
         Uint32 build = text_build;
         analyze_mode mode = analyze_mode.TEXT;
         for (var element in inst_input){
