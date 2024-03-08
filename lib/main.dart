@@ -1,5 +1,6 @@
 import 'package:binary/binary.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:helloworld/arch.dart';
@@ -582,6 +583,36 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             // width: width / 10,
         );
     }
+
+    Future<String> readFileAsString(String filePath) async {
+        File file = File(filePath);
+        try {
+            // 读取文件内容
+            String fileContent = await file.readAsString();
+            return fileContent;
+        } catch (e) {
+            print('Error reading file: $e');
+            return '';
+        }
+    }
+
+    // Widget Docs(){
+    //     final Future<String> markdownData = readFileAsString('../docs/asm.md');
+    //     String data = markdownData.then((value) => value);
+    //     return Scaffold(
+    //     appBar: AppBar(
+    //         title: Text('Markdown Example'),
+    //     ),
+    //     body: SingleChildScrollView(
+    //         child: Padding(
+    //         padding: EdgeInsets.all(16.0),
+    //         child: Markdown(
+    //             data: markdownData.then((value) => value),
+    //         ),
+    //         ),
+    //     ),
+    //     );
+    // }
 
     @override
     Widget build(BuildContext context) {
