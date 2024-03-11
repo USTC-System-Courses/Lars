@@ -56,6 +56,20 @@ class MyTextPaginatingWidget extends StatefulWidget {
 }
 
 // class SecondPage extends StatelessWidget {
+//     @override
+//     Widget build(BuildContext context) {
+//         return Scaffold(
+//         appBar: AppBar(
+//             title: Text('Second Page'),
+//         ),
+//         body: Center(
+//             child: Text('This is the second page'),
+//         ),
+//         );
+//     }
+// }
+
+// class SecondPage extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -601,35 +615,67 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
 
-    Future<String> readFileAsString(String filePath) async {
-        File file = File(filePath);
-        try {
-            // 读取文件内容
-            String fileContent = await file.readAsString();
-            return fileContent;
-        } catch (e) {
-            print('Error reading file: $e');
-            return '';
-        }
-    }
-
-    // Widget Docs(){
-    //     final Future<String> markdownData = readFileAsString('../docs/asm.md');
-    //     String data = markdownData.then((value) => value);
-    //     return Scaffold(
-    //     appBar: AppBar(
-    //         title: Text('Markdown Example'),
-    //     ),
-    //     body: SingleChildScrollView(
-    //         child: Padding(
-    //         padding: EdgeInsets.all(16.0),
-    //         child: Markdown(
-    //             data: markdownData.then((value) => value),
-    //         ),
-    //         ),
-    //     ),
-    //     );
+    // Future<String> readFileAsString(String filePath) async {
+    //     File file = File(filePath);
+    //     try {
+    //         // 读取文件内容
+    //         String fileContent = await file.readAsString();
+    //         return fileContent;
+    //     } catch (e) {
+    //         print('Error reading file: $e');
+    //         return '';
+    //     }
     // }
+
+//     Widget Docs(){
+//         final String data = '''
+// # 使用指南
+
+// 本文将以一段简单的汇编程序为例，介绍如何使用本工具。这段汇编程序是将内存中的数据复制到另一个内存地址中。
+
+// ```assembly
+// .data
+// a:
+// .word 8
+
+// .text
+// la.local \$r1, a
+// ld.w \$r2, \$r1, 0
+// addi.w \$r1, \$r1, 4
+// st.w \$r2, \$r1, 0
+// ```
+
+// ## 代码编写
+// 在界面左侧的文本框中，您可以随心所欲地编写代码：
+
+// // todo
+
+// ## 代码编译
+
+// 当您编写完代码后，点击界面左侧的“编译”按钮，即可将您的代码编译为机器码：
+
+// // todo
+
+// - 代码（.text）段的数据将会顺序放置在以0x1c000000为起始地址的内存中
+// - 数据（.data）段的数据将会顺序放置在以0x30000000为起始地址的内存中。
+
+
+//         ''';
+//         return Scaffold(
+//         appBar: AppBar(
+//             title: Text('Markdown Example'),
+//         ),
+//         body: SingleChildScrollView(
+//             child: Padding(
+//             padding: EdgeInsets.all(16.0),
+//             child: Markdown(
+//                 data: data,
+//             ),
+//             ),
+//         ),
+//         );
+//     }
+    
 
     @override
     Widget build(BuildContext context) {
