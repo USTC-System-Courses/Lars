@@ -221,10 +221,10 @@ class SyntaxParser {
             } catch(e){
                 throw SentenceException(Exception_type.INVALID_IMM, s_regular);
             }
-            if(imm.toSignedInt() > 32767 || imm.toSignedInt() < -32768){
+            if(imm.toSignedInt() > 32767 || imm.toSignedInt() < -32768 || imm.bitRange(1, 0) != Uint32.zero){
                 throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, s_regular);
             }
-            return (imm << Uint32_t(10)).bitRange(25, 0);
+            return (imm << Uint32_t(8)).bitRange(25, 0);
         }
         if(with_si20.contains(type)){
             try{
