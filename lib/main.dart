@@ -207,7 +207,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         border: Border.all(color: Colors.black),
                                         borderRadius: BorderRadius.all(Radius.circular(6))
                                     ),
-                                    child: Center(child:Text('R${4*i+j} / ' + register_name[4*i+j] + '\n0x${sim.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
+                                    child: Center(child:Text('R${4*i+j}' + ((register_name[4*i+j].isEmpty) ? "" : " / ") + register_name[4*i+j] + '\n0x${sim.reg[4*i+j].toInt().toRadixString(16)}', style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center,)),
                                 ),
                             ],
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -306,7 +306,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     /* memory table */
     Widget _buildMemoryTable(double width, double height){
         return Container(
-            margin: EdgeInsets.only(bottom: height/120),
+            // margin: EdgeInsets.only(bottom: height/120),
             alignment: Alignment.center,
             child: SingleChildScrollView(child:
             Table(
@@ -317,7 +317,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         // 修改高度
                         children: [
                             TableCell(
-                                // verticalAlignment: TableCellVerticalAlignment.middle,
+                                verticalAlignment: TableCellVerticalAlignment.middle,
                                 child: Text('Memory', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
                                 // decoration: BoxDecoration(border: Border.all(color: Colors.black),),
                             ),
@@ -335,41 +335,48 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     for (int i = 0; i < height ~/ 80; i++)
                         TableRow(
                             children: [
-                                TableCell(
-                                    child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                                        // decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: Colors.black), end: BorderSide(color: Colors.black))),
-                                    // verticalAlignment: TableCellVerticalAlignment.middle,
+                                Container(
+                                    // height: 40,
+                                    child: TableCell(
+                                        child: Text('0x${(mem_search + i*16).toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+                                            // decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: Colors.black), end: BorderSide(color: Colors.black))),
+                                        // verticalAlignment: TableCellVerticalAlignment.middle,
+                                    ),
                                 ),
                                 
                                 for(int j = 0; j < 16; j += 4)
                                     TableCell(
                                         // alignment: Alignment.center,
                                         // verticalAlignment: TableCellVerticalAlignment.middle,
-                                        child: Tooltip(
-                                            waitDuration: Duration(seconds: 1),
-                                            verticalOffset: 8,
-                                            message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
-                                            padding: EdgeInsets.all(1),
-                                            child: UnconstrainedBox(
-                                                child: TextButton(
-                                                    onPressed: (){
-                                                        if(breakpoints.contains(Uint32(mem_search + i*16 + j))){
-                                                            breakpoints.remove(Uint32(mem_search + i*16 + j));
-                                                        } else {
-                                                            breakpoints.add(Uint32(mem_search + i*16 + j));
-                                                        }
-                                                        setState(() {});
-                                                    },
-                                                    
-                                                    child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
-                                                    style: ButtonStyle(
-                                                        visualDensity: VisualDensity.compact,
-                                                        padding: MaterialStateProperty.all(EdgeInsets.zero),
-                                                        minimumSize: MaterialStateProperty.all(Size(0, 0)),
-                                                        backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
-                                                    )
-                                                ),
-                                            )
+                                        child: Container(
+                                            color: (sim.pc == Uint32(mem_search + i*16 + j) ? Color.fromARGB(255, 253, 222, 136) : Colors.transparent),
+                                            // height: 40,
+                                            child: Tooltip(
+                                                waitDuration: Duration(seconds: 1),
+                                                verticalOffset: 8,
+                                                message: (asm.inst_rec[Uint32(mem_search + i*16 + j)] != null) ? asm.inst_rec[Uint32(mem_search + i*16 + j)]!.sentence: '', 
+                                                padding: EdgeInsets.all(1),
+                                                child: UnconstrainedBox(
+                                                    child: TextButton(
+                                                        onPressed: (){
+                                                            if(breakpoints.contains(Uint32(mem_search + i*16 + j))){
+                                                                breakpoints.remove(Uint32(mem_search + i*16 + j));
+                                                            } else {
+                                                                breakpoints.add(Uint32(mem_search + i*16 + j));
+                                                            }
+                                                            setState(() {});
+                                                        },
+                                                        
+                                                        child: Text('0x${memory[Uint32(mem_search + i*16 + j)].toInt().toRadixString(16).padLeft(8, '0')}', textAlign: TextAlign.center, style: TextStyle(color: Colors.black),),
+                                                        style: ButtonStyle(
+                                                            visualDensity: VisualDensity.compact,
+                                                            padding: MaterialStateProperty.all(EdgeInsets.zero),
+                                                            minimumSize: MaterialStateProperty.all(Size(0, 0)),
+                                                            backgroundColor: breakpoints.contains(Uint32(mem_search + i*16 + j)) ? MaterialStateProperty.all(const Color.fromARGB(255, 245, 177, 172)):MaterialStateProperty.all(Colors.transparent),
+                                                        )
+                                                    ),
+                                                )
+                                            ),
                                         ),
                                     ),
                             ],
@@ -657,7 +664,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 // // todo
 
 // - 代码（.text）段的数据将会顺序放置在以0x1c000000为起始地址的内存中
-// - 数据（.data）段的数据将会顺序放置在以0x30000000为起始地址的内存中。
+// - 数据（.data）段的数据将会顺序放置在以0x1c800000为起始地址的内存中。
 
 
 //         ''';

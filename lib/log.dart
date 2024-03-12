@@ -1,5 +1,6 @@
 // import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
+import 'package:helloworld/Uint32_ext.dart';
 
 class Info{
     final Uint32 pc;
@@ -23,5 +24,12 @@ class Log{
         } on StateError catch(e){
             return Info(Uint32(0x1c000000), null, null);
         }
+    }
+    List<String> print(){
+        List<String> temp = [];
+        for(var i in _info){
+            temp.add("PC: ${i.pc.toInt().toRadixString(16)} ");
+        }
+        return temp;
     }
 }

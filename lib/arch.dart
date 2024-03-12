@@ -10,7 +10,7 @@ Map<String, String> register_rename_table = {
     r"T4": r"R16", r"T5": r"R17", r"T6": r"R18", r"T7": r"R19",
     r"S0": r"R23", r"S1": r"R24", r"S2": r"R25", r"S3": r"R26",
     r"S4": r"R27", r"S5": r"R28", r"S6": r"R29", r"S7": r"R30",
-    r"S8": r"R31", r"S9": r"R22", r"FP": r"R22",
+    r"S8": r"R31", r"S9": r"R22", r"FP": r"R22", r"T8": r"R20",
 };
 
 Map<Ins_type, Uint32> opcode_table = {
@@ -71,9 +71,9 @@ List<String> register_name = [
     r"A4", r"A5", r"A6", r"A7",
     r"T0", r"T1", r"T2", r"T3",
     r"T4", r"T5", r"T6", r"T7",
-    r"S0", r"S1", r"S2", r"S3",
-    r"S4", r"S5", r"S6", r"S7",
-    r"S8", r"S9", r"S10", r"S11",
+    r"T8", r"", r"S9 / FP", r"S0",
+    r"S1", r"S2", r"S3", r"S4",
+    r"S5", r"S6", r"S7", r"S8",
 ];
 
 
