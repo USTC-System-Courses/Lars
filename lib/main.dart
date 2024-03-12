@@ -622,6 +622,27 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
 
+    Widget _buildlogButton(double width){
+        return Tooltip(
+            message: '查看log',
+            waitDuration: Duration(seconds: 1),
+            child: IconButton(
+                onPressed: (){
+                    downloadTxtFile('log.txt', sim.log.print(asm.inst_rec));
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                // child: Text('导出数据')
+                icon: Icon(Icons.edit_note_rounded, color: Colors.white),
+                
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+            ),
+            // width: width / 10,
+        );
+    }
+
     // Future<String> readFileAsString(String filePath) async {
     //     File file = File(filePath);
     //     try {
@@ -702,6 +723,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildStepBackButton(width),
                             _buildDumpTextButton(width),
                             _buildDumpDataButton(width),
+                            _buildlogButton(width),
                             SizedBox(height: height / 120,),
                         ],),
                         decoration: BoxDecoration(
