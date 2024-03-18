@@ -71,10 +71,28 @@ class Memory{
         }
         return res;
     }
+    String DumpInstPdu(){
+        String res = "WI 0 1000\n";
+        for(Uint32 i = Uint32_t(0x1c000000); i < text_upper; i = i.add(4)){
+            res += read(i).toInt().toRadixString(16).padLeft(8, '0');
+            if(i != text_upper.add(-1)) res += "\n";
+            else res += ";";
+        }
+        return res;
+    }
     String DumpDataCoe(){
         String res = "memory_initialization_radix=16;\nmemory_initialization_vector=\n";
         for(Uint32 i = Uint32_t(0x1c800000); i < data_upper; i = i.add(4)){
             res += read(i).toInt().toRadixString(16).padLeft(8, '0') + ",\n";
+        }
+        return res;
+    }
+    String DumpDataPdu(){
+        String res = "WD 0 1000\n";
+        for(Uint32 i = Uint32_t(0x1c000000); i < text_upper; i = i.add(4)){
+            res += read(i).toInt().toRadixString(16).padLeft(8, '0');
+            if(i != text_upper.add(-1)) res += "\n";
+            else res += ";";
         }
         return res;
     }

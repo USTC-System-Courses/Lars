@@ -84,12 +84,13 @@ class MyTextPaginatingWidget extends StatefulWidget {
 // }
 
 class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
-    TextEditingController memtext_ctrl = TextEditingController();
+    TextEditingController memtext_ctrl = TextEditingController(), memdata_ctrl = TextEditingController();
     List<String> textLines = [];
     Assembler asm = Assembler([]);
     Simulator sim = Simulator();
     // DumpCode dp = DumpCode();
     int mem_search = 0x1c000000;
+    int mem_waddr = 0x1c000000;
     final ScrollController _scrollController = ScrollController();
     List<String> Warnings = [];
     List<Uint32> reg = List.filled(32, Uint32.zero);
@@ -405,6 +406,20 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
                 ),
+                onSubmitted: (value){
+                    memtext_ctrl.text = value;
+                    try{
+                        mem_search = int.parse(memtext_ctrl.text, radix: 16);
+                    } catch(e){
+                        mem_search = 0x1c000000;
+                    }
+                    if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
+                    mem_search = mem_search & 0xfffffff0;
+                    setState(() {});
+                },
+                onChanged: (value){
+                    mem_waddr = int.parse(value, radix: 16);
+                },
                 controller: memtext_ctrl,
                 maxLines: 1,
             ),
@@ -414,6 +429,37 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             ),
         );
     }
+
+    Widget _buildMemoryDataInput(double width, double height){
+        return Container(
+            alignment: Alignment.center,
+            width: width / 8,
+            height: height / 30,
+            
+            child: TextField(
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                    isDense: true,
+                    hintText: '输入16进制内存数据',
+                    // 减小字体
+                    hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                ),
+                onSubmitted: (value){
+                    memory.write(Uint32(mem_waddr), Uint32(int.parse(memdata_ctrl.text, radix: 16)));
+                    setState(() {});
+                },
+                controller: memdata_ctrl,
+                maxLines: 1,
+            ),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            ),
+        );
+    }
+
     Widget _buildMemoryCheckButton(double width, double height){
         return Container(
             alignment: Alignment.center,
@@ -425,6 +471,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         mem_search = 0x1c000000;
                     }
                     if(mem_search < 0x1c000000 || mem_search > 0x24000000) mem_search = 0x1c000000;
+                    mem_search = mem_search & 0xfffffff0;
                     setState(() {});
                 },
                 style: ButtonStyle(
@@ -752,6 +799,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             child: Row(children: [
                                 _buildMemoryCheckButton(width, height),
                                 _buildMemoryAddrInput(width, height),
+                                Container(
+                                    width: 10,
+                                ),
+                                _buildMemoryDataInput(width, height)
                             ],)
                         ),
                         // memory table

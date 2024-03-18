@@ -93,16 +93,14 @@ class Simulator{
                 pc = pc.add(4);
                 break;
             case Ins_type.SRAW:
-                var sign = reg[rj].getBit(31);
-                Uint32 mask = ~(Uint32_t(sign != 0 ? 0xffffffff : 0) >> reg[rk]);
-                var temp = reg[rj] >> reg[rk];
-                temp = temp | mask;
+                Uint32 temp = reg[rj];
+                if((reg[rk].bitRange(4, 0)).toInt()!= 0) temp = reg[rj].signedRightShift((reg[rk].bitRange(4, 0)).toInt());
                 log.SetLog(pc, (rd, reg[rd], temp), null);
                 reg[rd] = temp;
                 pc = pc.add(4);
                 break;
             case Ins_type.SRLW:
-                var temp = reg[rj] >> (reg[rk]);
+                var temp = reg[rj] >> (reg[rk].bitRange(4, 0));
                 log.SetLog(pc, (rd, reg[rd], temp), null);
                 reg[rd] = temp;
                 pc = pc.add(4);
@@ -156,9 +154,8 @@ class Simulator{
                 pc = pc.add(4);
                 break;
             case Ins_type.SRAIW:
-                var sign = reg[rj].getBit(31);
-                Uint32 mask = ~(Uint32_t(sign != 0 ? 0xffffffff : 0) >> Uint32_t(ui5));
-                var temp = (reg[rj] >> (Uint32_t(ui5))) | mask;
+                Uint32 temp = reg[rj];
+                if(ui5 != 0) temp = reg[rj].signedRightShift(ui5);
                 log.SetLog(pc, (rd, reg[rd], temp), null);
                 reg[rd] = temp;
                 pc = pc.add(4);

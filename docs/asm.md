@@ -50,12 +50,12 @@ LARS支持LA32R架构的绝大部分**基础整数指令**和一条自定义停�
 |srli.w rd, rj, imm|rd = rj >> imm|逻辑右移|srli rd, rs1, shamt|
 |srai.w rd, rj, imm|rd = rj >>> imm|算术右移|srai rd, rs1, shamt|
 |slti rd, rj, imm|rd = (rj.s < imm.s)|有符号整数比较|slti rd, rs1, shamt|
-|sltiu rd, rj, imm|rd = (rj < imm)|无符号整数比较|sltiu rd, rs1, shamt|
+|sltui rd, rj, imm|rd = (rj < imm)|无符号整数比较|sltui rd, rs1, shamt|
 |andi rd, rj, imm|rd = rj & imm|按位与|andi rd, rs1, shamt|
 |ori rd, rj, imm|rd = rj \| imm|按位或|ori rd, rs1, shamt|
 |xori rd, rj, imm|rd = rj ^ imm|按位异或|xori rd, rs1, shamt|
-|lu12i rd, imm|rd = imm << 12|加载高20位立即数|lui rd, imm|
-|auipc rd, imm|rd = pc + (imm << 12)|加载加上pc的高20位立即数|auipc rd, imm|
+|lu12i.w rd, imm|rd = imm << 12|加载高20位立即数|lui rd, imm|
+|pcaddu12i rd, imm|rd = pc + (imm << 12)|加载加上pc的高20位立即数|auipc rd, imm|
 |ld.b rd, rj, imm|rd = SE(Mem[rj + imm])|加载字节并符号拓展|lb rd, rs1, imm|
 |ld.h rd, rj, imm|rd = SE(Mem[rj + imm])|加载半字并符号拓展|lh rd, rs1, imm|
 |ld.w rd, rj, imm|rd = Mem[rj + imm]|加载字|lw rd, rs1, imm|
