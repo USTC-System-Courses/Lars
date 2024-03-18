@@ -32,12 +32,12 @@ class Assembler{
             if(pkg.is_sign){
                 switch(pkg.sign_type){
                     case Sign_type.TEXT:
-                        data_build = mode == analyze_mode.TEXT ? build : data_build;
+                        data_build = mode == analyze_mode.DATA ? build : data_build;
                         build = text_build;
                         mode = analyze_mode.TEXT;
                         break;
                     case Sign_type.DATA:
-                        text_build = mode == analyze_mode.DATA ? build : text_build;
+                        text_build = mode == analyze_mode.TEXT ? build : text_build;
                         build = data_build;
                         mode = analyze_mode.DATA;
                         break;
