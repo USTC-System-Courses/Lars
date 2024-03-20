@@ -173,7 +173,7 @@ class Simulator{
                 pc = pc.add(4);
                 break;
             case Ins_type.SLTUI:
-                var temp = reg[rj] < Uint32_t(ui12) ? Uint32_t(1) : Uint32_t(0);
+                var temp = reg[rj] < Uint32_t(si12 & UI32_mask) ? Uint32_t(1) : Uint32_t(0);
                 log.SetLog(pc, (rd, reg[rd], temp), null);
                 reg[rd] = temp;
                 pc = pc.add(4);
@@ -268,8 +268,8 @@ class Simulator{
             case Ins_type.JIRL:
                 var temp = pc.add(4);
                 log.SetLog(pc, (rd, reg[rd], temp), null);
-                reg[rd] = temp;
                 pc = reg[rj] + Uint32_t(si16 << 2).signExtend(17);
+                reg[rd] = temp;
                 break;
             case Ins_type.B:
                 log.SetLog(pc, null, null);

@@ -1,8 +1,5 @@
 import 'package:binary/binary.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:helloworld/arch.dart';
 import 'package:helloworld/Uint32_ext.dart';
 import 'package:helloworld/assembler.dart';
@@ -96,6 +93,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     List<Uint32> reg = List.filled(32, Uint32.zero);
     List<bool> reg_change = List.filled(32, false);
     Set<Uint32> breakpoints = {};
+    bool is_dumped = false;
+    bool need_dump = false;
 
     TextFieldController _controller = TextFieldController(
         patternMatchMap: {
@@ -140,6 +139,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                                         border: InputBorder.none,
                                         hintStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
                                     ),
+                                    onChanged: ((value) {
+                                      is_dumped = false;
+                                    }),
                                     // inputFormatters: [
                                     //     // 限制只能输入英文字母和数字
                                     //     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\n\s\,\.\:\(\)\[\]\+\-\*\/\%\&\|\^\~\!\=\>\<\_\#]+')),
@@ -500,6 +502,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     reg_change = List.filled(32, false);
                     try {
                         asm = Assembler(textLines);
+                        if(need_dump) downloadTxtFile('your_input.asm', textLines.join('\n'));
+                        is_dumped = true;
                     } on SentenceException catch (e) {
                         Warnings.add(e.toString());
                     } on MemoryException catch (e){
@@ -634,7 +638,12 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
-                    downloadTxtFile('text.coe', memory.DumpInstCoe());
+                    if(Platform.isWindows){
+
+                    }
+                    else {
+                        downloadTxtFile('text.coe', memory.DumpInstCoe());
+                    }
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
@@ -654,7 +663,10 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
-                    downloadTxtFile('data.coe', memory.DumpDataCoe());
+                    if(Platform.isWindows){
+
+                    }
+                    else downloadTxtFile('data.coe', memory.DumpDataCoe());
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
@@ -682,6 +694,30 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('导出数据')
                 icon: Icon(Icons.edit_note_rounded, color: Colors.white),
+                
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+            ),
+            // width: width / 10,
+        );
+    }
+
+    Widget _buildneeddumpButton(double width){
+        return Tooltip(
+            message: '打开/关闭编译后自动导出',
+            waitDuration: Duration(milliseconds: 500),
+            child: IconButton(
+                onPressed: (){
+                    is_dumped = need_dump;
+                    need_dump = !need_dump;
+                    setState(() {});
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                // child: Text('导出数据')
+                // icon: Icon(Icons.edit_note_rounded, color: Colors.white),
+                icon: need_dump?Icon(Icons.raw_on, color: Colors.white,):Icon(Icons.raw_off),
                 
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
@@ -765,6 +801,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         child: Column(children: [
                             SizedBox(height: height / 120,),
                             _buildCompileButton(width),
+                            _buildneeddumpButton(width),
                             _buildRunButton(width),
                             _buildSingleStepButton(width),
                             _buildStepBackButton(width),
