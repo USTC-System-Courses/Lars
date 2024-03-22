@@ -9,7 +9,7 @@ import 'package:helloworld/codefield.dart';
 import 'package:helloworld/memory.dart';
 import 'package:helloworld/simulator.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:helloworld/dump.dart';
+import 'package:helloworld/dump.dart' if (dart.library.io) 'winout.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 // import 'package:binary/binary.dart';
@@ -638,12 +638,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
-                    if(Platform.isWindows){
-
-                    }
-                    else {
-                        downloadTxtFile('text.coe', memory.DumpInstCoe());
-                    }
+                    downloadTxtFile('text.coe', memory.DumpInstCoe());
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),
@@ -663,10 +658,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
-                    if(Platform.isWindows){
-
-                    }
-                    else downloadTxtFile('data.coe', memory.DumpDataCoe());
+                    downloadTxtFile('data.coe', memory.DumpDataCoe());
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(2),

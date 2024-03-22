@@ -6,7 +6,7 @@ extension Uint32_ext on Uint32{
     }
 
     Uint32 add(int other){
-        var temp = (this.toInt() + other & UI32_mask);
+        // var temp = (this.toInt() + other & UI32_mask);
         return Uint32((this.toInt() + other & UI32_mask) & UI32_mask);
     }
 
