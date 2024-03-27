@@ -693,6 +693,65 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             // width: width / 10,
         );
     }
+    
+    Widget _buildHW2_4Button(double width){
+        return Tooltip(
+            message: 'HW2_4',
+            waitDuration: Duration(seconds: 1),
+            child: IconButton(
+                onPressed: (){
+                    textLines = [
+    '.text',
+    '_start:',
+        '#load the program & call main function ',
+        '# TODO1:',
+        'halt',
+    'main:',
+        '# prologue 栈式分配内存 注意16字节地址对齐',
+        '# TODO2:',
+    'main_label_entry:',
+        'addi.w \$t0, \$fp, -20',
+        'st.w \$t0, \$fp, -12',
+        'ld.w \$t0, \$fp, -12',
+        'addi.w \$t1, \$zero, 1',
+        'st.w \$t1, \$t0, 0',
+        'ld.w \$t0, \$fp, -12',
+        'ld.w \$t1, \$t0, 0',
+        'slli.w \$t1, \$t1, 31',
+        'srai.w \$t1, \$t1, 31',
+        'st.w \$t1, \$t0, 0',
+        'lu12i.w \$t1, 0x80000',
+        'srli.w \$t1, \$t1, 31',
+        'st.w \$t1, \$t0, 4',
+        'ld.w \$t1, \$t0, 0',
+        'ld.w \$t2, \$t0, 4',
+        'beq \$t1, \$t2, fail',
+        'b main_exit',
+    'main_exit:',
+        '# epilogue 回收内存 并返回(_start)',
+        '# TODO2:',
+    'fail:',
+        'add.w \$fp \$zero \$zero',
+        'sub.w \$sp \$zero \$fp',
+        'and \$ra, \$zero, \$ra',
+        'halt',
+                    ];
+                    setState(() {
+                    });
+                    _controller.text = textLines.join('\n');
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                // child: Text('导出数据')
+                icon: Icon(Icons.quiz_rounded, color: Colors.white),
+                
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+            ),
+            // width: width / 10,
+        );
+    }
 
     Widget _buildneeddumpButton(double width){
         return Tooltip(
@@ -800,6 +859,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildDumpTextButton(width),
                             _buildDumpDataButton(width),
                             _buildlogButton(width),
+                            SizedBox(height: height / 60,),
+                            _buildHW2_4Button(width),
                             SizedBox(height: height / 120,),
                         ],),
                         decoration: BoxDecoration(
