@@ -655,7 +655,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildDumpPDUTextButton(double width){
         return Tooltip(
-            message: '导出代码(PDU)',
+            message: '导出代码(sim)',
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
@@ -675,7 +675,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildDumpDataButton(double width){
         return Tooltip(
-            message: '导出数据coe',
+            message: '导出数据(coe)',
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
@@ -696,7 +696,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildDumpPDUDataButton(double width){
         return Tooltip(
-            message: '导出数据PDU',
+            message: '导出数据(sim)',
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
