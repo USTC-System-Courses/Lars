@@ -125,7 +125,8 @@ class Assembler{
     }
 
     bool addr_range_check(Ins_type type, Uint32 addr, Uint32 build){
-        if ((with_label16.contains(type) || type == Ins_type.JIRL) && !((build - addr) > -(1 << 15) || (build - addr) < (1 << 15) - 1)) return false;
+        if ((with_label16.contains(type)) && !((build - addr) > -(1 << 15) || (build - addr) < (1 << 15) - 1)) return false;
+        else if ((type == Ins_type.JIRL) && !((build - addr) > -(1 << 17) || (build - addr) < (1 << 17) - 1)) return false;
         else if (with_label26.contains(type) && !((build - addr) > -(1 << 25) || (build - addr) < (1 << 25) - 1)) return false;
         else return true;
     }

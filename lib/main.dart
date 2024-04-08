@@ -497,6 +497,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     String text = _controller.text + '\n';
                     textLines = text.split('\n');
                     memory = Memory();
+                    memory.write(Uint32(0x23fffffc), Uint32(1));
                     Warnings = [];
                     reg = List.filled(32, Uint32.zero);
                     reg_change = List.filled(32, false);
@@ -634,7 +635,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
     Widget _buildDumpTextButton(double width){
         return Tooltip(
-            message: '导出代码',
+            message: '导出代码(coe)',
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
@@ -652,9 +653,29 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         );
     }
 
+    Widget _buildDumpPDUTextButton(double width){
+        return Tooltip(
+            message: '导出代码(PDU)',
+            waitDuration: Duration(seconds: 1),
+            child: IconButton(
+                onPressed: (){
+                    downloadTxtFile('text_PDU.coe', memory.DumpInstPdu());
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                // child: Text('导出代码')
+                icon: Icon(Icons.file_download, color: Colors.yellow),
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+            ),
+            // width: width / 10,
+        );
+    }
+
     Widget _buildDumpDataButton(double width){
         return Tooltip(
-            message: '导出数据',
+            message: '导出数据coe',
             waitDuration: Duration(seconds: 1),
             child: IconButton(
                 onPressed: (){
@@ -665,6 +686,27 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                 ),
                 // child: Text('导出数据')
                 icon: Icon(Icons.vertical_align_bottom, color: Colors.white),
+                
+                padding: EdgeInsets.zero,
+                hoverColor: Colors.brown,
+            ),
+            // width: width / 10,
+        );
+    }
+
+    Widget _buildDumpPDUDataButton(double width){
+        return Tooltip(
+            message: '导出数据PDU',
+            waitDuration: Duration(seconds: 1),
+            child: IconButton(
+                onPressed: (){
+                    downloadTxtFile('data_PDU.coe', memory.DumpDataPdu());
+                },
+                style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(2),
+                ),
+                // child: Text('导出数据')
+                icon: Icon(Icons.vertical_align_bottom, color: Colors.yellow),
                 
                 padding: EdgeInsets.zero,
                 hoverColor: Colors.brown,
@@ -710,6 +752,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
         '# prologue 栈式分配内存 注意16字节地址对齐',
         '# TODO2:',
     'main_label_entry:',
+        'beq \$a0, \$zero, fail',
         'addi.w \$t0, \$fp, -20',
         'st.w \$t0, \$fp, -12',
         'ld.w \$t0, \$fp, -12',
@@ -857,7 +900,9 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                             _buildSingleStepButton(width),
                             _buildStepBackButton(width),
                             _buildDumpTextButton(width),
+                            _buildDumpPDUTextButton(width),
                             _buildDumpDataButton(width),
+                            _buildDumpPDUDataButton(width),
                             _buildlogButton(width),
                             SizedBox(height: height / 60,),
                             _buildHW2_4Button(width),

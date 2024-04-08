@@ -72,12 +72,12 @@ class Memory{
         return res;
     }
     String DumpInstPdu(){
-        String res = "WI 0 1000\n";
+        String res = "";
         for(Uint32 i = Uint32_t(0x1c000000); i < text_upper; i = i.add(4)){
             res += read(i).toInt().toRadixString(16).padLeft(8, '0');
-            if(i != text_upper.add(-1)) res += "\n";
-            else res += ";";
+            res += "\n";
         }
+        res += '\n';
         return res;
     }
     String DumpDataCoe(){
@@ -88,12 +88,12 @@ class Memory{
         return res;
     }
     String DumpDataPdu(){
-        String res = "WD 0 1000\n";
+        String res = "";
         for(Uint32 i = Uint32_t(0x1c000000); i < text_upper; i = i.add(4)){
             res += read(i).toInt().toRadixString(16).padLeft(8, '0');
-            if(i != text_upper.add(-1)) res += "\n";
-            else res += ";";
+            res += "\n";
         }
+        res += '\n';
         return res;
     }
 }
