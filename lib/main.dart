@@ -17,16 +17,16 @@
 
 import 'package:binary/binary.dart';
 import 'package:flutter/material.dart';
-import 'package:LARS/arch.dart';
-import 'package:LARS/Uint32_ext.dart';
-import 'package:LARS/assembler.dart';
-import 'package:LARS/config.dart';
-import 'package:LARS/exception.dart';
-import 'package:LARS/codefield.dart';
-import 'package:LARS/memory.dart';
-import 'package:LARS/simulator.dart';
+import 'package:lars/arch.dart';
+import 'package:lars/Uint32_ext.dart';
+import 'package:lars/assembler.dart';
+import 'package:lars/config.dart';
+import 'package:lars/exception.dart';
+import 'package:lars/codefield.dart';
+import 'package:lars/memory.dart';
+import 'package:lars/simulator.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:LARS/dump.dart' if (dart.library.io) 'winout.dart';
+import 'package:lars/dump.dart' if (dart.library.io) 'winout.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  '龙芯架构32位精简版指令集汇编器与模拟器',
+                  '龙芯架构32位精简版指令集 汇编器与模拟器',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withAlpha(200),

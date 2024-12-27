@@ -1,6 +1,6 @@
 // import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
-import 'package:LARS/Uint32_ext.dart';
+import 'package:lars/Uint32_ext.dart';
 import './assembler.dart';
 
 class Info{
