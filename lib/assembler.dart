@@ -1,6 +1,3 @@
-// import 'dart:ffi' as ffi;
-// import 'dart:js_util';
-
 import './Uint32_ext.dart';
 import 'package:binary/binary.dart';
 import 'dart:core';
@@ -59,8 +56,7 @@ class Assembler{
                         }
                         build = build.add(pkg.sign_item.toInt());
                         break;
-                    default: throw SentenceException(Exception_type.INVALID_LABEL, pkg.sentence);
-                }
+                    }
                 continue;
             }
             // label: add label to label table
