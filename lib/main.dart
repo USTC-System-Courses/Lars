@@ -253,7 +253,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       margin: EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.indigo[100],
+        color: Colors.blue[50],
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -270,7 +270,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             'Inst',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.indigo[900],
+              color: Colors.blue[900],
               fontSize: 15,
             ),
           ),
@@ -279,7 +279,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
             '${asm.inst_rec[sim.pc] == null ? 'NOP' : asm.inst_rec[sim.pc]!.sentence}',
             style: TextStyle(
               fontFamily: 'FiraCode',
-              color: Colors.indigo[800],
+              color: Colors.blue[800],
               fontSize: 13,
             ),
             textAlign: TextAlign.center,
@@ -468,15 +468,24 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
   /// 构建地址单元格
   TableCell _buildAddressCell(int rowIndex) {
     return TableCell(
-      child: Padding(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.indigo[50],
+          border: Border(
+            right: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1,
+            ),
+          ),
+        ),
         padding: const EdgeInsets.all(8.0),
         child: Text(
           '0x${(mem_search + rowIndex * 16).toRadixString(16).padLeft(8, '0')}',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'FiraCode',
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[800],
+            fontWeight: FontWeight.w600,
+            color: Colors.indigo[900],
             fontSize: 13,
           ),
         ),
