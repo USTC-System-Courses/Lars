@@ -311,11 +311,36 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                         padding: EdgeInsets.all(8),
                         child: Column(
                           children: [
-                            Text(
-                              'R${4 * i + j}${register_name[4 * i + j].isNotEmpty ? " / ${register_name[4 * i + j]}" : ""}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'R${4 * i + j}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                      color: Colors.grey[800],
+                                    ),
+                                  ),
+                                  if (register_name[4 * i + j].isNotEmpty)
+                                    TextSpan(
+                                      text: ' / ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ),
+                                  if (register_name[4 * i + j].isNotEmpty)
+                                    TextSpan(
+                                      text: register_name[4 * i + j],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                             SizedBox(height: 4),
@@ -511,7 +536,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
   Widget _buildMemoryButton(int address, bool isBreakpoint) {
     return Tooltip(
       message: _getInstructionTooltip(address),
-      waitDuration: Duration(seconds: 1),
+      waitDuration: Duration(milliseconds: 50),
       child: TextButton(
         onPressed: () => _toggleBreakpoint(address),
         child: _buildMemoryButtonText(address),
