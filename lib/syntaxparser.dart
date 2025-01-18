@@ -1,8 +1,8 @@
-import './Uint32_ext.dart';
+import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
 import 'dart:core';
 import 'config.dart';
-import './exception.dart';
+import 'exception.dart';
 import 'arch.dart';
 
 class SyntaxPackage {
