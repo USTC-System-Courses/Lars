@@ -17,16 +17,16 @@
 
 import 'package:binary/binary.dart';
 import 'package:flutter/material.dart';
-import 'package:lars/arch.dart';
-import 'package:lars/Uint32_ext.dart';
-import 'package:lars/assembler.dart';
-import 'package:lars/config.dart';
-import 'package:lars/exception.dart';
-import 'package:lars/codefield.dart';
-import 'package:lars/memory.dart';
-import 'package:lars/simulator.dart';
+import 'package:lars/Lars/arch.dart';
+import 'package:lars/Lars/Uint32_ext.dart';
+import 'package:lars/Lars/assembler.dart';
+import 'package:lars/Lars/config.dart';
+import 'package:lars/Lars/exception.dart';
+import 'package:lars/Lars/codefield.dart';
+import 'package:lars/Lars/memory.dart';
+import 'package:lars/Lars/simulator.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:lars/dump.dart' if (dart.library.io) 'winout.dart';
+import 'package:lars/Lars/dump.dart' if (dart.library.io) 'winout.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:ui' as ui;

@@ -14,7 +14,7 @@
 /// Licensed under MIT License
 
 import 'package:binary/binary.dart';
-import './Uint32_ext.dart';
+import 'Uint32_ext.dart';
 import 'dart:typed_data';
 
 class Memory {

@@ -5,14 +5,14 @@
 /// Copyright (c) 2024 LARS Team
 /// Licensed under MIT License
 
-import './Uint32_ext.dart';
+import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
 import 'dart:core';
 import 'dart:collection';
 import 'config.dart';
-import './memory.dart';
-import './label.dart';
-import './exception.dart';
+import 'memory.dart';
+import 'label.dart';
+import 'exception.dart';
 import 'syntaxparser.dart';
 
 class Assembler {

@@ -1,5 +1,5 @@
 import 'package:binary/binary.dart';
-import 'package:lars/exception.dart';
+import 'package:lars/Lars/exception.dart';
 
 class Label{
     Map <String, Uint32> label = {};

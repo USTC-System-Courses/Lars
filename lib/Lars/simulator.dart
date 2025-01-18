@@ -1,12 +1,12 @@
 // import 'dart:ffi';
 
-import './log.dart';
-import './Uint32_ext.dart';
+import 'log.dart';
+import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
 import 'dart:core';
 import 'config.dart';
-import './memory.dart';
-import './exception.dart';
+import 'memory.dart';
+import 'exception.dart';
 
 class Simulator{
     bool _isEnd = false;
