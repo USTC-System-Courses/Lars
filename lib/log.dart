@@ -1,6 +1,6 @@
 // import 'Uint32_ext.dart';
 import 'package:binary/binary.dart';
-import 'package:helloworld/Uint32_ext.dart';
+import 'package:lars/Uint32_ext.dart';
 import './assembler.dart';
 
 class Info{
@@ -29,7 +29,7 @@ class Log{
             var temp = _info.last;
             _info.removeLast();
             return temp;
-        } on StateError catch(e){
+        } on StateError {
             return Info(Uint32(0x1c000000), null, null);
         }
     }
