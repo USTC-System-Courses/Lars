@@ -1,20 +1,31 @@
 import 'modules.dart';
+
 class Context {
-  List<Wire> _wires = [];
+  // List<Wire> _wires = [];
   List<Module> _modules = [];
-  List<Register> _registers = [];
+  // List<Register> _registers = [];
 
-
-  addWire(Wire wire) {
-    _wires.add(wire);
-  }
+  // addWire(Wire wire) {
+  //   _wires.add(wire);
+  // }
 
   addModule(Module module) {
+    String name = module.name;
+    if (name == '') {
+      name = module.runtimeType.toString();
+    }
+    if (_modules.any((module) => module.name == name)) {
+      return;
+    }
     _modules.add(module);
   }
 
-  addRegister(Register register) {
-    _registers.add(register);
+  // addRegister(Register register) {
+  //   _registers.add(register);
+  // }
+
+  getModule(String name) {
+    return _modules.firstWhere((module) => module.name == name);
   }
 }
 
@@ -30,9 +41,11 @@ abstract class Value {
   String name = '';
   ValueType state = ValueType.Z;
 
-  checkState(){
-    if (_value.every((v) => (v == ValueType.L || v == ValueType.H))) state = ValueType.L;
-    else state = ValueType.X;
+  checkState() {
+    if (_value.every((v) => (v == ValueType.L || v == ValueType.H)))
+      state = ValueType.L;
+    else
+      state = ValueType.X;
   }
 
   Value(this._context, {int width = 1, this.name = ''}) {
@@ -62,7 +75,7 @@ abstract class Value {
     return _value.toString() == other._value.toString();
   }
 
-  int getValue(){
+  int getValue() {
     int result = 0;
     if (_width > 62) throw Exception('位宽过大 请使用getValue_s');
     checkState();
@@ -73,7 +86,7 @@ abstract class Value {
     return result;
   }
 
-  BigInt getValue_s(){
+  BigInt getValue_s() {
     BigInt result = BigInt.from(0);
     checkState();
     if (state == ValueType.X) return BigInt.from(-1);
@@ -108,44 +121,44 @@ abstract class Value {
     return ValueType.H;
   }
 
-
-  static Wire X(Context context, int width){
+  static Wire X(Context context, int width) {
     return Wire(context, width: width, name: 'X');
   }
 
   //仿真一次组合逻辑
-  void simC(){}
+  void simC() {}
   //仿真一次时序逻辑
-  void simT(){}
+  void simT() {}
 
   @override
   String toString() {
     return '$name: ${_value.map((v) => v.toString().split('.').last).join('')}';
   }
-  
+
   static Wire fromInt(Context context, int value, int width) {
     Wire wire = Wire(context, width: width);
     for (int i = 0; i < width; i++) {
-      wire._value[width - 1 - i] = (value & (1 << i)) != 0 ? ValueType.H : ValueType.L;
+      wire._value[width - 1 - i] =
+          (value & (1 << i)) != 0 ? ValueType.H : ValueType.L;
     }
     return wire;
+  }
+
+  void setValue(Value value) {
+    this.value = value.value;
   }
 }
 
 // Wire 类现在继承自 Value
 class Wire extends Value {
   bool _isConstant = false;
-  late Value parent;
 
-  Wire(Context context, {int width = 1, String name = '', Value? parent})
+  Wire(Context context, {int width = 1, String name = '', Value? init})
       : super(context, width: width, name: name) {
-    _context.addWire(this);
-    if (parent != null) {
-      this.parent = parent;
+    if (init != null) {
+      setValue(init);
     }
-    else{
-      this.parent = Wire(context, width: width, name: name);
-    }
+    // _context.addWire(this);
   }
 
   bool get isConstant => _isConstant;
@@ -193,9 +206,13 @@ class Wire extends Value {
     return _value.toString() == other._value.toString();
   }
 
-  void setValue(Wire value){
-    this.value = value.value;
-  }
+  // void setValue(Wire value){
+  //   this.value = value.value;
+  // }
+
+  // void setValue(Value value){
+  //   this.value = value.value;
+  // }
 
   @override
   int get hashCode => _value.toString().hashCode;
@@ -226,17 +243,14 @@ class Wire extends Value {
 // Register 类现在继承自 Value
 class Register extends Value {
   late Wire _output;
-  
 
   Register(Context context, {int width = 1, String name = ''})
       : super(context, width: width, name: name) {
-    _context.addRegister(this);
+    // _context.addRegister(this);
     _output = Wire(_context, width: width, name: '${name}_out');
   }
 
-
   Wire get output => _output;
-
 
   @override
   set value(List<ValueType> newValue) {
@@ -259,33 +273,40 @@ class Register extends Value {
     throw Exception('Register 不支持直接位运算');
   }
 }
+
 abstract class Module {
   Map<String, Wire> inputs = {};
   Map<String, Wire> outputs = {};
+  String name = '';
 
   List<Module> basedModules = [];
   List<Module> subModules = [];
   List<Module> drivenModules = [];
   late Context _context;
-  Module(Context context, {Map<String, Wire> inputs = const {}, Map<String, Wire> outputs = const {}}){
+  Module(Context context,
+      {Map<String, Wire> inputs = const {},
+      Map<String, Wire> outputs = const {},
+      String name = ''}) {
     _context = context;
+    this.name = name;
+    this.inputs = inputs;
+    this.outputs = outputs;
     context.addModule(this);
   }
 
   void input(List<Wire> inputs) {
-    for(var wire in inputs){
+    for (var wire in inputs) {
       this.inputs[wire.name] = wire;
     }
   }
-  
+
   Context get context => _context;
 
-  void simC(){}
-  void simT(){}
+  void simC() {}
+  void simT() {}
 }
 
 class Connection extends Module {
   Module parent, child;
   Connection(Context context, this.parent, this.child) : super(context);
-  
 }

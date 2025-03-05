@@ -1,5 +1,10 @@
 import 'dart:core';
 
+import 'package:binary/binary.dart';
+import 'package:lars/Lars/Uint32_ext.dart';
+
+import 'exception.dart';
+
 enum Ins_type {
   NULL,
   NOP,
@@ -190,3 +195,76 @@ String regString =
 
 String opcheckString =
     r"^((NOP)|(ADD\.W)|(SUB\.W)|(SLT)|(SLTU)|(NOR)|(AND)|(OR)|(XOR)|(SLL\.W)|(SRL\.W)|(SRA\.W)|(MUL\.W)|(MULH\.W)|(MULHU\.W)|(DIV\.W)|(MOD\.W)|(DIVU\.W)|(MODU\.W)|(SLLI\.W)|(SRLI\.W)|(SRAI\.W)|(SLTI)|(SLTUI)|(ADDI\.W)|(ANDI)|(ORI)|(XORI)|(LU12I\.W)|(PCADDU12I)|(LD\.B)|(LD\.H)|(LD\.W)|(ST\.B)|(ST\.H)|(ST\.W)|(LD\.BU)|(LD\.HU)|(JIRL)|(B)|(BL)|(BEQ)|(BNE)|(BLT)|(BGE)|(BLTU)|(BGEU)|(BREAK)|(HALT)|(LI\.W)|(LA\.LOCAL))$";
+
+Ins_type get_inst_type(Uint32 ins){
+    if(ins.getBit(31) == 1)
+        return Ins_type.HALT;
+    if(ins.getBit(30) == 1)
+        switch(ins.bitRange(31, 26).toInt()){
+            case 0x13: return Ins_type.JIRL;
+            case 0x14: return Ins_type.B;
+            case 0x15: return Ins_type.BL;
+            case 0x16: return Ins_type.BEQ;
+            case 0x17: return Ins_type.BNE;
+            case 0x18: return Ins_type.BLT;
+            case 0x19: return Ins_type.BGE;
+            case 0x1A: return Ins_type.BLTU;
+            case 0x1B: return Ins_type.BGEU;
+            default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+        }
+    else if (ins.getBit(29) == 1) 
+        switch(ins.bitRange(31, 22).toInt()){
+            case 0xA0: return Ins_type.LDB;
+            case 0xA1: return Ins_type.LDH;
+            case 0xA2: return Ins_type.LDW;
+            case 0xA4: return Ins_type.STB;
+            case 0xA5: return Ins_type.STH;
+            case 0xA6: return Ins_type.STW;
+            case 0xA8: return Ins_type.LDBU;
+            case 0xA9: return Ins_type.LDHU;
+            default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+        }
+    else if (ins.getBit(28) == 1)
+        switch(ins.bitRange(31, 25).toInt()){
+            case 0x0A: return Ins_type.LU12IW;
+            case 0x0E: return Ins_type.PCADDU12I;
+            default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+        }
+    else if (ins.getBit(25) == 1)
+        switch(ins.bitRange(31, 22).toInt()){
+            case 0x08: return Ins_type.SLTI;
+            case 0x09: return Ins_type.SLTUI;
+            case 0x0A: if(ins.bitRange(21, 0) == 0) return Ins_type.NOP; else return Ins_type.ADDIW;
+            case 0x0D: return Ins_type.ANDI;
+            case 0x0E: return Ins_type.ORI;
+            case 0x0F: return Ins_type.XORI;
+            default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+        }
+    else
+        switch(ins.bitRange(31, 15).toInt()){
+            case 0x20: return Ins_type.ADDW;
+            case 0x22: return Ins_type.SUBW;
+            case 0x24: return Ins_type.SLT;
+            case 0x25: return Ins_type.SLTU;
+            case 0x28: return Ins_type.NOR;
+            case 0x29: return Ins_type.AND;
+            case 0x2A: return Ins_type.OR;
+            case 0x2B: return Ins_type.XOR;
+            case 0x2E: return Ins_type.SLLW;
+            case 0x2F: return Ins_type.SRLW;
+            case 0x30: return Ins_type.SRAW;
+            case 0x38: return Ins_type.MULW;
+            case 0x39: return Ins_type.MULHW;
+            case 0x3A: return Ins_type.MULHWU;
+            case 0x40: return Ins_type.DIVW;
+            case 0x41: return Ins_type.MODW;
+            case 0x42: return Ins_type.DIVWU;
+            case 0x43: return Ins_type.MODWU;
+            case 0x54: return Ins_type.BREAK;
+            case 0x81: return Ins_type.SLLIW;
+            case 0x89: return Ins_type.SRLIW;
+            case 0x91: return Ins_type.SRAIW;
+            case 0: return Ins_type.NULL;
+            default: throw MemoryException(MEM_EXP_type.UNEXPECTED_MEM_ERROR);
+        }
+}

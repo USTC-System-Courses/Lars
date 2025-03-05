@@ -28,6 +28,8 @@ import 'package:lars/Lars/simulator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:lars/Lars/dump.dart' if (dart.library.io) 'winout.dart';
 import 'package:flutter/services.dart';
+import 'package:lars/Lipes/Lipes.dart';
+import 'package:lars/Lipes/modules.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 // import 'package:binary/binary.dart';
@@ -98,6 +100,8 @@ class MyTextPaginatingWidget extends StatefulWidget {
 /// - Memory and register state
 /// - Debug features
 class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
+  Lipes lipes = Lipes();
+
   /// Controllers for memory text and data input
   TextEditingController memtext_ctrl = TextEditingController(),
       memdata_ctrl = TextEditingController();
@@ -127,6 +131,13 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     // You can control the [RegExp] options used:
     regExpUnicode: true,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    // lipes.addModule((context) => clk(context));
+    // lipes.checkclk();
+  }
 
   /// Builds the code editor with syntax highlighting and line numbers
   Widget _buildCodeText(double height) {
@@ -1044,7 +1055,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                     indent: 12,
                     endIndent: 12,
                   ),
-                  _buildHW2_4Button(width),
+                  // _buildHW2_4Button(width),
                 ],
               ),
             ),
