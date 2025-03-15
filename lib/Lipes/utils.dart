@@ -41,6 +41,11 @@ abstract class Value {
   String name = '';
   ValueType state = ValueType.Z;
 
+  getZero(int width){
+    List<ValueType> result = List.filled(width, ValueType.L);
+    return result;
+  }
+
   checkState() {
     if (_value.every((v) => (v == ValueType.L || v == ValueType.H)))
       state = ValueType.L;

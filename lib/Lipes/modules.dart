@@ -66,12 +66,15 @@ final class Inst_Decoder extends Module {
     int inst = inputs['inst_ID']!.getValue();
     Uint32 inst_t = Uint32_t(inst);
     Ins_type type = get_inst_type(inst_t);
-    // switch(type) {
-    //   case Ins_type.HALT:
-    //     break;
-    //   case Ins_type.JIRL:
-    //     break;
-    // }
+
+    // src1_sel_ID
+    outputs['src1_sel_ID']!.setValue(Value.fromInt(context, with_label.contains(type) ? 1 : 0, 1));
+    // src2_sel_ID
+    if(with_imm.contains(type)) outputs['src2_sel_ID']!.setValue(Value.fromInt(context, 1, 2));
+    else if (type == Ins_type.JIRL) outputs['src2_sel_ID']!.setValue(Value.fromInt(context, 2, 2));
+    else outputs['src2_sel_ID']!.setValue(Value.fromInt(context, 0, 2));
+    //imm_ID
+    
   }
 }
 

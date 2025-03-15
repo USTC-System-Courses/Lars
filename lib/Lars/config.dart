@@ -169,6 +169,8 @@ Set<Ins_type> without_rd = {
 Set<Ins_type> with_label =
     (with_label16.toList() + with_label26.toList() + with_label32.toList())
         .toSet();
+Set<Ins_type> with_imm =
+    (with_si12.toList() + with_si16.toList() + with_si20.toList() + with_ui5.toList() + with_ui12.toList()).toSet();
 
 enum analyze_mode {
   DATA,

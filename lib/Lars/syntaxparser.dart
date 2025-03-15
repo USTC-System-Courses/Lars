@@ -241,8 +241,8 @@ class SyntaxParser {
       } catch (e) {
         throw SentenceException(Exception_type.INVALID_IMM, s_regular);
       }
-      if (imm.toSignedInt() > 32767 ||
-          imm.toSignedInt() < -32768 ||
+      if (imm.toSignedInt() > (1 << 17) - 1 ||
+          imm.toSignedInt() < -(1 << 17) ||
           imm.bitRange(1, 0) != Uint32.zero) {
         throw SentenceException(Exception_type.IMM_OUT_OF_RANGE, s_regular);
       }
