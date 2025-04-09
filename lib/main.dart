@@ -104,7 +104,8 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
 
   /// Controllers for memory text and data input
   TextEditingController memtext_ctrl = TextEditingController(),
-      memdata_ctrl = TextEditingController();
+      memdata_ctrl = TextEditingController(),
+      machineCodeInputCtrl = TextEditingController();
   List<String> textLines = [];
   Assembler asm = Assembler([]);
   Simulator sim = Simulator();
@@ -1007,6 +1008,340 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
     );
   }
 
+  /// 构建解析机器码按钮
+  Widget _buildMachineCodeButton(double width) {
+    return _buildToolbarButton(
+      icon: Icons.memory,
+      tooltip: '解析机器码',
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('解析LA机器码'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: machineCodeInputCtrl,
+                    decoration: InputDecoration(
+                      hintText: '输入十六进制机器码（最多8位）',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLength: 8,
+                    onChanged: (value) {
+                      // 限制只能输入十六进制字符
+                      if (value.isNotEmpty &&
+                          !RegExp(r'^[0-9a-fA-F]+$').hasMatch(value)) {
+                        machineCodeInputCtrl.text =
+                            value.replaceAll(RegExp(r'[^0-9a-fA-F]'), '');
+                      }
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('取消'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    String hexCode = machineCodeInputCtrl.text;
+                    if (hexCode.isEmpty) {
+                      return;
+                    }
+
+                    try {
+                      // 解析十六进制为整数
+                      int intValue = int.parse(hexCode, radix: 16);
+                      Uint32 machineCode = Uint32_t(intValue);
+
+                      // 获取指令类型
+                      Ins_type type = get_inst_type(machineCode);
+
+                      // 解析指令内容
+                      String instruction = "未能解析的指令";
+
+                      // 解析寄存器和立即数
+                      int rd = machineCode.bitRange(4, 0).toInt();
+                      int rj = machineCode.bitRange(9, 5).toInt();
+                      int rk = machineCode.bitRange(14, 10).toInt();
+
+                      // 根据指令类型格式化指令文本
+                      switch (type) {
+                        case Ins_type.ADDW:
+                          instruction = "ADD.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SUBW:
+                          instruction = "SUB.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SLT:
+                          instruction = "SLT \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SLTU:
+                          instruction = "SLTU \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.NOR:
+                          instruction = "NOR \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.AND:
+                          instruction = "AND \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.OR:
+                          instruction = "OR \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.XOR:
+                          instruction = "XOR \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SLLW:
+                          instruction = "SLL.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SRLW:
+                          instruction = "SRL.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SRAW:
+                          instruction = "SRA.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.MULW:
+                          instruction = "MUL.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.MULHW:
+                          instruction = "MULH.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.MULHWU:
+                          instruction = "MULHU.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.DIVW:
+                          instruction = "DIV.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.MODW:
+                          instruction = "MOD.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.DIVWU:
+                          instruction = "DIVU.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.MODWU:
+                          instruction = "MODU.W \$r$rd, \$r$rj, \$r$rk";
+                          break;
+                        case Ins_type.SLLIW:
+                          int imm = machineCode.bitRange(14, 10).toInt();
+                          instruction = "SLLI.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.SRLIW:
+                          int imm = machineCode.bitRange(14, 10).toInt();
+                          instruction = "SRLI.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.SRAIW:
+                          int imm = machineCode.bitRange(14, 10).toInt();
+                          instruction = "SRAI.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.SLTI:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "SLTI \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.SLTUI:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "SLTUI \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.ADDIW:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "ADDI.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.ANDI:
+                          int imm = machineCode.bitRange(21, 10).toInt();
+                          instruction =
+                              "ANDI \$r$rd, \$r$rj, 0x${imm.toRadixString(16)}";
+                          break;
+                        case Ins_type.ORI:
+                          int imm = machineCode.bitRange(21, 10).toInt();
+                          instruction =
+                              "ORI \$r$rd, \$r$rj, 0x${imm.toRadixString(16)}";
+                          break;
+                        case Ins_type.XORI:
+                          int imm = machineCode.bitRange(21, 10).toInt();
+                          instruction =
+                              "XORI \$r$rd, \$r$rj, 0x${imm.toRadixString(16)}";
+                          break;
+                        case Ins_type.LU12IW:
+                          int imm = machineCode.bitRange(24, 5).toSignedInt();
+                          instruction =
+                              "LU12I.W \$r$rd, 0x${imm.toRadixString(16)}";
+                          break;
+                        case Ins_type.PCADDU12I:
+                          int imm = machineCode.bitRange(24, 5).toSignedInt();
+                          instruction =
+                              "PCADDU12I \$r$rd, 0x${imm.toRadixString(16)}";
+                          break;
+                        case Ins_type.LDB:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "LD.B \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.LDH:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "LD.H \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.LDW:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "LD.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.STB:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "ST.B \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.STH:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "ST.H \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.STW:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "ST.W \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.LDBU:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "LD.BU \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.LDHU:
+                          int imm = machineCode.bitRange(21, 10).toSignedInt();
+                          instruction = "LD.HU \$r$rd, \$r$rj, $imm";
+                          break;
+                        case Ins_type.JIRL:
+                          int imm = machineCode.bitRange(25, 10).toSignedInt();
+                          instruction = "JIRL \$r$rd, \$r$rj, ${imm << 2}";
+                          break;
+                        case Ins_type.B:
+                          int imm = machineCode.bitRange(9, 0).toInt() |
+                              (machineCode.bitRange(25, 10).toInt() << 10);
+                          imm = ((imm << (32 - 26)) >> (32 - 26)) << 2; // 符号扩展
+                          instruction = "B ${imm}";
+                          break;
+                        case Ins_type.BL:
+                          int imm = machineCode.bitRange(9, 0).toInt() |
+                              (machineCode.bitRange(25, 10).toInt() << 10);
+                          imm = ((imm << (32 - 26)) >> (32 - 26)) << 2; // 符号扩展
+                          instruction = "BL ${imm}";
+                          break;
+                        case Ins_type.BEQ:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BEQ \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BNE:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BNE \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BLT:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BLT \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BGE:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BGE \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BLTU:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BLTU \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BGEU:
+                          int imm =
+                              machineCode.bitRange(25, 10).toSignedInt() << 2;
+                          instruction = "BGEU \$r$rj, \$r$rd, ${imm}";
+                          break;
+                        case Ins_type.BREAK:
+                          instruction = "BREAK";
+                          break;
+                        case Ins_type.HALT:
+                          instruction = "HALT";
+                          break;
+                        case Ins_type.NOP:
+                          instruction = "NOP";
+                          break;
+                        default:
+                          instruction = "未支持的指令类型";
+                      }
+
+                      // 显示解析结果
+                      Navigator.of(context).pop();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('解析结果'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    '机器码: 0x${machineCode.toInt().toRadixString(16).padLeft(8, '0')}'),
+                                SizedBox(height: 12),
+                                Text('汇编指令:'),
+                                SizedBox(height: 8),
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    instruction,
+                                    style: TextStyle(
+                                      fontFamily: 'FiraCode',
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.indigo[900],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('确定'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      // 显示错误信息
+                      Navigator.of(context).pop();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('错误'),
+                            content: Text('无法解析机器码: ${e.toString()}'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('确定'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Text('解析'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -1048,6 +1383,7 @@ class _MyTextPaginatingWidgetState extends State<MyTextPaginatingWidget> {
                   _buildDumpDataButton(width),
                   _buildDumpPDUDataButton(width),
                   _buildlogButton(width),
+                  _buildMachineCodeButton(width),
                   Divider(
                     color: Colors.indigo.withAlpha(40),
                     height: 32,
