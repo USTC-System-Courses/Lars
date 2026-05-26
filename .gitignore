@@ -17,3 +17,5 @@ windows/
 analysis_options.yaml
 *.iml
 *.lock
+
+lib/Lipes/la32r-pipeline

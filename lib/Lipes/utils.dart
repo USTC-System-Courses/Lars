@@ -223,28 +223,6 @@ class Wire extends Value {
   int get hashCode => _value.toString().hashCode;
 }
 
-// // 普通Wire
-// class PlainWire extends Wire {
-//   PlainWire(Context context, {int width = 1, String name = '', Value? parent})
-//       : super(context, width: width, name: name, parent: parent);
-// }
-
-// // 寄存器输出Wire
-// class RegisterWire extends Wire {
-//   final Register register;
-
-//   RegisterWire(Context context, this.register, {String name = ''})
-//       : super(context, width: register.width, name: name, parent: register) {
-//     register.setOutputWire(this);
-//   }
-
-//   @override
-//   set value(List<ValueType> newValue) {
-//     super.value = newValue;
-//     // 可以添加特定于寄存器输出的逻辑
-//   }
-// }
-
 // Register 类现在继承自 Value
 class Register extends Value {
   late Wire _output;
